@@ -2,6 +2,7 @@
 
 import { readFileSync } from "fs";
 import { Command } from 'commander';
+import { translate } from "./commands/translate.js";
 
 const pkgJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8"));
 
@@ -12,9 +13,12 @@ program
   .usage('[arguments] [options]')
   .description(`Description: ${pkgJson.description}`)
   .version(pkgJson.version, '-v, --version', 'output the current version')
+  .argument('[text]', 'テキストを翻訳する')
+  .option('-f, --file <path>', 'ファイルを翻訳する')
+  .option('-o, --output <path>', 'ファイルに出力する (デフォルト: 標準出力)')
   .showHelpAfterError()
   .addHelpText('after',
-  `\nExamples:
+    `\nExamples:
   $ enja "Hello, world!"     # 引数で渡された文字列を翻訳
   $ git --help | enja        # パイプ(標準入力)で渡されたテキストを翻訳
   $ enja -f input.txt        # ファイルからテキストを読み込んで翻訳
@@ -23,6 +27,7 @@ program
   )
   .addHelpText('afterAll', `\nEnja CLI v${pkgJson.version}`)
   .addHelpText('afterAll', 'Copyright (c) 2025 yhotta240')
-  .addHelpText('afterAll', 'GitHub: https://github.com/yhotamos/enja-cli');
+  .addHelpText('afterAll', 'GitHub: https://github.com/yhotamos/enja-cli')
+  .action(translate);
 
 program.parse();
