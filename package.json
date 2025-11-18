@@ -1,0 +1,24 @@
+{
+  "name": "enja-cli",
+  "version": "0.0.1",
+  "description": "英語を日本語に翻訳するシンプルなコマンドラインツール",
+  "main": "index.js",
+  "bin": {
+    "enja": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "yhotta240 <yhotta240@gmail.com> (https://github.com/yhotta240)",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "commander": "^14.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
