@@ -7,7 +7,8 @@
     "enja": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
   "keywords": [],
   "author": "yhotta240 <yhotta240@gmail.com> (https://github.com/yhotta240)",

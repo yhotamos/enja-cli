@@ -1,5 +1,6 @@
 import * as fs from 'fs';
-import { TranslateOptions } from '../types';
+import { TranslateOptions } from '../types/index.js';
+import { createTranslator } from '../services/translator/factory.js';
 
 export async function translate(text: string | undefined, options: TranslateOptions): Promise<void> {
   try {
@@ -12,6 +13,9 @@ export async function translate(text: string | undefined, options: TranslateOpti
 
     // ファイルからの読み込み処理
     if (options.file) {
+      if (!fs.existsSync(options.file)) {
+        throw new Error(`File Not Found Error: ${options.file} が見つかりません`);
+      }
       const fileContent = fs.readFileSync(options.file, 'utf-8');
       await processTranslation(fileContent, options);
       return;
@@ -24,6 +28,7 @@ export async function translate(text: string | undefined, options: TranslateOpti
     }
 
     console.error('Error: 入力が提供されていません');
+    console.error('Usage: enja <テキスト> または enja -f <ファイル> または パイプ入力');
     process.exit(1);
   } catch (error) {
     console.error('Error:', error instanceof Error ? error.message : error);
@@ -32,13 +37,25 @@ export async function translate(text: string | undefined, options: TranslateOpti
 }
 
 async function processTranslation(text: string, options: TranslateOptions): Promise<void> {
-  // TODO: 実際の翻訳処理を実装
-  const translated = `[翻訳結果] ${text}`;
+  if (!text || text.trim().length === 0) {
+    throw new Error('Translation Error: 翻訳するテキストが空です');
+  }
+
+  // 翻訳サービスの初期化
+  const translator = createTranslator();
+
+  // 翻訳処理
+  const result = await translator.translate(text, 'en', 'ja');
+  const translated = result.text;
 
   // 出力処理
   if (options.output) {
-    fs.writeFileSync(options.output, translated, 'utf-8');
-    console.log(`${options.output} に翻訳結果を保存しました`);
+    try {
+      fs.writeFileSync(options.output, translated, 'utf-8');
+      console.log(`✓ ${options.output} に翻訳結果を保存しました`);
+    } catch (error) {
+      throw new Error(`File Write Error: ${options.output} への書き込みに失敗しました - ${error instanceof Error ? error.message : error}`);
+    }
   } else {
     console.log(translated);
   }
