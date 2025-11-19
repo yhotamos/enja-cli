@@ -9,7 +9,7 @@ export function getConfig(): Config {
   const gasApiUrl = GAS_API_URL;
 
   if (!gasApiUrl || !gasApiUrl.startsWith('https://script.google.com/macros/s/')) {
-    throw new Error('Config Error: 無効なGAS API URLです。\n');
+    throw new Error('Config Error: 無効なGAS API URLです。');
   }
 
   return {

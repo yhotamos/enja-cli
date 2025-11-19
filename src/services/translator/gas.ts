@@ -29,7 +29,7 @@ export class GASTranslator implements Translator {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP Error: ステータス ${response.status}`);
+        throw new Error(`HTTP Error: ステータス ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json() as GASApiResponse;
