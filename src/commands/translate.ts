@@ -41,11 +41,20 @@ async function processTranslation(text: string, options: TranslateOptions): Prom
     throw new Error('Translation Error: 翻訳するテキストが空です');
   }
 
+  // HTMLタグ除去
+  let processedText = text;
+  if (options.stripHtml) {
+    processedText = stripHtmlTags(text);
+    if (!processedText || processedText.trim().length === 0) {
+      throw new Error('Translation Error: HTMLタグを除去した結果，翻訳するテキストが空になりました');
+    }
+  }
+
   // 翻訳サービスの初期化
   const translator = createTranslator();
 
   // 翻訳処理
-  const result = await translator.translate(text, 'en', 'ja');
+  const result = await translator.translate(processedText, 'en', 'ja');
   const translated = result.text;
 
   // 出力処理
@@ -78,4 +87,19 @@ function readStdin(): Promise<string> {
       reject(error);
     });
   });
+}
+
+function stripHtmlTags(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n\s*\n/g, '\n')
+    .trim();
 }
