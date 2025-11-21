@@ -17,6 +17,7 @@ program
   .option('-f, --file <path>', 'ファイルを翻訳する')
   .option('-o, --output <path>', 'ファイルに出力する (デフォルト: 標準出力)')
   .option('-s, --strip-html', 'HTMLタグを除去してから翻訳する')
+  .option('-F, --flip', '翻訳方向を逆にする (デフォルト: 英語→日本語)')
   .showHelpAfterError()
   .addHelpText('after',
     `\nExamples:
