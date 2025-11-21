@@ -54,7 +54,10 @@ async function processTranslation(text: string, options: TranslateOptions): Prom
   const translator = createTranslator();
 
   // 翻訳処理
-  const result = await translator.translate(processedText, 'en', 'ja');
+  const sourceLang = options.flip ? 'ja' : 'en';
+  const targetLang = options.flip ? 'en' : 'ja';
+
+  const result = await translator.translate(processedText, sourceLang, targetLang);
   const translated = result.text;
 
   // 出力処理
