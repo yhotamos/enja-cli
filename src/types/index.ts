@@ -3,6 +3,9 @@ export interface TranslateOptions {
   output?: string;
   stripHtml?: boolean;
   flip?: boolean;
+  endpoint?: string;
+  apiKey?: string;
+  provider?: string;
 }
 
 export interface HistoryEntry {

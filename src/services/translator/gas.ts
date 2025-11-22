@@ -9,18 +9,26 @@ interface GASApiResponse {
 
 export class GASTranslator implements Translator {
   private apiUrl: string;
+  private apiKey?: string;
 
-  constructor(apiUrl: string) {
+  constructor(apiUrl: string, apiKey?: string) {
     this.apiUrl = apiUrl;
+    this.apiKey = apiKey;
   }
 
   async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
     try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (this.apiKey) {
+        headers['Authorization'] = `Bearer ${this.apiKey}`;
+      }
+
       const response = await fetch(this.apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           text,
           sourceLang,

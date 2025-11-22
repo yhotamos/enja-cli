@@ -54,7 +54,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
   }
 
   // 翻訳サービスの初期化
-  const translator = createTranslator();
+  const translator = createTranslator(options);
   const historyStorage = new HistoryStorage();
 
   // 翻訳処理

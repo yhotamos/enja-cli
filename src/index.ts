@@ -22,6 +22,9 @@ program
   .option('-o, --output <path>', 'ファイルに出力する (デフォルト: 標準出力)')
   .option('-s, --strip-html', 'HTMLタグを除去してから翻訳する')
   .option('-F, --flip', '翻訳方向を逆にする (デフォルト: 英語→日本語)')
+  .option('--endpoint <url>', 'カスタム翻訳エンドポイントを指定')
+  .option('--api-key <key>', 'API キーを指定')
+  .option('--provider <name>', '翻訳プロバイダーを指定 (gas, custom)')
   .showHelpAfterError()
   .addHelpText('after',
     `\nExamples:
@@ -30,7 +33,8 @@ program
   $ enja -f input.txt        # ファイルからテキストを読み込んで翻訳
   $ enja -f input.txt -o output.txt  # ファイルから読み込み，翻訳結果をファイルに保存
   $ cat README.md | enja -o japanese.md  # パイプとファイル出力の組み合わせ
-  $ curl -s https://example.com | enja -s  # HTMLタグを除去して翻訳`
+  $ curl -s https://example.com | enja -s  # HTMLタグを除去して翻訳
+  $ enja "Hello" --endpoint https://api.example.com/translate --api-key YOUR_KEY  # カスタムエンドポイント`
   )
   .addHelpText('afterAll', `\nEnja CLI v${pkgJson.version}`)
   .addHelpText('afterAll', 'Copyright (c) 2025 yhotta240')
