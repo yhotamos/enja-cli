@@ -37,13 +37,13 @@ export class GASTranslator implements Translator {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP Error: ステータス ${response.status} ${response.statusText}`);
+        throw new Error(`error: HTTP ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json() as GASApiResponse;
 
       if (data.code !== 200 || !data.translatedText) {
-        throw new Error(data.error || '翻訳に失敗しました');
+        throw new Error(`error: ${data.error || '翻訳に失敗しました'}`);
       }
 
       return {
@@ -52,9 +52,9 @@ export class GASTranslator implements Translator {
       };
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Translation Error: ${error.message}`);
+        throw error;
       }
-      throw error;
+      throw new Error(`error: 翻訳に失敗しました`);
     }
   }
 }

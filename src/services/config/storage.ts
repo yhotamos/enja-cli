@@ -33,7 +33,6 @@ export class ConfigStorage implements ConfigManager {
       const config = JSON.parse(data) as ConfigProfile;
       return { ...DEFAULT_CONFIG, ...config };
     } catch (error) {
-      console.error('Error reading config file:', error);
       return { ...DEFAULT_CONFIG };
     }
   }
@@ -43,7 +42,7 @@ export class ConfigStorage implements ConfigManager {
       this.ensureConfigDir();
       fs.writeFileSync(this.filePath, JSON.stringify(config, null, 2), 'utf-8');
     } catch (error) {
-      throw new Error(`Error writing config file: ${error instanceof Error ? error.message : error}`);
+      throw new Error(`error: 設定ファイルの書き込みに失敗しました`);
     }
   }
 
@@ -65,12 +64,12 @@ export class ConfigStorage implements ConfigManager {
         break;
       case 'provider':
         if (value !== 'gas' && value !== 'custom') {
-          throw new Error(`Invalid provider: ${value} (gas, custom のいずれかを指定してください)`);
+          throw new Error(`error: 無効なプロバイダー (${value}): gas または custom を指定してください`);
         }
         config.provider = value;
         break;
       default:
-        throw new Error(`Invalid configuration key: ${key} (endpoint, api-key, provider のいずれかを指定してください)`);
+        throw new Error(`error: 無効な設定キー (${key})`);
     }
 
     await this.writeConfig(config);
@@ -91,7 +90,7 @@ export class ConfigStorage implements ConfigManager {
         config.provider = DEFAULT_CONFIG.provider;
         break;
       default:
-        throw new Error(`Invalid configuration key: ${key} (endpoint, api-key, provider のいずれかを指定してください)`);
+        throw new Error(`error: 無効な設定キー (${key})`);
     }
 
     await this.writeConfig(config);

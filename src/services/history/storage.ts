@@ -31,7 +31,6 @@ export class HistoryStorage implements HistoryManager {
       const data = fs.readFileSync(this.filePath, 'utf-8');
       return JSON.parse(data) as HistoryEntry[];
     } catch (error) {
-      console.error('履歴ファイルの読み込みに失敗しました:', error);
       return [];
     }
   }
@@ -42,7 +41,7 @@ export class HistoryStorage implements HistoryManager {
       this.ensureConfigDir();
       fs.writeFileSync(this.filePath, JSON.stringify(entries, null, 2), 'utf-8');
     } catch (error) {
-      throw new Error(`履歴ファイルの書き込みに失敗しました: ${error instanceof Error ? error.message : error}`);
+      throw new Error(`error: 履歴ファイルの書き込みに失敗しました`);
     }
   }
 
