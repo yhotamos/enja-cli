@@ -66,6 +66,10 @@ curl -s https://example.com | enja -s
 curl -s https://example.com/api/docs | enja
 ```
 
+## コマンド
+
+[COMMANDS.md](docs/COMMANDS.md) を参照してください．
+
 ## セキュリティとプライバシー
 
 - 翻訳データは保存されません（リクエストごとに処理し，即座にレスポンス）
