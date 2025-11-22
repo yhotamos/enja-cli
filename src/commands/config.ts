@@ -38,7 +38,7 @@ export async function config(key?: ConfigKey, value?: string, options?: ConfigOp
       } else if (key === 'provider') {
         console.log(config.provider);
       } else {
-        console.error(`Invalid configuration key: ${key}`);
+        console.error(`error: 無効な設定キー (${key})`);
         process.exit(1);
       }
       return;

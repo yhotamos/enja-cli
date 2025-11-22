@@ -22,7 +22,7 @@ export async function history(options: HistoryOptions): Promise<void> {
     console.log(output);
 
   } catch (error) {
-    console.error('Error:', error instanceof Error ? error.message : error);
+    console.error(error instanceof Error ? error.message : error);
     process.exit(1);
   }
 }

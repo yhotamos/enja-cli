@@ -8,7 +8,7 @@ export function getConfigDir(): string {
   if (platform === 'win32') {
     const appData = process.env.APPDATA;
     if (!appData) {
-      throw new Error('APPDATA environment variable is not set');
+      throw new Error('error: APPDATA 環境変数が設定されていません');
     }
     return path.join(appData, 'enja-cli');
   }
