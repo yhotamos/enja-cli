@@ -1,19 +1,38 @@
+import { TranslateOptions } from '../types/index.js';
+import { ConfigStorage } from '../services/config/storage.js';
+
 export interface Config {
-  gasApiUrl: string;
-  translationProvider: 'gas';
+  endpoint: string;
+  provider: 'gas' | 'custom';
+  apiKey?: string;
 }
 
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxOSbKD0aBTaQqIzHv00BMzp6WwrtWHBU3gJY0vhB2HblgUO-cgesfT1l-rrfttnWZzew/exec";
+const DEFAULT_GAS_API_URL = "https://script.google.com/macros/s/AKfycbxOSbKD0aBTaQqIzHv00BMzp6WwrtWHBU3gJY0vhB2HblgUO-cgesfT1l-rrfttnWZzew/exec";
 
-export function getConfig(): Config {
-  const gasApiUrl = GAS_API_URL;
+export async function getConfig(options?: TranslateOptions): Promise<Config> {
+  // 設定ファイルから読み込み
+  const storage = new ConfigStorage();
+  const fileConfig = await storage.get();
 
-  if (!gasApiUrl || !gasApiUrl.startsWith('https://script.google.com/macros/s/')) {
-    throw new Error('Config Error: 無効なGAS API URLです。');
-  }
+  // 優先順位: コマンドラインオプション > 設定ファイル > デフォルト値
+  const endpoint =
+    options?.endpoint ||
+    fileConfig.endpoint ||
+    DEFAULT_GAS_API_URL;
+
+  const apiKey =
+    options?.apiKey ||
+    fileConfig.apiKey ||
+    undefined;
+
+  const provider =
+    (options?.provider as 'gas' | 'custom') ||
+    fileConfig.provider ||
+    'gas';
 
   return {
-    gasApiUrl,
-    translationProvider: 'gas',
+    endpoint,
+    provider,
+    apiKey,
   };
 }

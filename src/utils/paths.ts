@@ -21,3 +21,8 @@ export function getConfigDir(): string {
 export function getHistoryFilePath(): string {
   return path.join(getConfigDir(), 'history.json');
 }
+
+/** 設定ファイルのパスを取得 */
+export function getConfigFilePath(): string {
+  return path.join(getConfigDir(), 'config.json');
+}
