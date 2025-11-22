@@ -2,13 +2,15 @@ import * as fs from 'fs';
 import ora from 'ora';
 import { TranslateOptions } from '../types/index.js';
 import { createTranslator } from '../services/translator/factory.js';
+import { HistoryStorage } from '../services/history/storage.js';
+import { hashText } from '../utils/hash.js';
 
 export async function translate(text: string | undefined, options: TranslateOptions): Promise<void> {
   try {
     // 標準入力からの読み込み処理
     if (!text && !options.file && !process.stdin.isTTY) {
       const stdin = await readStdin();
-      await processTranslation(stdin, options);
+      await processTranslation(stdin, options, 'stdin');
       return;
     }
 
@@ -18,13 +20,13 @@ export async function translate(text: string | undefined, options: TranslateOpti
         throw new Error(`File Not Found Error: ${options.file} が見つかりません`);
       }
       const fileContent = fs.readFileSync(options.file, 'utf-8');
-      await processTranslation(fileContent, options);
+      await processTranslation(fileContent, options, 'file');
       return;
     }
 
     // 引数で渡されたテキストの処理
     if (text) {
-      await processTranslation(text, options);
+      await processTranslation(text, options, 'arg');
       return;
     }
 
@@ -37,7 +39,7 @@ export async function translate(text: string | undefined, options: TranslateOpti
   }
 }
 
-async function processTranslation(text: string, options: TranslateOptions): Promise<void> {
+async function processTranslation(text: string, options: TranslateOptions, inputMethod: 'arg' | 'stdin' | 'file'): Promise<void> {
   if (!text || text.trim().length === 0) {
     throw new Error('Translation Error: 翻訳するテキストが空です');
   }
@@ -53,10 +55,33 @@ async function processTranslation(text: string, options: TranslateOptions): Prom
 
   // 翻訳サービスの初期化
   const translator = createTranslator();
+  const historyStorage = new HistoryStorage();
 
   // 翻訳処理
   const sourceLang = options.flip ? 'ja' : 'en';
   const targetLang = options.flip ? 'en' : 'ja';
+
+  // キャッシュチェック
+  const textHash = hashText(processedText);
+  const cachedEntry = await historyStorage.findByHash(textHash, sourceLang, targetLang);
+
+  if (cachedEntry) {
+    console.log('✓ キャッシュから翻訳結果を取得しました');
+    const translated = cachedEntry.translatedText;
+
+    // 出力処理
+    if (options.output) {
+      try {
+        fs.writeFileSync(options.output, translated, 'utf-8');
+        console.log(`✓ ${options.output} に翻訳結果を保存しました`);
+      } catch (error) {
+        throw new Error(`File Write Error: ${options.output} への書き込みに失敗しました - ${error instanceof Error ? error.message : error}`);
+      }
+    } else {
+      console.log(translated);
+    }
+    return;
+  }
 
   const dir = `(${sourceLang} → ${targetLang})`;
   const spinner = ora(`翻訳中... ${dir}`).start();
@@ -64,6 +89,22 @@ async function processTranslation(text: string, options: TranslateOptions): Prom
     const result = await translator.translate(processedText, sourceLang, targetLang);
     const translated = result.text;
     spinner.succeed(`翻訳完了 ${dir}`);
+
+    // 履歴に保存
+    await historyStorage.add({
+      sourceText: processedText,
+      translatedText: translated,
+      sourceLang,
+      targetLang,
+      textLength: processedText.length,
+      sourceHash: textHash,
+      options: {
+        stripHtml: options.stripHtml,
+        file: options.file,
+        inputMethod,
+      },
+    });
+
     // 出力処理
     if (options.output) {
       try {
