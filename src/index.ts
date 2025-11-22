@@ -4,6 +4,7 @@ import { readFileSync } from "fs";
 import { Command } from 'commander';
 import { translate } from "./commands/translate.js";
 import { history } from "./commands/history.js";
+import { config } from "./commands/config.js";
 
 const pkgJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf-8"));
 
@@ -49,5 +50,26 @@ program
   .option('-n <number>', '表示件数 (デフォルト: 10)', '10')
   .option('--clear', '履歴をクリア')
   .action(history);
+
+// 設定コマンド
+program
+  .command('config')
+  .description('設定を管理する')
+  .argument('[key]', '設定キー (endpoint, api-key, provider)')
+  .argument('[value]', '設定値')
+  .option('-l, --list', '設定を一覧表示')
+  .option('--unset <key>', '設定を削除（デフォルトに戻す）')
+  .option('--reset', 'すべての設定をリセット')
+  .addHelpText('after',
+    `\nExamples:
+  $ enja config                           # すべての設定を表示
+  $ enja config --list                    # すべての設定を表示
+  $ enja config endpoint                  # endpoint の値を表示
+  $ enja config endpoint <URL>            # endpoint を設定
+  $ enja config api-key <KEY>             # API キーを設定
+  $ enja config provider gas              # プロバイダーを設定
+  $ enja config --unset api-key           # API キーを削除
+  $ enja config --reset                   # すべての設定をリセット`)
+  .action(config);
 
 program.parse();

@@ -31,3 +31,17 @@ export interface HistoryOptions {
   clear?: boolean;
   replay?: string;
 }
+
+export interface ConfigProfile {
+  provider: 'gas' | 'custom';
+  endpoint: string;
+  apiKey?: string;
+}
+
+export interface ConfigOptions {
+  list?: boolean;
+  unset?: ConfigKey;
+  reset?: boolean;
+}
+
+export type ConfigKey = 'endpoint' | 'api-key' | 'provider';
