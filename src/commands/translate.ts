@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import ora from 'ora';
 import { TranslateOptions } from '../types/index.js';
 import { createTranslator } from '../services/translator/factory.js';
 
@@ -57,19 +58,26 @@ async function processTranslation(text: string, options: TranslateOptions): Prom
   const sourceLang = options.flip ? 'ja' : 'en';
   const targetLang = options.flip ? 'en' : 'ja';
 
-  const result = await translator.translate(processedText, sourceLang, targetLang);
-  const translated = result.text;
-
-  // 出力処理
-  if (options.output) {
-    try {
-      fs.writeFileSync(options.output, translated, 'utf-8');
-      console.log(`✓ ${options.output} に翻訳結果を保存しました`);
-    } catch (error) {
-      throw new Error(`File Write Error: ${options.output} への書き込みに失敗しました - ${error instanceof Error ? error.message : error}`);
+  const dir = `(${sourceLang} → ${targetLang})`;
+  const spinner = ora(`翻訳中... ${dir}`).start();
+  try {
+    const result = await translator.translate(processedText, sourceLang, targetLang);
+    const translated = result.text;
+    spinner.succeed(`翻訳完了 ${dir}`);
+    // 出力処理
+    if (options.output) {
+      try {
+        fs.writeFileSync(options.output, translated, 'utf-8');
+        console.log(`✓ ${options.output} に翻訳結果を保存しました`);
+      } catch (error) {
+        throw new Error(`File Write Error: ${options.output} への書き込みに失敗しました - ${error instanceof Error ? error.message : error}`);
+      }
+    } else {
+      console.log(translated);
     }
-  } else {
-    console.log(translated);
+  } catch (error) {
+    spinner.fail(`翻訳失敗 ${dir}`);
+    throw error;
   }
 }
 

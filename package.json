@@ -15,7 +15,8 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "commander": "^14.0.2"
+    "commander": "^14.0.2",
+    "ora": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
