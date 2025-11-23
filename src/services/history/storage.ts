@@ -102,23 +102,13 @@ export class HistoryStorage implements HistoryManager {
     return entries.find(entry => entry.id === id) || null;
   }
 
-  /** 短縮IDで履歴を検索（先頭一致）．複数マッチする可能性があるため配列を返す */
+  /**
+   * 短縮IDで履歴を検索（先頭一致）  
+   * 複数マッチする可能性があるため配列を返す
+   */
   async findByShortId(id: string): Promise<HistoryEntry[]> {
     const entries = await this.readHistory();
     return entries.filter(entry => entry.id.startsWith(id));
-  }
-
-  /** IDまたは短縮IDで履歴を検索 */
-  async findByIdOrShortId(id: string): Promise<HistoryEntry | null> {
-    const trimmed = id.trim();
-    if (!trimmed) return null;
-    // 36 文字以上は完全 ID として扱う（UUID は通常 36 文字）
-    if (trimmed.length >= 36) return this.findById(trimmed);
-    // それ以外は短縮 ID として先頭一致で検索
-    const matches = await this.findByShortId(trimmed);
-    if (matches.length === 0) return null;
-    // 既存の呼び出し互換性のため，複数ヒットした場合は最初のエントリを返す
-    return matches[0];
   }
 
   /** ハッシュと翻訳方向で履歴を検索 */
