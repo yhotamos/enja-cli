@@ -1,3 +1,4 @@
+import kleur from 'kleur';
 import { HistoryEntry } from '../../types/index.js';
 
 /** 履歴エントリをフォーマットして文字列として返す */
@@ -25,7 +26,7 @@ function formatSimple(entries: HistoryEntry[]): string {
       ? entry.sourceText.substring(0, 30) + '...'
       : entry.sourceText;
 
-    lines.push(`[${index + 1}] ${entry.id.substring(0, 8)} | ${date}`);
+    lines.push(`${kleur.cyan('[' + (index + 1) + ']')} ${entry.id.substring(0, 8)} | ${date}`);
     lines.push(`    ${entry.sourceLang} → ${entry.targetLang} | ${preview}`);
     lines.push('');
   });
@@ -46,10 +47,10 @@ function formatDetailed(entries: HistoryEntry[]): string {
 
     const date = new Date(entry.timestamp).toLocaleString('ja-JP');
 
-    lines.push(`ID: ${entry.id}`);
-    lines.push(`Date: ${date}`);
-    lines.push(`Direction: ${entry.sourceLang} → ${entry.targetLang}`);
-    lines.push(`Length: ${entry.textLength} characters`);
+    lines.push(`${kleur.cyan('ID:')} ${entry.id}`);
+    lines.push(`${kleur.cyan('Date:')} ${date}`);
+    lines.push(`${kleur.cyan('Direction:')} ${entry.sourceLang} → ${entry.targetLang}`);
+    lines.push(`${kleur.cyan('Length:')} ${entry.textLength} characters`);
 
     if (entry.options) {
       const opts: string[] = [];
@@ -57,15 +58,15 @@ function formatDetailed(entries: HistoryEntry[]): string {
       if (entry.options.stripHtml) opts.push('stripHtml=true');
       if (entry.options.file) opts.push(`file=${entry.options.file}`);
       if (opts.length > 0) {
-        lines.push(`Options: ${opts.join(', ')}`);
+        lines.push(`${kleur.cyan('Options:')} ${opts.join(', ')}`);
       }
     }
 
     lines.push('');
-    lines.push(`Input:`);
+    lines.push(`${kleur.cyan('Input:')}`);
     lines.push(entry.sourceText);
     lines.push('');
-    lines.push(`Output:`);
+    lines.push(`${kleur.cyan('Output:')}`);
     lines.push(entry.translatedText);
     lines.push('');
   });
