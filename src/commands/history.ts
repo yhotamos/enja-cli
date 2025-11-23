@@ -1,6 +1,7 @@
 import { HistoryOptions } from '../types/index.js';
 import { HistoryStorage } from '../services/history/storage.js';
 import { formatHistory } from '../services/history/formatter.js';
+import kleur from 'kleur';
 
 /** 履歴コマンドの実行 */
 export async function history(id: string, options: HistoryOptions): Promise<void> {
@@ -52,7 +53,7 @@ export async function history(id: string, options: HistoryOptions): Promise<void
       if (delId.length >= 36) {
         const deleted = await storage.deleteById(delId);
         if (deleted) {
-          console.log(`✓ 履歴ID ${delId} を削除しました`);
+          console.log(`${kleur.green('✔')} 履歴ID ${delId} を削除しました`);
         } else {
           throw new Error(`指定されたIDの履歴が見つかりません (${delId})`);
         }
@@ -81,7 +82,7 @@ export async function history(id: string, options: HistoryOptions): Promise<void
       const targetId = matches[0].id;
       const deleted = await storage.deleteById(targetId);
       if (deleted) {
-        console.log(`✓ 履歴ID ${targetId} を削除しました`);
+        console.log(`${kleur.green('✔')} 履歴ID ${targetId} を削除しました`);
       } else {
         throw new Error(`削除に失敗しました (${targetId})`);
       }
@@ -91,7 +92,7 @@ export async function history(id: string, options: HistoryOptions): Promise<void
     // 履歴クリア
     if (options.clear) {
       await storage.clear();
-      console.log('✓ 履歴をクリアしました');
+      console.log(`${kleur.green('✔')} 履歴をクリアしました`);
       return;
     }
 

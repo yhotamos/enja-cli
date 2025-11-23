@@ -4,6 +4,7 @@ import { TranslateOptions } from '../types/index.js';
 import { createTranslator } from '../services/translator/factory.js';
 import { HistoryStorage } from '../services/history/storage.js';
 import { hashText } from '../utils/hash.js';
+import kleur from 'kleur';
 
 export async function translate(text: string | undefined, options: TranslateOptions): Promise<void> {
   try {
@@ -66,14 +67,14 @@ async function processTranslation(text: string, options: TranslateOptions, input
   const cachedEntry = await historyStorage.findByHash(textHash, sourceLang, targetLang);
 
   if (cachedEntry && options.cache !== false) {
-    console.log('✓ キャッシュから翻訳結果を取得しました');
+    console.log(`${kleur.green('✔')} キャッシュから翻訳結果を取得しました`);
     const translated = cachedEntry.translatedText;
 
     // 出力処理
     if (options.output) {
       try {
         fs.writeFileSync(options.output, translated, 'utf-8');
-        console.log(`✓ ${options.output} に翻訳結果を保存しました`);
+        console.log(`${kleur.green('✔')} ${options.output} に翻訳結果を保存しました`);
       } catch (error) {
         throw new Error(`error: ファイルへの書き込みに失敗しました (${options.output})`);
       }
@@ -109,7 +110,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
     if (options.output) {
       try {
         fs.writeFileSync(options.output, translated, 'utf-8');
-        console.log(`✓ ${options.output} に翻訳結果を保存しました`);
+        console.log(`${kleur.green('✔')} ${options.output} に翻訳結果を保存しました`);
       } catch (error) {
         throw new Error(`error: ファイルへの書き込みに失敗しました (${options.output})`);
       }
