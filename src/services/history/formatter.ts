@@ -23,7 +23,7 @@ function formatSimple(entries: HistoryEntry[]): string {
   entries.forEach((entry, index) => {
     const date = new Date(entry.timestamp).toLocaleString('ja-JP');
     const preview = entry.sourceText.length > 30
-      ? entry.sourceText.substring(0, 30) + '...'
+      ? entry.sourceText.replace(/[\r\n]+/g, ' ').substring(0, 30) + '...'
       : entry.sourceText;
 
     lines.push(`${kleur.cyan('[' + (index + 1) + ']')} ${entry.id.substring(0, 8)} | ${date}`);
