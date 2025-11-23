@@ -2,6 +2,7 @@ export interface TranslateOptions {
   file?: string;
   output?: string;
   stripHtml?: boolean;
+  cache?: boolean;
   flip?: boolean;
   endpoint?: string;
   apiKey?: string;
