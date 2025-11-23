@@ -29,7 +29,7 @@ export interface HistoryEntry {
 export interface HistoryOptions {
   id?: string;
   detail?: boolean;
-  n?: number;
+  number?: number;
   delete?: string;
   clear?: boolean;
   replay?: string;

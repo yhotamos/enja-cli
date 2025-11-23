@@ -22,7 +22,7 @@ program
   .option('-f, --file <path>', 'ファイルを翻訳する')
   .option('-o, --output <path>', 'ファイルに出力する (デフォルト: 標準出力)')
   .option('-s, --strip-html', 'HTMLタグを除去してから翻訳する')
-  .option('-n, --no-cache', 'キャッシュを使用せずに再翻訳する')
+  .option('-N, --no-cache', 'キャッシュを使用せずに再翻訳する')
   .option('-F, --flip', '翻訳方向を逆にする (デフォルト: 英語→日本語)')
   .option('--endpoint <url>', 'カスタム翻訳エンドポイントを指定')
   .option('--api-key <key>', 'API キーを指定')
@@ -49,7 +49,7 @@ program
   .description('翻訳履歴を表示する')
   .argument('[id]', 'ID で履歴を表示する（完全 ID または短縮 ID）')
   .option('-d, --detail', '詳細表示')
-  .option('-n <number>', '表示件数 (デフォルト: 10)', '10')
+  .option('-n, --number <number>', '表示件数 (デフォルト: 10)', '10')
   .option('--delete <id>', '特定の履歴を削除する')
   .option('--clear', '履歴をクリア')
   .action(history);
