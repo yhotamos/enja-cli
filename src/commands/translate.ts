@@ -65,7 +65,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
   const textHash = hashText(processedText);
   const cachedEntry = await historyStorage.findByHash(textHash, sourceLang, targetLang);
 
-  if (cachedEntry) {
+  if (cachedEntry && options.cache !== false) {
     console.log('✓ キャッシュから翻訳結果を取得しました');
     const translated = cachedEntry.translatedText;
 

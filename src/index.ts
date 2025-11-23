@@ -22,6 +22,7 @@ program
   .option('-f, --file <path>', 'ファイルを翻訳する')
   .option('-o, --output <path>', 'ファイルに出力する (デフォルト: 標準出力)')
   .option('-s, --strip-html', 'HTMLタグを除去してから翻訳する')
+  .option('-n, --no-cache', 'キャッシュを使用せずに再翻訳する')
   .option('-F, --flip', '翻訳方向を逆にする (デフォルト: 英語→日本語)')
   .option('--endpoint <url>', 'カスタム翻訳エンドポイントを指定')
   .option('--api-key <key>', 'API キーを指定')
