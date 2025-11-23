@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { promises as fsp } from 'fs';
 import { randomUUID } from 'crypto';
 import { HistoryEntry } from '../../types/index.js';
 import { HistoryManager } from './index.js';
@@ -25,12 +26,12 @@ export class HistoryStorage implements HistoryManager {
   /** 履歴ファイルを読み込む */
   private async readHistory(): Promise<HistoryEntry[]> {
     try {
-      if (!fs.existsSync(this.filePath)) {
-        return [];
-      }
-      const data = fs.readFileSync(this.filePath, 'utf-8');
+      // ファイルが存在しない場合は空配列を返す
+      await fsp.access(this.filePath).catch(() => { throw new Error('NO_FILE'); });
+      const data = await fsp.readFile(this.filePath, 'utf-8');
       return JSON.parse(data) as HistoryEntry[];
     } catch (error) {
+      // 読み取りや JSON パースに失敗した場合は安全に空配列を返す
       return [];
     }
   }
@@ -39,7 +40,11 @@ export class HistoryStorage implements HistoryManager {
   private async writeHistory(entries: HistoryEntry[]): Promise<void> {
     try {
       this.ensureConfigDir();
-      fs.writeFileSync(this.filePath, JSON.stringify(entries, null, 2), 'utf-8');
+      // 一時ファイルに書き込み、リネームで原子性を確保
+      const tmpPath = `${this.filePath}.tmp`;
+      const data = JSON.stringify(entries, null, 2);
+      await fsp.writeFile(tmpPath, data, 'utf-8');
+      await fsp.rename(tmpPath, this.filePath);
     } catch (error) {
       throw new Error(`error: 履歴ファイルの書き込みに失敗しました`);
     }
@@ -76,6 +81,16 @@ export class HistoryStorage implements HistoryManager {
     return entries.slice(0, limit);
   }
 
+  /** 履歴を削除 */
+  async deleteById(id: string): Promise<boolean> {
+    const entries = await this.readHistory();
+    const filteredEntries = entries.filter(entry => entry.id !== id);
+    // 変更がなければ書き込みを行わない
+    if (filteredEntries.length === entries.length) return false;
+    await this.writeHistory(filteredEntries);
+    return true;
+  }
+
   /** 履歴をクリア */
   async clear(): Promise<void> {
     await this.writeHistory([]);
@@ -85,6 +100,15 @@ export class HistoryStorage implements HistoryManager {
   async findById(id: string): Promise<HistoryEntry | null> {
     const entries = await this.readHistory();
     return entries.find(entry => entry.id === id) || null;
+  }
+
+  /**
+   * 短縮IDで履歴を検索（先頭一致）  
+   * 複数マッチする可能性があるため配列を返す
+   */
+  async findByShortId(id: string): Promise<HistoryEntry[]> {
+    const entries = await this.readHistory();
+    return entries.filter(entry => entry.id.startsWith(id));
   }
 
   /** ハッシュと翻訳方向で履歴を検索 */

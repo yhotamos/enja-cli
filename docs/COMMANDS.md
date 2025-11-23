@@ -17,6 +17,7 @@ enja [text] [options]
 - `-f, --file <path>` - ファイルを翻訳する
 - `-o, --output <path>` - ファイルに出力する (デフォルト: 標準出力)
 - `-s, --strip-html` - HTML タグを除去してから翻訳する
+- `-n, --no-cache` - キャッシュを使用せずに再翻訳する
 - `-F, --flip` - 翻訳方向を逆にする (デフォルト: 英語 → 日本語)
 - `--endpoint <url>` - カスタム翻訳エンドポイントを指定
 - `--api-key <key>` - API キーを指定
@@ -48,8 +49,6 @@ enja "こんにちは" -F
 enja "Hello" --endpoint https://api.example.com/translate --api-key YOUR_KEY
 ```
 
----
-
 ## `enja history` コマンド
 
 翻訳履歴を表示する
@@ -60,10 +59,15 @@ enja "Hello" --endpoint https://api.example.com/translate --api-key YOUR_KEY
 enja history [options]
 ```
 
+### Arguments
+
+- `id` - ID で履歴を表示する（完全 ID または短縮 ID）
+
 ### Options
 
 - `-d, --detail` - 詳細表示
 - `-n <number>` - 表示件数 (デフォルト: 10)
+- `--delete <id>` - 特定の履歴を削除する
 - `--clear` - 履歴をクリア
 - `-h, --help` - ヘルプを表示
 
@@ -73,11 +77,17 @@ enja history [options]
 # 最新10件の履歴を表示
 enja history
 
+# 特定のIDの履歴を表示
+enja history <ID>
+
 # 詳細表示
 enja history -d
 
 # 最新20件を表示
 enja history -n 20
+
+# 特定のIDの履歴を削除
+enja history --delete <ID>
 
 # 履歴をすべて削除
 enja history --clear
@@ -87,8 +97,6 @@ enja history --clear
 
 - **Windows**: `%APPDATA%\enja-cli\history.json`
 - **Linux/Mac**: `~/.config/enja-cli/history.json`
-
----
 
 ## `enja config` コマンド
 

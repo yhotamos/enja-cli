@@ -47,8 +47,10 @@ program
 program
   .command('history')
   .description('翻訳履歴を表示する')
+  .argument('[id]', 'ID で履歴を表示する（完全 ID または短縮 ID）')
   .option('-d, --detail', '詳細表示')
   .option('-n <number>', '表示件数 (デフォルト: 10)', '10')
+  .option('--delete <id>', '特定の履歴を削除する')
   .option('--clear', '履歴をクリア')
   .action(history);
 
