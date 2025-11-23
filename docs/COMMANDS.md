@@ -31,7 +31,7 @@ enja [text] [options]
 enja "Hello, world!"
 
 # パイプで渡されたテキストを翻訳
-git --help - enja
+git --help | enja
 
 # ファイルから読み込んで翻訳
 enja -f input.txt
@@ -40,7 +40,10 @@ enja -f input.txt
 enja -f input.txt -o output.txt
 
 # HTMLタグを除去して翻訳
-curl -s https://example.com - enja -s
+curl -s https://example.com | enja -s
+
+# キャッシュを使用せずに再翻訳
+enja "Hello, world!" -N
 
 # 日本語→英語に翻訳
 enja "こんにちは" -F
@@ -130,10 +133,10 @@ enja config
 enja config endpoint
 
 # endpoint を設定
-enja config endpoint <URL>
+enja config endpoint https://api.example.com/translate
 
 # API キーを設定
-enja config api-key <KEY>
+enja config api-key YOUR_API_KEY
 
 # プロバイダーを設定
 enja config provider gas
