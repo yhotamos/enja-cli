@@ -1,5 +1,9 @@
 # Enja CLI
 
+![NPM Version](https://img.shields.io/npm/v/%40yhotamos%2Fenja-cli)
+![NPM Downloads](https://img.shields.io/npm/dm/%40yhotamos%2Fenja-cli)
+![NPM License](https://img.shields.io/npm/l/%40yhotamos%2Fenja-cli)
+
 英語を日本語に翻訳するシンプルなコマンドラインツール
 
 ## 特徴
@@ -15,7 +19,7 @@
 ## インストール
 
 ```bash
-npm install -g enja-cli
+npm install -g @yhotamos/enja-cli
 ```
 
 ## 使い方
@@ -27,7 +31,7 @@ npm install -g enja-cli
 enja "Hello, world!"
 
 # パイプで翻訳
-git --help | enja
+echo "Hello, world!" | enja
 
 # ファイルから読み込み
 enja -f input.txt -o output.txt
@@ -54,7 +58,7 @@ enja config endpoint https://api.example.com/translate
 npm install nonexistent-package 2>&1 | enja
 
 # Git コマンドのヘルプを日本語化
-git commit --help | enja
+git --help | enja
 
 # 英語のドキュメントを日本語に変換
 enja -f CONTRIBUTING.md -o CONTRIBUTING.ja.md
