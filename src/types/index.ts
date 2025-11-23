@@ -27,8 +27,10 @@ export interface HistoryEntry {
 }
 
 export interface HistoryOptions {
+  id?: string;
   detail?: boolean;
   n?: number;
+  delete?: string;
   clear?: boolean;
   replay?: string;
 }
