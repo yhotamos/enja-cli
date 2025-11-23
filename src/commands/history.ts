@@ -97,7 +97,7 @@ export async function history(id: string, options: HistoryOptions): Promise<void
     }
 
     // 履歴表示
-    const limit = options.n || 10;
+    const limit = Number(options.number) || 10;
     const entries = await storage.getRecent(limit);
 
     const output = formatHistory(entries, options.detail);
