@@ -6,9 +6,9 @@ export function getConfigDir(): string {
   const platform = process.platform;
 
   if (platform === 'win32') {
-    const appData = process.env.APPDATA;
+    const appData = process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
     if (!appData) {
-      throw new Error('error: APPDATA 環境変数が設定されていません');
+      throw new Error('APPDATA 環境変数が設定されておらず，代替パスの取得に失敗しました');
     }
     return path.join(appData, 'enja-cli');
   }

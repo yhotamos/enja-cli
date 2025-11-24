@@ -26,12 +26,15 @@ export class HistoryStorage implements HistoryManager {
   /** 履歴ファイルを読み込む */
   private async readHistory(): Promise<HistoryEntry[]> {
     try {
-      // ファイルが存在しない場合は空配列を返す
-      await fsp.access(this.filePath).catch(() => { throw new Error('NO_FILE'); });
       const data = await fsp.readFile(this.filePath, 'utf-8');
       return JSON.parse(data) as HistoryEntry[];
-    } catch (error) {
-      // 読み取りや JSON パースに失敗した場合は安全に空配列を返す
+    } catch (error: any) {
+      // ファイルが存在しない場合は空配列を返す
+      if (error && error.code === 'ENOENT') {
+        return [];
+      }
+      // それ以外の読み取り/パースエラーは警告を出して空配列を返す
+      console.warn('履歴の読み込みに失敗しました．空配列を返します');
       return [];
     }
   }
@@ -40,13 +43,12 @@ export class HistoryStorage implements HistoryManager {
   private async writeHistory(entries: HistoryEntry[]): Promise<void> {
     try {
       this.ensureConfigDir();
-      // 一時ファイルに書き込み、リネームで原子性を確保
       const tmpPath = `${this.filePath}.tmp`;
       const data = JSON.stringify(entries, null, 2);
       await fsp.writeFile(tmpPath, data, 'utf-8');
       await fsp.rename(tmpPath, this.filePath);
     } catch (error) {
-      throw new Error(`error: 履歴ファイルの書き込みに失敗しました`);
+      throw new Error(`履歴ファイルの書き込みに失敗しました`);
     }
   }
 

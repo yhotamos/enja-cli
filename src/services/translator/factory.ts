@@ -11,6 +11,6 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
     case 'custom':
       return new GASTranslator(config.endpoint, config.apiKey);
     default:
-      throw new Error(`error: サポートされていないプロバイダー (${config.provider})`);
+      throw new Error(`サポートされていないプロバイダー (${config.provider})`);
   }
 }
