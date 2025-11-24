@@ -18,7 +18,7 @@ export async function translate(text: string | undefined, options: TranslateOpti
     // ファイルからの読み込み処理
     if (options.file) {
       if (!fs.existsSync(options.file)) {
-        throw new Error(`error: ファイルが見つかりません (${options.file})`);
+        throw new Error(`ファイルが見つかりません (${options.file})`);
       }
       const fileContent = fs.readFileSync(options.file, 'utf-8');
       await processTranslation(fileContent, options, 'file');
@@ -35,14 +35,14 @@ export async function translate(text: string | undefined, options: TranslateOpti
     console.error('使い方: enja <テキスト> または enja -f <ファイル> または パイプ入力');
     process.exit(1);
   } catch (error) {
-    console.error(error instanceof Error ? error.message : error);
+    console.error(error instanceof Error ? `error: ${error.message}` : error);
     process.exit(1);
   }
 }
 
 async function processTranslation(text: string, options: TranslateOptions, inputMethod: 'arg' | 'stdin' | 'file'): Promise<void> {
   if (!text || text.trim().length === 0) {
-    throw new Error('error: 翻訳するテキストが空です');
+    throw new Error('翻訳するテキストが空です');
   }
 
   // HTMLタグ除去
@@ -50,7 +50,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
   if (options.stripHtml) {
     processedText = stripHtmlTags(text);
     if (!processedText || processedText.trim().length === 0) {
-      throw new Error('error: HTMLタグを除去した結果、翻訳するテキストが空になりました');
+      throw new Error('HTMLタグを除去した結果，翻訳するテキストが空になりました');
     }
   }
 
@@ -76,7 +76,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
         fs.writeFileSync(options.output, translated, 'utf-8');
         console.log(`${kleur.green('✔')} ${options.output} に翻訳結果を保存しました`);
       } catch (error) {
-        throw new Error(`error: ファイルへの書き込みに失敗しました (${options.output})`);
+        throw new Error(`ファイルへの書き込みに失敗しました (${options.output})`);
       }
     } else {
       console.log(translated);
@@ -112,7 +112,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
         fs.writeFileSync(options.output, translated, 'utf-8');
         console.log(`${kleur.green('✔')} ${options.output} に翻訳結果を保存しました`);
       } catch (error) {
-        throw new Error(`error: ファイルへの書き込みに失敗しました (${options.output})`);
+        throw new Error(`ファイルへの書き込みに失敗しました (${options.output})`);
       }
     } else {
       console.log(translated);

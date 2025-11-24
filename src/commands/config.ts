@@ -39,8 +39,7 @@ export async function config(key?: ConfigKey, value?: string, options?: ConfigOp
       } else if (key === 'provider') {
         console.log(config.provider);
       } else {
-        console.error(`error: 無効な設定キー (${key})`);
-        process.exit(1);
+        throw new Error(`無効な設定キー (${key})`);
       }
       return;
     }
@@ -52,11 +51,7 @@ export async function config(key?: ConfigKey, value?: string, options?: ConfigOp
     console.log(`${kleur.blue('apiKey:')} ${config.apiKey ? maskApiKey(config.apiKey) : '(not set)'}`);
 
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message);
-    } else {
-      console.error(error);
-    }
+    console.error(error instanceof Error ? `error: ${error.message}` : error);
     process.exit(1);
   }
 }
