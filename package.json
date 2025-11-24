@@ -11,8 +11,30 @@
     "enja": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch"
+    "build": "tsup --no-sourcemap",
+    "build:dev": "tsup",
+    "watch": "tsup --watch"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "esm"
+    ],
+    "bundle": true,
+    "minify": true,
+    "treeshake": true,
+    "external": [
+      "commander",
+      "kleur",
+      "ora"
+    ],
+    "dts": true,
+    "outDir": "dist",
+    "clean": true,
+    "sourcemap": true,
+    "target": "node18"
   },
   "keywords": [
     "translation",
@@ -44,6 +66,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "tsup": "^8.5.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
