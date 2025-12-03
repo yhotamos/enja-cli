@@ -12,8 +12,7 @@
 - Google Apps Script の LanguageApp を使用した軽量な翻訳
 - 引数，パイプ，ファイルから翻訳可能
 - HTML タグ除去機能で Web ページも翻訳可能
-- API キー不要，課金なし
-- カスタム翻訳エンドポイント対応
+- OpenAI API を使用して高品質な翻訳も可能
 - 翻訳履歴の保存・参照機能
 
 ## インストール
@@ -38,6 +37,9 @@ enja -f input.txt -o output.txt
 
 # 翻訳方向を逆にする (日本語 → 英語)
 enja "こんにちは" -F
+
+# OpenAI API を使用して翻訳
+enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY
 ```
 
 ### 履歴と設定
