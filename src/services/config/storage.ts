@@ -64,8 +64,8 @@ export class ConfigStorage implements ConfigManager {
         config.apiKey = value;
         break;
       case 'provider':
-        if (value !== 'gas' && value !== 'custom') {
-          throw new Error(`無効なプロバイダー (${value}): gas または custom を指定してください`);
+        if (value !== 'gas' && value !== 'custom' && value !== 'openai') {
+          throw new Error(`無効なプロバイダー (${value}): gas または custom または openai を指定してください`);
         }
         config.provider = value;
         break;
