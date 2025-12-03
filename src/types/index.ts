@@ -6,7 +6,7 @@ export interface TranslateOptions {
   flip?: boolean;
   endpoint?: string;
   apiKey?: string;
-  provider?: string;
+  provider?: TranslatorProvider;
 }
 
 export interface HistoryEntry {
@@ -36,7 +36,7 @@ export interface HistoryOptions {
 }
 
 export interface ConfigProfile {
-  provider: 'gas' | 'custom';
+  provider: TranslatorProvider;
   endpoint: string;
   apiKey?: string;
 }
@@ -48,3 +48,5 @@ export interface ConfigOptions {
 }
 
 export type ConfigKey = 'endpoint' | 'api-key' | 'provider';
+
+export type TranslatorProvider = 'gas' | 'custom' | 'openai';

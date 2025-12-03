@@ -1,15 +1,21 @@
 import { Translator } from './index.js';
 import { GASTranslator } from './gas.js';
-import { getConfig, Config } from '../../config/index.js';
-import { TranslateOptions } from '../../types/index.js';
+import { getConfig } from '../../config/index.js';
+import { ConfigProfile, TranslateOptions } from '../../types/index.js';
+import { OpenAITranslator } from './openai.js';
 
 export async function createTranslator(options?: TranslateOptions): Promise<Translator> {
-  const config: Config = await getConfig(options);
+  const config: ConfigProfile = await getConfig(options);
 
   switch (config.provider) {
     case 'gas':
     case 'custom':
       return new GASTranslator(config.endpoint, config.apiKey);
+    case 'openai':
+      if (!config.apiKey) {
+        throw new Error('OpenAIを使用するにはAPIキーが必要です');
+      }
+      return new OpenAITranslator(config.apiKey);
     default:
       throw new Error(`サポートされていないプロバイダー (${config.provider})`);
   }
