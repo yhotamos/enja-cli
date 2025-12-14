@@ -26,7 +26,7 @@ program
   .option('-F, --flip', '翻訳方向を逆にする (default: 英語→日本語)')
   .option('--endpoint <url>', 'カスタム翻訳エンドポイントを指定')
   .option('--api-key <key>', 'API キーを指定')
-  .option('--provider <name>', '翻訳プロバイダーを指定 (gas, custom, openai)')
+  .option('--provider <name>', '翻訳プロバイダーを指定 (gas, custom, openai, gemini)')
   .showHelpAfterError()
   .addHelpText('after',
     `\nExamples:
@@ -36,7 +36,7 @@ program
   $ enja -f input.txt -o output.txt  # ファイルから読み込み，翻訳結果をファイルに保存
   $ cat README.md | enja -o japanese.md  # パイプとファイル出力の組み合わせ
   $ curl -s https://example.com | enja -s  # HTMLタグを除去して翻訳
-  $ enja "Hello, world!" --endpoint https://api.example.com/translate --api-key YOUR_API_KEY  # OpenAI API を使用して翻訳`
+  $ enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY  # OpenAI API を使用して翻訳`
   )
   .addHelpText('afterAll', `\nEnja CLI v${pkgJson.version}`)
   .addHelpText('afterAll', 'Copyright (c) 2025 yhotta240')
@@ -64,7 +64,7 @@ program
   .option('--unset <key>', '設定を削除（デフォルトに戻す）')
   .option('--reset', 'すべての設定をリセット')
   .addHelpText('after',
-    `\nValues for provider: gas, custom, openai
+    `\nValues for provider: gas, custom, openai, gemini
     \nExamples:
   $ enja config                           # すべての設定を表示
   $ enja config --list                    # すべての設定を表示
