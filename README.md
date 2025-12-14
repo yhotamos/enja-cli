@@ -12,7 +12,7 @@
 - Google Apps Script の LanguageApp を使用した軽量な翻訳
 - 引数，パイプ，ファイルから翻訳可能
 - HTML タグ除去機能で Web ページも翻訳可能
-- OpenAI API を使用して高品質な翻訳も可能
+- OpenAI API や Gemini API を使用して高品質な翻訳も可能
 - 翻訳履歴の保存・参照機能
 
 ## インストール

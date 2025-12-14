@@ -21,7 +21,7 @@ enja [text] [options]
 - `-F, --flip` - 翻訳方向を逆にする (デフォルト: 英語 → 日本語)
 - `--endpoint <url>` - カスタム翻訳エンドポイントを指定
 - `--api-key <key>` - API キーを指定
-- `--provider <name>` - 翻訳プロバイダーを指定 (gas, custom, openai)
+- `--provider <name>` - 翻訳プロバイダーを指定 (gas, custom, openai, gemini)
 - `-h, --help` - ヘルプを表示
 
 ### Examples
@@ -53,6 +53,9 @@ enja "Hello, world!" --endpoint https://api.example.com/translate --api-key YOUR
 
 # OpenAI API を使用して翻訳
 enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY
+
+# Gemini API を使用して翻訳
+enja "Hello, world!" --provider gemini --api-key YOUR_GEMINI_API_KEY
 ```
 
 ## `enja history` コマンド
@@ -131,6 +134,7 @@ enja config [key] [value] [options]
 - `gas` - Google Apps Script の LanguageApp を使用した翻訳（デフォルト）
 - `custom` - カスタム翻訳エンドポイントを使用
 - `openai` - OpenAI API を使用した翻訳
+- `gemini` - Gemini API を使用した翻訳
 
 ### Examples
 
@@ -150,6 +154,7 @@ enja config api-key YOUR_API_KEY
 # プロバイダーを設定
 enja config provider gas
 enja config provider openai
+enja config provider gemini
 
 # API キーを削除
 enja config --unset api-key

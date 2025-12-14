@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { ConfigProfile } from '../../types/index.js';
+import { ConfigProfile, TranslatorProvider } from '../../types/index.js';
 import { ConfigManager } from './index.js';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
 
@@ -64,10 +64,11 @@ export class ConfigStorage implements ConfigManager {
         config.apiKey = value;
         break;
       case 'provider':
-        if (value !== 'gas' && value !== 'custom' && value !== 'openai') {
-          throw new Error(`無効なプロバイダー (${value}): gas または custom または openai を指定してください`);
+        const validProviders = ['gas', 'custom', 'openai', 'gemini'];
+        if (!validProviders.includes(value)) {
+          throw new Error(`無効なプロバイダー (${value}): 'gas', 'custom', 'openai', 'gemini' のいずれかを指定してください`);
         }
-        config.provider = value;
+        config.provider = value as TranslatorProvider;
         break;
       default:
         throw new Error(`無効な設定キー (${key})`);

@@ -60,6 +60,7 @@
   },
   "homepage": "https://github.com/yhotamos/enja-cli#readme",
   "dependencies": {
+    "@google/genai": "^1.33.0",
     "commander": "^14.0.2",
     "kleur": "^4.1.5",
     "openai": "^6.9.1",
