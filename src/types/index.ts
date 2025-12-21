@@ -7,6 +7,7 @@ export interface TranslateOptions {
   endpoint?: string;
   apiKey?: string;
   provider?: TranslatorProvider;
+  model?: string;
 }
 
 export interface HistoryEntry {
@@ -39,6 +40,7 @@ export interface ConfigProfile {
   provider: TranslatorProvider;
   endpoint: string;
   apiKey?: string;
+  model?: string;
 }
 
 export interface ConfigOptions {
@@ -47,6 +49,6 @@ export interface ConfigOptions {
   reset?: boolean;
 }
 
-export type ConfigKey = 'endpoint' | 'api-key' | 'provider';
+export type ConfigKey = 'endpoint' | 'api-key' | 'provider' | 'model';
 
 export type TranslatorProvider = 'gas' | 'custom' | 'openai' | 'gemini';

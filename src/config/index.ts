@@ -23,9 +23,14 @@ export async function getConfig(options?: TranslateOptions): Promise<ConfigProfi
     fileConfig.provider ||
     'gas';
 
+  const model: string | undefined =
+    options?.model ||
+    fileConfig.model;
+
   return {
     endpoint,
     provider,
     apiKey,
+    model,
   };
 }
