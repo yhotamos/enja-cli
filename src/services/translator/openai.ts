@@ -3,11 +3,11 @@ import { Translator, TranslationResult } from './index.js';
 
 export class OpenAITranslator implements Translator {
   private client: OpenAI;
+  private model: string;
 
-  constructor(apiKey: string) {
-    this.client = new OpenAI({
-      apiKey,
-    });
+  constructor(apiKey: string, model: string) {
+    this.client = new OpenAI({ apiKey });
+    this.model = model;
   }
 
   async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
@@ -18,7 +18,7 @@ export class OpenAITranslator implements Translator {
       const systemPrompt = `You are a professional translator. Translate the following text from ${sourceLanguage} to ${targetLanguage}. Only return the translated text without any additional explanation or comments.`;
 
       const completion = await this.client.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: this.model,
         messages: [
           {
             role: 'system',
@@ -43,7 +43,9 @@ export class OpenAITranslator implements Translator {
         detectedSourceLang: sourceLang,
       };
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof OpenAI.APIError) {
+        throw new Error(`OpenAI翻訳APIエラー: ${error.message}`);
+      } else if (error instanceof Error) {
         throw new Error(`OpenAI翻訳エラー: ${error.message}`);
       }
       throw error;

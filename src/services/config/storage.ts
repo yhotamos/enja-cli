@@ -7,6 +7,7 @@ const DEFAULT_CONFIG: ConfigProfile = {
   provider: 'gas',
   endpoint: 'https://script.google.com/macros/s/AKfycbxOSbKD0aBTaQqIzHv00BMzp6WwrtWHBU3gJY0vhB2HblgUO-cgesfT1l-rrfttnWZzew/exec',
   apiKey: undefined,
+  model: undefined,
 };
 
 /** 設定の永続化を管理するクラス */
@@ -70,6 +71,9 @@ export class ConfigStorage implements ConfigManager {
         }
         config.provider = value as TranslatorProvider;
         break;
+      case 'model':
+        config.model = value;
+        break;
       default:
         throw new Error(`無効な設定キー (${key})`);
     }
@@ -90,6 +94,9 @@ export class ConfigStorage implements ConfigManager {
         break;
       case 'provider':
         config.provider = DEFAULT_CONFIG.provider;
+        break;
+      case 'model':
+        config.model = DEFAULT_CONFIG.model;
         break;
       default:
         throw new Error(`無効な設定キー (${key})`);

@@ -27,6 +27,7 @@ program
   .option('--endpoint <url>', 'カスタム翻訳エンドポイントを指定')
   .option('--api-key <key>', 'API キーを指定')
   .option('--provider <name>', '翻訳プロバイダーを指定 (gas, custom, openai, gemini)')
+  .option('--model <name>', '使用するモデル名を指定 (例: gpt-4o-mini, gemini-2.5-flash-lite)')
   .showHelpAfterError()
   .addHelpText('after',
     `\nExamples:
@@ -58,7 +59,7 @@ program
 program
   .command('config')
   .description('Description: 設定を管理する')
-  .argument('[key]', '設定キー (endpoint, api-key, provider)')
+  .argument('[key]', '設定キー (endpoint, api-key, provider, model)')
   .argument('[value]', '設定値')
   .option('-l, --list', '設定を一覧表示')
   .option('--unset <key>', '設定を削除（デフォルトに戻す）')

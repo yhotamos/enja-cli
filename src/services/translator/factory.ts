@@ -16,12 +16,12 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
       if (!config.apiKey) {
         throw new Error('OpenAIを使用するにはAPIキーが必要です');
       }
-      return new OpenAITranslator(config.apiKey);
+      return new OpenAITranslator(config.apiKey, config.model || 'gpt-4o-mini');
     case 'gemini':
       if (!config.apiKey) {
         throw new Error('Geminiを使用するにはAPIキーが必要です');
       }
-      return new GeminiTranslator(config.apiKey);
+      return new GeminiTranslator(config.apiKey, config.model || 'gemini-2.5-flash-lite');
     default:
       throw new Error(`サポートされていないプロバイダー (${config.provider})`);
   }

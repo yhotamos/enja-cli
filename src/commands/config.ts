@@ -38,6 +38,8 @@ export async function config(key?: ConfigKey, value?: string, options?: ConfigOp
         console.log(config.apiKey ? maskApiKey(config.apiKey) : '(not set)');
       } else if (key === 'provider') {
         console.log(config.provider);
+      } else if (key === 'model') {
+        console.log(config.model || '(not set)');
       } else {
         throw new Error(`無効な設定キー (${key})`);
       }
@@ -49,6 +51,7 @@ export async function config(key?: ConfigKey, value?: string, options?: ConfigOp
     console.log(`${kleur.blue('provider:')} ${config.provider}`);
     console.log(`${kleur.blue('endpoint:')} ${config.endpoint}`);
     console.log(`${kleur.blue('apiKey:')} ${config.apiKey ? maskApiKey(config.apiKey) : '(not set)'}`);
+    console.log(`${kleur.blue('model:')} ${config.model || '(not set)'}`);
 
   } catch (error) {
     console.error(error instanceof Error ? `error: ${error.message}` : error);
