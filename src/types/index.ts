@@ -8,6 +8,7 @@ export interface TranslateOptions {
   apiKey?: string;
   provider?: TranslatorProvider;
   model?: string;
+  profile?: string;
 }
 
 export interface HistoryEntry {
@@ -43,10 +44,21 @@ export interface ConfigProfile {
   model?: string;
 }
 
+export interface AppConfig {
+  version: string;
+  activeProfile: string;
+  profiles: Record<string, ConfigProfile>;
+}
+
 export interface ConfigOptions {
-  list?: boolean;
   unset?: ConfigKey;
   reset?: boolean;
+
+  // profile と add 用のオプション
+  provider?: TranslatorProvider;
+  endpoint?: string;
+  apiKey?: string;
+  model?: string;
 }
 
 export type ConfigKey = 'endpoint' | 'api-key' | 'provider' | 'model';

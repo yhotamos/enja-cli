@@ -24,6 +24,7 @@ program
   .option('-s, --strip-html', 'HTMLタグを除去してから翻訳する')
   .option('-N, --no-cache', 'キャッシュを使用せずに再翻訳する')
   .option('-F, --flip', '翻訳方向を逆にする (default: 英語→日本語)')
+  .option('-p, --profile <name>', '使用するプロファイルを指定')
   .option('--endpoint <url>', 'カスタム翻訳エンドポイントを指定')
   .option('--api-key <key>', 'API キーを指定')
   .option('--provider <name>', '翻訳プロバイダーを指定 (gas, custom, openai, gemini)')
@@ -37,6 +38,7 @@ program
   $ enja -f input.txt -o output.txt  # ファイルから読み込み，翻訳結果をファイルに保存
   $ cat README.md | enja -o japanese.md  # パイプとファイル出力の組み合わせ
   $ curl -s https://example.com | enja -s  # HTMLタグを除去して翻訳
+  $ enja "Hello" -p work     # work プロファイルを使用して翻訳
   $ enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY  # OpenAI API を使用して翻訳`
   )
   .addHelpText('afterAll', `\nEnja CLI v${pkgJson.version}`)
@@ -58,23 +60,43 @@ program
 // 設定コマンド
 program
   .command('config')
-  .description('Description: 設定を管理する')
-  .argument('[key]', '設定キー (endpoint, api-key, provider, model)')
-  .argument('[value]', '設定値')
-  .option('-l, --list', '設定を一覧表示')
-  .option('--unset <key>', '設定を削除（デフォルトに戻す）')
-  .option('--reset', 'すべての設定をリセット')
+  .description('Description: 設定とプロファイルを管理する')
+  .argument('[profile]', 'プロファイル名またはサブコマンド (ls, use, rm, add)')
+  .argument('[subcommandArg]', 'サブコマンドの引数 (プロファイル名)')
+  .option('--provider <name>', 'プロファイルのプロバイダーを設定 (gas, custom, openai, gemini)')
+  .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
+  .option('--api-key <key>', 'プロファイルのAPIキーを設定')
+  .option('--model <name>', 'プロファイルのモデルを設定')
+  .option('--unset <key>', 'プロファイルの指定した設定をリセット')
+  .option('--reset', 'プロファイル全体をリセット')
   .addHelpText('after',
-    `\nValues for provider: gas, custom, openai, gemini
-    \nExamples:
-  $ enja config                           # すべての設定を表示
-  $ enja config --list                    # すべての設定を表示
-  $ enja config endpoint                  # endpoint の値を表示
-  $ enja config endpoint <URL>            # endpoint を設定
-  $ enja config api-key <KEY>             # API キーを設定
-  $ enja config provider gas              # プロバイダーを設定
-  $ enja config --unset api-key           # API キーを削除
-  $ enja config --reset                   # すべての設定をリセット`
+    `
+注意: --provider, --endpoint, --api-key, --model オプションは
+      プロファイル名または 'add' サブコマンドと一緒に使用してください
+
+プロファイル管理:
+  $ enja config                                    現在のプロファイルを表示
+  $ enja config ls                                 全プロファイルを一覧表示
+  $ enja config <profile>                          プロファイルの詳細を表示
+  $ enja config use <profile>                      アクティブプロファイルを変更
+  $ enja config add <profile> [options]            新しいプロファイルを作成
+  $ enja config rm <profile>                       プロファイルを削除
+
+プロファイルの設定:
+  $ enja config <profile> --provider <value>       プロファイルの provider を変更
+  $ enja config <profile> --model <value>          プロファイルの model を変更
+  $ enja config <profile> --unset <key>            設定をリセット
+  $ enja config <profile> --reset                  プロファイル全体をリセット
+
+Examples:
+  $ enja config                                    現在の設定を表示
+  $ enja config ls                                 プロファイル一覧
+  $ enja config work                               work プロファイルを表示
+  $ enja config use work                           work をアクティブに設定
+  $ enja config work --provider openai             work の provider を設定
+  $ enja config work --provider openai --model gpt-4o  複数設定を同時変更
+  $ enja config add personal --provider gemini     personal プロファイルを作成
+  $ enja "Hello" -p work                           work プロファイルで翻訳`
   )
   .action(config);
 
