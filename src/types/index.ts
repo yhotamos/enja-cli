@@ -39,7 +39,7 @@ export interface HistoryOptions {
 
 export interface ConfigProfile {
   provider: TranslatorProvider;
-  endpoint: string;
+  endpoint?: string;
   apiKey?: string;
   model?: string;
 }

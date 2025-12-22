@@ -78,7 +78,7 @@ export async function config(
       const config = await storage.get();
       console.log(`${kleur.bold('Active Profile:')} ${activeProfile}`);
       console.log(`${kleur.blue('provider:')} ${config.provider}`);
-      console.log(`${kleur.blue('endpoint:')} ${config.endpoint}`);
+      console.log(`${kleur.blue('endpoint:')} ${config.endpoint || '(not set)'}`);
       console.log(`${kleur.blue('apiKey:')} ${config.apiKey ? maskApiKey(config.apiKey) : '(not set)'}`);
       console.log(`${kleur.blue('model:')} ${config.model || '(not set)'}`);
       return;
@@ -118,7 +118,7 @@ export async function config(
       const config = await storage.getProfile(profileOrSubcommand);
       console.log(`${kleur.bold('Profile:')} ${profileOrSubcommand}`);
       console.log(`${kleur.blue('provider:')} ${config.provider}`);
-      console.log(`${kleur.blue('endpoint:')} ${config.endpoint}`);
+      console.log(`${kleur.blue('endpoint:')} ${config.endpoint || '(not set)'}`);
       console.log(`${kleur.blue('apiKey:')} ${config.apiKey ? maskApiKey(config.apiKey) : '(not set)'}`);
       console.log(`${kleur.blue('model:')} ${config.model || '(not set)'}`);
       return;

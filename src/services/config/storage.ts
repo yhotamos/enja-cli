@@ -206,9 +206,12 @@ export class ConfigStorage implements ConfigManager {
       throw new Error(`プロファイル '${name}' は既に存在します`);
     }
 
+    // 新規プロファイル作成時は provider のみデフォルト設定
     appConfig.profiles[name] = {
-      ...DEFAULT_CONFIG,
-      ...config,
+      provider: config?.provider || 'gas',
+      endpoint: config?.endpoint,
+      apiKey: config?.apiKey,
+      model: config?.model,
     };
 
     await this.writeAppConfig(appConfig);
