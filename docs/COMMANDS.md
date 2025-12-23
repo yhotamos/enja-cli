@@ -19,9 +19,11 @@ enja [text] [options]
 - `-s, --strip-html` - HTML タグを除去してから翻訳する
 - `-N, --no-cache` - キャッシュを使用せずに再翻訳する
 - `-F, --flip` - 翻訳方向を逆にする (デフォルト: 英語 → 日本語)
+- `-p, --profile <name>` - 使用するプロファイルを指定
 - `--endpoint <url>` - カスタム翻訳エンドポイントを指定
 - `--api-key <key>` - API キーを指定
 - `--provider <name>` - 翻訳プロバイダーを指定 (gas, custom, openai, gemini)
+- `--model <name>` - 翻訳モデルを指定 (openai, gemini のみ)
 - `-h, --help` - ヘルプを表示
 
 ### Examples
@@ -48,14 +50,17 @@ enja "Hello, world!" -N
 # 日本語→英語に翻訳
 enja "こんにちは" -F
 
+# プロファイルを使用
+enja "Hello, world!" -p work
+
 # カスタムエンドポイントを使用
 enja "Hello, world!" --endpoint https://api.example.com/translate --api-key YOUR_KEY
 
 # OpenAI API を使用して翻訳
-enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY
+enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY --model gpt-4o
 
 # Gemini API を使用して翻訳
-enja "Hello, world!" --provider gemini --api-key YOUR_GEMINI_API_KEY
+enja "Hello, world!" --provider gemini --api-key YOUR_GEMINI_API_KEY --model gemini-1.5-flash
 ```
 
 ## `enja history` コマンド
@@ -109,27 +114,65 @@ enja history --clear
 
 ## `enja config` コマンド
 
-設定を管理する
+設定とプロファイルを管理する
+
+### プロファイル機能
+
+プロファイルを使用すると，複数の設定を切り替えて使用できます．例えば，仕事用とプライベート用で異なる API キーやプロバイダーを使い分けることができます．
+
+- `default` プロファイルは常に存在し，削除できません
+- アクティブなプロファイルの設定が自動的に使用されます
+- `enja` コマンドで `-p, --profile` オプションを使用して一時的に別のプロファイルを使用できます
 
 ### 使い方
 
 ```bash
-enja config [key] [value] [options]
+enja config [profile|subcommand] [subcommandArg] [options]
 ```
 
 ### Arguments
 
-- `key` - 設定キー (endpoint, api-key, provider)
-- `value` - 設定値
+First argument:
+
+- `profile|subcommand` - プロファイル名またはサブコマンド (`ls`, `list`, `use`, `rm`, `delete`, `add`)
+  - プロファイル名を指定した場合: 詳細表示または設定変更
+  - サブコマンドを指定した場合: プロファイル管理操作
+
+Second argument (subcommand only):
+
+- `subcommandArg` - サブコマンド (`use`, `rm`, `delete`, `add`)で必要なプロファイル名
+
+### Profile Argument
+
+- `<profile>` - 指定したプロファイルの詳細を表示
+- `<profile> [options]` - 指定したプロファイルの設定を変更
+
+### Subcommands
+
+- `ls`, `list` - 全プロファイルを一覧表示
+- `use <profile>` - アクティブプロファイルを変更
+- `rm <profile>`, `delete <profile>` - プロファイルを削除
+- `add <profile>` - 新しいプロファイルを作成
 
 ### Options
 
-- `-l, --list` - 設定を一覧表示
-- `--unset` - 設定を削除（デフォルトに戻す）
-- `--reset` - すべての設定をリセット
+`--provider`, `--endpoint`, `--api-key`, `--model` はプロファイル名または `add` と一緒に使用します．  
+`--unset`, `--reset` はプロファイル名と一緒に使用します．
+
+- `--provider <name>` - プロファイルのプロバイダーを設定 (gas, custom, openai, gemini)
+- `--endpoint <url>` - プロファイルのエンドポイントを設定
+- `--api-key <key>` - プロファイルの API キーを設定
+- `--model <name>` - プロファイルのモデルを設定
+- `--unset <key>` - プロファイルの指定した設定をリセット
+- `--reset` - プロファイル全体をリセット
 - `-h, --help` - ヘルプを表示
 
-### Values for provider
+オプションの使用方法:
+
+- `enja config add <profile> [options]` - プロファイル作成時に初期設定
+- `enja config <profile> [options]` - 既存プロファイルの設定を変更
+
+### Named Providers
 
 - `gas` - Google Apps Script の LanguageApp を使用した翻訳（デフォルト）
 - `custom` - カスタム翻訳エンドポイントを使用
@@ -139,28 +182,51 @@ enja config [key] [value] [options]
 ### Examples
 
 ```bash
-# すべての設定を表示
+# 現在のプロファイルを表示
 enja config
 
-# endpoint の値を表示
-enja config endpoint
+# 全プロファイルを一覧表示
+enja config ls
+enja config list
 
-# endpoint を設定
-enja config endpoint https://api.example.com/translate
+# 指定したプロファイルの詳細を表示
+enja config work-profile
 
-# API キーを設定
-enja config api-key YOUR_API_KEY
+# 新しいプロファイルを作成（デフォルトで gas プロバイダー）
+enja config add work-profile
 
-# プロバイダーを設定
-enja config provider gas
-enja config provider openai
-enja config provider gemini
+# OpenAI を使用するプロファイルを作成
+enja config add personal-profile --provider openai --api-key YOUR_KEY --model gpt-4o
 
-# API キーを削除
-enja config --unset api-key
+# Gemini を使用するプロファイルを作成
+enja config add gemini-profile --provider gemini --api-key YOUR_KEY --model gemini-1.5-flash
 
-# すべての設定をリセット
-enja config --reset
+# カスタムエンドポイントを使用するプロファイルを作成
+enja config add custom-profile --provider custom --endpoint https://api.example.com/translate --api-key YOUR_KEY
+
+# アクティブプロファイルを変更
+enja config use work-profile
+
+# プロファイルを削除
+enja config rm work-profile
+
+# プロファイルの provider を変更
+enja config work-profile --provider openai
+
+# プロファイルの model を変更
+enja config work-profile --model gpt-4o-mini
+
+# プロファイルの API キーを変更
+enja config work-profile --api-key NEW_KEY
+
+# プロファイルの API キーをリセット
+enja config work-profile --unset api-key
+
+# プロファイル全体をリセット
+enja config work-profile --reset
+
+# 複数の設定を同時に変更
+enja config work-profile --provider openai --api-key NEW_KEY --model gpt-4o
 ```
 
 ### 設定ファイルの場所
@@ -170,4 +236,4 @@ enja config --reset
 
 ### 設定の優先順位
 
-CLI オプション > 設定ファイル > デフォルト値
+CLI オプション > プロファイル設定 > デフォルト値
