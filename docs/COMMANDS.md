@@ -152,7 +152,7 @@ Second argument (subcommand only):
 - `ls`, `list` - 全プロファイルを一覧表示
 - `use <profile>` - アクティブプロファイルを変更
 - `rm <profile>`, `delete <profile>` - プロファイルを削除
-- `add <profile>` - 新しいプロファイルを作成
+- `add <profile> [options]` - 新しいプロファイルを作成
 
 ### Options
 
