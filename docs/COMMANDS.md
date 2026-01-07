@@ -132,27 +132,21 @@ enja config [profile|subcommand] [subcommandArg] [options]
 
 ### Arguments
 
-First argument:
+- `profile|subcommand` - プロファイル名またはサブコマンド
 
-- `profile|subcommand` - プロファイル名またはサブコマンド (`ls`, `list`, `use`, `rm`, `delete`, `add`)
-  - プロファイル名を指定した場合: 詳細表示または設定変更
-  - サブコマンドを指定した場合: プロファイル管理操作
+  Profiles:
 
-Second argument (subcommand only):
+  - `<profile>` - 指定したプロファイルの詳細を表示
+  - `<profile> [options]` - 指定したプロファイルの設定を変更
 
-- `subcommandArg` - サブコマンド (`use`, `rm`, `delete`, `add`)で必要なプロファイル名
+  Subcommands:
 
-### Profile Argument
+  - `ls`, `list` - 全プロファイルを一覧表示
+  - `use <profile>` - アクティブプロファイルを変更
+  - `rm <profile>`, `delete <profile>` - プロファイルを削除
+  - `add <profile> [options]` - 新しいプロファイルを作成
 
-- `<profile>` - 指定したプロファイルの詳細を表示
-- `<profile> [options]` - 指定したプロファイルの設定を変更
-
-### Subcommands
-
-- `ls`, `list` - 全プロファイルを一覧表示
-- `use <profile>` - アクティブプロファイルを変更
-- `rm <profile>`, `delete <profile>` - プロファイルを削除
-- `add <profile> [options]` - 新しいプロファイルを作成
+- `subcommandArg` - サブコマンド (use, rm, delete, add) の引数として指定するプロファイル名
 
 ### Options
 
@@ -161,23 +155,22 @@ Second argument (subcommand only):
 
 - `--provider <name>` - プロファイルのプロバイダーを設定 (gas, custom, openai, gemini)
 - `--endpoint <url>` - プロファイルのエンドポイントを設定
-- `--api-key <key>` - プロファイルの API キーを設定
+- `--api-key <api-key>` - プロファイルの API キーを設定
 - `--model <name>` - プロファイルのモデルを設定
 - `--unset <key>` - プロファイルの指定した設定をリセット
 - `--reset` - プロファイル全体をリセット
 - `-h, --help` - ヘルプを表示
 
-オプションの使用方法:
-
-- `enja config add <profile> [options]` - プロファイル作成時に初期設定
-- `enja config <profile> [options]` - 既存プロファイルの設定を変更
-
-### Named Providers
+#### `--provider` Names
 
 - `gas` - Google Apps Script の LanguageApp を使用した翻訳（デフォルト）
 - `custom` - カスタム翻訳エンドポイントを使用
 - `openai` - OpenAI API を使用した翻訳
 - `gemini` - Gemini API を使用した翻訳
+
+#### `--unset` Keys
+
+- `provider`, `endpoint`, `api-key`, `model`
 
 ### Examples
 

@@ -60,33 +60,40 @@ program
 // 設定コマンド
 program
   .command('config')
+  .usage('[profile|subcommand] [subcommandArg] [options]')
   .description('Description: 設定とプロファイルを管理する')
-  .argument('[profile]', 'プロファイル名またはサブコマンド (ls, use, rm, add)')
-  .argument('[subcommandArg]', 'サブコマンドの引数 (プロファイル名)')
+  .argument('[profile|subcommand]', `プロファイル名またはサブコマンド
+
+Profiles:
+  <profile>           指定したプロファイルの詳細を表示
+  <profile> [options] 指定したプロファイルの設定を変更
+
+Subcommands:
+  ls, list                       全プロファイルを一覧表示
+  use <profile>                  アクティブプロファイルを変更
+  rm <profile>, delete <profile> プロファイルを削除
+  add <profile> [options]        新しいプロファイルを作成
+  `)
+  .argument('[subcommandArg]', 'サブコマンド (use, rm, delete, add) の引数として指定するプロファイル名')
   .option('--provider <name>', 'プロファイルのプロバイダーを設定 (gas, custom, openai, gemini)')
   .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
-  .option('--api-key <key>', 'プロファイルのAPIキーを設定')
+  .option('--api-key <api-key>', 'プロファイルの API キーを設定')
   .option('--model <name>', 'プロファイルのモデルを設定')
   .option('--unset <key>', 'プロファイルの指定した設定をリセット')
   .option('--reset', 'プロファイル全体をリセット')
-  .addHelpText('after',
-    `
-注意: --provider, --endpoint, --api-key, --model オプションは
+  .addHelpText('after', `
+  --provider Names:
+    gas                Google Apps Script の LanguageApp を使用した翻訳（デフォルト）
+    custom             カスタム翻訳エンドポイントを使用
+    openai             OpenAI API を使用した翻訳
+    gemini             Gemini API を使用した翻訳
+
+  --unset Keys:
+    provider, endpoint, api-key, model
+
+  注意: --provider, --endpoint, --api-key, --model オプションは
       プロファイル名または 'add' サブコマンドと一緒に使用してください
-
-プロファイル管理:
-  $ enja config                                    現在のプロファイルを表示
-  $ enja config ls                                 全プロファイルを一覧表示
-  $ enja config <profile>                          プロファイルの詳細を表示
-  $ enja config use <profile>                      アクティブプロファイルを変更
-  $ enja config add <profile> [options]            新しいプロファイルを作成
-  $ enja config rm <profile>                       プロファイルを削除
-
-プロファイルの設定:
-  $ enja config <profile> --provider <value>       プロファイルの provider を変更
-  $ enja config <profile> --model <value>          プロファイルの model を変更
-  $ enja config <profile> --unset <key>            設定をリセット
-  $ enja config <profile> --reset                  プロファイル全体をリセット
+      --unset, --reset はプロファイル名と一緒に使用してください
 
 Examples:
   $ enja config                                    現在の設定を表示
