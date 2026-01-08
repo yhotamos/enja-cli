@@ -41,28 +41,6 @@ export class ConfigStorage implements ConfigManager {
       const data = fs.readFileSync(this.filePath, 'utf-8');
       const config = JSON.parse(data);
 
-      // マイグレーション: 古い形式を検出
-      if (!config.version || config.version === '1' || !config.profiles) {
-        console.log('設定ファイルを新しい形式に移行しています...');
-        const oldConfig: ConfigProfile = {
-          provider: config.provider || DEFAULT_CONFIG.provider,
-          endpoint: config.endpoint || DEFAULT_CONFIG.endpoint,
-          apiKey: config.apiKey,
-          model: config.model,
-        };
-
-        const newConfig: AppConfig = {
-          version: '1.1',
-          activeProfile: 'default',
-          profiles: {
-            default: oldConfig,
-          },
-        };
-
-        await this.writeAppConfig(newConfig);
-        return newConfig;
-      }
-
       return config as AppConfig;
     } catch (error) {
       console.warn('設定読み込みに失敗しました．規定値を使用します');
