@@ -5,7 +5,7 @@ export class GeminiTranslator implements Translator {
   private client: GoogleGenAI;
   private model: string;
 
-  constructor(apiKey: string, model: string) {
+  constructor(apiKey: string, model: string = 'gemini-2.5-flash-lite') {
     this.client = new GoogleGenAI({ apiKey: apiKey });
     this.model = model;
   }

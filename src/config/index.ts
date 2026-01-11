@@ -23,19 +23,18 @@ export async function getConfig(options?: TranslateOptions): Promise<ConfigProfi
   }
 
   // 優先順位: コマンドラインオプション > プロファイル > デフォルト値
-  const endpoint: string =
-    options?.endpoint ||
-    fileConfig.endpoint ||
-    DEFAULT_GAS_API_URL;
-
-  const apiKey: string | undefined =
-    options?.apiKey ||
-    fileConfig.apiKey;
-
   const provider: TranslatorProvider =
     options?.provider ||
     fileConfig.provider ||
     'gas';
+
+  const endpoint: string | undefined =
+    options?.endpoint ||
+    fileConfig.endpoint;
+
+  const apiKey: string | undefined =
+    options?.apiKey ||
+    fileConfig.apiKey;
 
   const model: string | undefined =
     options?.model ||
