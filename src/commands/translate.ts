@@ -55,7 +55,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
   }
 
   // 翻訳サービスの初期化
-  const translator = await createTranslator(options);
+  const { translator, config, activeProfile } = await createTranslator(options);
   const historyStorage = new HistoryStorage();
 
   // 翻訳処理
@@ -85,12 +85,14 @@ async function processTranslation(text: string, options: TranslateOptions, input
   }
 
   const dir = `(${sourceLang} → ${targetLang})`;
-  const spinner = ora(`翻訳中... ${dir}`).start();
+  const model = translator.getModel() || config.model;
+  const profileInfo = `[${activeProfile} | ${config.provider}${model ? ` | ${model}` : ''}]`;
+
+  const spinner = ora(`翻訳中... ${dir} ${profileInfo}`).start();
   try {
     const result = await translator.translate(processedText, sourceLang, targetLang);
     const translated = result.text;
-    spinner.succeed(`翻訳完了 ${dir}`);
-
+    spinner.succeed(`翻訳完了 ${dir} ${profileInfo}`);
     // 履歴に保存
     await historyStorage.add({
       sourceText: processedText,

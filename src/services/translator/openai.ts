@@ -10,6 +10,10 @@ export class OpenAITranslator implements Translator {
     this.model = model;
   }
 
+  getModel(): string {
+    return this.model;
+  }
+
   async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
     try {
       const sourceLanguage = this.mapLanguageCode(sourceLang);
