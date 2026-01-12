@@ -4,9 +4,25 @@ import { getConfig } from '../../config/index.js';
 import { ConfigProfile, TranslateOptions } from '../../types/index.js';
 import { OpenAITranslator } from './openai.js';
 import { GeminiTranslator } from './gemini.js';
+import { ConfigStorage } from '../config/storage.js';
 
-export async function createTranslator(options?: TranslateOptions): Promise<Translator> {
+interface TranslatorProvider {
+  translator: Translator;
+  config: ConfigProfile;
+  activeProfile: string;
+}
+
+export async function createTranslator(options?: TranslateOptions): Promise<TranslatorProvider> {
+  const storage = new ConfigStorage();
   const config: ConfigProfile = await getConfig(options);
+
+  // activeProfileを取得
+  let activeProfile: string;
+  if (options?.profile) {
+    activeProfile = options.profile;
+  } else {
+    activeProfile = await storage.getActiveProfileName();
+  }
 
   switch (config.provider) {
     case 'gas':
@@ -16,7 +32,7 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
         if (!endpoint) {
           throw new Error('エンドポイントURLが必要です');
         }
-        return new GASTranslator(endpoint, apiKey);
+        return { translator: new GASTranslator(endpoint, apiKey), config, activeProfile };
       }
     case 'openai':
       {
@@ -24,7 +40,7 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
         if (!apiKey) {
           throw new Error('OpenAIを使用するにはAPIキーが必要です');
         }
-        return new OpenAITranslator(apiKey, model);
+        return { translator: new OpenAITranslator(apiKey, model), config, activeProfile };
       }
     case 'gemini':
       {
@@ -32,7 +48,7 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
         if (!apiKey) {
           throw new Error('Geminiを使用するにはAPIキーが必要です');
         }
-        return new GeminiTranslator(apiKey, model);
+        return { translator: new GeminiTranslator(apiKey, model), config, activeProfile };
       }
     default:
       throw new Error(`サポートされていないプロバイダー (${config.provider})`);
