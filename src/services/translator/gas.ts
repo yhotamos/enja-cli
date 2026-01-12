@@ -16,6 +16,10 @@ export class GASTranslator implements Translator {
     this.apiKey = apiKey;
   }
 
+  getModel(): string | null {
+    return null;
+  }
+
   async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',

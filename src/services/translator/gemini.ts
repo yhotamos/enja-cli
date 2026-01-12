@@ -1,4 +1,4 @@
-import { ApiError, GenerateContentResponse, GoogleGenAI, Model, Pager } from "@google/genai";
+import { ApiError, GenerateContentResponse, GoogleGenAI } from "@google/genai";
 import { Translator, TranslationResult } from './index.js';
 
 export class GeminiTranslator implements Translator {
@@ -8,6 +8,10 @@ export class GeminiTranslator implements Translator {
   constructor(apiKey: string, model: string = 'gemini-2.5-flash-lite') {
     this.client = new GoogleGenAI({ apiKey: apiKey });
     this.model = model;
+  }
+
+  getModel(): string {
+    return this.model;
   }
 
   async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
