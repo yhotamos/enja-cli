@@ -3,18 +3,30 @@ import { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.
 import { ConfigManager } from './index.js';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
 
-const DEFAULT_CONFIG: ConfigProfile = {
-  provider: 'gas',
-  endpoint: 'https://script.google.com/macros/s/AKfycbxOSbKD0aBTaQqIzHv00BMzp6WwrtWHBU3gJY0vhB2HblgUO-cgesfT1l-rrfttnWZzew/exec',
-  apiKey: undefined,
-  model: undefined,
+// プロバイダごとのデフォルト設定
+const DEFAULT_PROFILES_BY_PROVIDER: Record<TranslatorProvider, Partial<ConfigProfile>> = {
+  gas: {
+    provider: 'gas',
+    endpoint: 'https://script.google.com/macros/s/AKfycbxOSbKD0aBTaQqIzHv00BMzp6WwrtWHBU3gJY0vhB2HblgUO-cgesfT1l-rrfttnWZzew/exec',
+  },
+  openai: {
+    provider: 'openai',
+    model: 'gpt-4o-mini',
+  },
+  gemini: {
+    provider: 'gemini',
+    model: 'gemini-2.5-flash-lite',
+  },
+  custom: {
+    provider: 'custom',
+  },
 };
 
 const DEFAULT_APP_CONFIG: AppConfig = {
   version: '1.1',
   activeProfile: 'default',
   profiles: {
-    default: { ...DEFAULT_CONFIG },
+    default: { ...DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile },
   },
 };
 
@@ -60,10 +72,7 @@ export class ConfigStorage implements ConfigManager {
   private async readConfig(): Promise<ConfigProfile> {
     const appConfig = await this.readAppConfig();
     const activeProfile = appConfig.profiles[appConfig.activeProfile];
-    if (!activeProfile) {
-      return { ...DEFAULT_CONFIG };
-    }
-    return { ...DEFAULT_CONFIG, ...activeProfile };
+    return activeProfile || { ...DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile };
   }
 
   private async writeConfig(config: ConfigProfile): Promise<void> {
@@ -108,19 +117,20 @@ export class ConfigStorage implements ConfigManager {
   /** 指定したキーを削除（デフォルトに戻す） */
   async unset(key: string): Promise<void> {
     const config = await this.readConfig();
-
+    const provider = config.provider || 'gas';
+    const defaultConfig = DEFAULT_PROFILES_BY_PROVIDER[provider] as ConfigProfile;
     switch (key) {
       case 'endpoint':
-        config.endpoint = DEFAULT_CONFIG.endpoint;
+        config.endpoint = defaultConfig.endpoint;
         break;
       case 'api-key':
-        config.apiKey = undefined;
+        config.apiKey = defaultConfig.apiKey;
         break;
       case 'provider':
-        config.provider = DEFAULT_CONFIG.provider;
+        config.provider = defaultConfig.provider;
         break;
       case 'model':
-        config.model = DEFAULT_CONFIG.model;
+        config.model = defaultConfig.model;
         break;
       default:
         throw new Error(`無効な設定キー (${key})`);
@@ -131,7 +141,7 @@ export class ConfigStorage implements ConfigManager {
 
   /** 設定をリセット */
   async reset(): Promise<void> {
-    await this.writeConfig({ ...DEFAULT_CONFIG });
+    await this.writeConfig({ ...DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile });
   }
 
   // プロファイル管理メソッド
@@ -184,13 +194,16 @@ export class ConfigStorage implements ConfigManager {
       throw new Error(`プロファイル '${name}' は既に存在します`);
     }
 
-    // 新規プロファイル作成時は provider のみデフォルト設定
-    appConfig.profiles[name] = {
-      provider: config?.provider || 'gas',
-      endpoint: config?.endpoint,
-      apiKey: config?.apiKey,
-      model: config?.model,
+    // プロバイダに応じたデフォルト設定を取得
+    const provider = config?.provider || 'gas';
+    const defaultProfile = DEFAULT_PROFILES_BY_PROVIDER[provider] as ConfigProfile;
+
+    // 指定された設定で上書き
+    const newProfile: ConfigProfile = {
+      ...defaultProfile,
+      ...config,
     };
+    appConfig.profiles[name] = newProfile;
 
     await this.writeAppConfig(appConfig);
   }
@@ -274,19 +287,21 @@ export class ConfigStorage implements ConfigManager {
     }
 
     const profile = appConfig.profiles[profileName];
+    const provider = profile.provider || 'gas';
+    const defaultProfile = DEFAULT_PROFILES_BY_PROVIDER[provider] as ConfigProfile;
 
     switch (key) {
+      case 'provider':
+        profile.provider = defaultProfile.provider;
+        break;
       case 'endpoint':
-        profile.endpoint = DEFAULT_CONFIG.endpoint;
+        profile.endpoint = defaultProfile.endpoint;
         break;
       case 'api-key':
-        profile.apiKey = undefined;
-        break;
-      case 'provider':
-        profile.provider = DEFAULT_CONFIG.provider;
+        profile.apiKey = defaultProfile.apiKey;
         break;
       case 'model':
-        profile.model = undefined;
+        profile.model = defaultProfile.model;
         break;
       default:
         throw new Error(`無効な設定キー (${key})`);
@@ -306,8 +321,9 @@ export class ConfigStorage implements ConfigManager {
     if (!appConfig.profiles[profileName]) {
       throw new Error(`プロファイル '${profileName}' が見つかりません`);
     }
+    const defaultProfile = DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile;
 
-    appConfig.profiles[profileName] = { ...DEFAULT_CONFIG };
+    appConfig.profiles[profileName] = { ...defaultProfile };
     await this.writeAppConfig(appConfig);
   }
 }
