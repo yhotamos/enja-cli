@@ -86,7 +86,8 @@ async function processTranslation(text: string, options: TranslateOptions, input
 
   const dir = `(${sourceLang} → ${targetLang})`;
   const model = translator.getModel() || config.model;
-  const profileInfo = `[${activeProfile} | ${config.provider}${model ? ` | ${model}` : ''}]`;
+  const profileName = activeProfile || 'unknown';
+  const profileInfo = `[${profileName} | ${config.provider}${model ? ` | ${model}` : ''}]`;
 
   const spinner = ora(`翻訳中... ${dir} ${profileInfo}`).start();
   try {
