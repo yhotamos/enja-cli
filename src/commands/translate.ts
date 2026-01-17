@@ -120,7 +120,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
       console.log(translated);
     }
   } catch (error) {
-    spinner.fail(`翻訳失敗 ${dir}`);
+    spinner.fail(`翻訳失敗 ${dir} ${profileInfo}`);
     throw error;
   }
 }
