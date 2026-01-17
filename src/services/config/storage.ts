@@ -117,7 +117,8 @@ export class ConfigStorage implements ConfigManager {
   /** 指定したキーを削除（デフォルトに戻す） */
   async unset(key: string): Promise<void> {
     const config = await this.readConfig();
-    const defaultConfig = DEFAULT_PROFILES_BY_PROVIDER[config.provider] as ConfigProfile;
+    const provider = config.provider || 'gas';
+    const defaultConfig = DEFAULT_PROFILES_BY_PROVIDER[provider] as ConfigProfile;
     switch (key) {
       case 'endpoint':
         config.endpoint = defaultConfig.endpoint;
@@ -286,7 +287,8 @@ export class ConfigStorage implements ConfigManager {
     }
 
     const profile = appConfig.profiles[profileName];
-    const defaultProfile = DEFAULT_PROFILES_BY_PROVIDER[profile.provider] as ConfigProfile;
+    const provider = profile.provider || 'gas';
+    const defaultProfile = DEFAULT_PROFILES_BY_PROVIDER[provider] as ConfigProfile;
 
     switch (key) {
       case 'provider':
