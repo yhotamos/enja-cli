@@ -35,7 +35,7 @@ export async function translate(text: string | undefined, options: TranslateOpti
     console.error('使い方: enja <テキスト> または enja -f <ファイル> または パイプ入力');
     process.exit(1);
   } catch (error) {
-    console.error(error instanceof Error ? `error: ${error.message}` : error);
+    console.error(`error: ${formatErrorMessage(error)}`);
     process.exit(1);
   }
 }
@@ -86,7 +86,8 @@ async function processTranslation(text: string, options: TranslateOptions, input
 
   const dir = `(${sourceLang} → ${targetLang})`;
   const model = translator.getModel() || config.model;
-  const profileInfo = `[${activeProfile} | ${config.provider}${model ? ` | ${model}` : ''}]`;
+  const profileName = activeProfile || 'unknown';
+  const profileInfo = `[${profileName} | ${config.provider}${model ? ` | ${model}` : ''}]`;
 
   const spinner = ora(`翻訳中... ${dir} ${profileInfo}`).start();
   try {
@@ -120,8 +121,17 @@ async function processTranslation(text: string, options: TranslateOptions, input
       console.log(translated);
     }
   } catch (error) {
-    spinner.fail(`翻訳失敗 ${dir}`);
+    spinner.fail(`翻訳失敗 ${dir} ${profileInfo}`);
     throw error;
+  }
+}
+
+function formatErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  try {
+    return String(error);
+  } catch {
+    return 'Unknown error';
   }
 }
 
