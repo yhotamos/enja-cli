@@ -312,10 +312,6 @@ export class ConfigStorage implements ConfigManager {
 
   /** プロファイル全体をリセット */
   async resetProfile(profileName: string): Promise<void> {
-    if (profileName === 'default') {
-      throw new Error(`'default' プロファイルはリセットのみ可能です`);
-    }
-
     const appConfig = await this.readAppConfig();
 
     if (!appConfig.profiles[profileName]) {
