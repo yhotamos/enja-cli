@@ -1,4 +1,4 @@
-import { ConfigKey, ConfigOptions } from '../types/index.js';
+import { ConfigOptions } from '../types/index.js';
 import { ConfigStorage } from '../services/config/storage.js';
 import kleur from 'kleur';
 
