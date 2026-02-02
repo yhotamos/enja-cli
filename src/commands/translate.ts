@@ -102,6 +102,9 @@ async function processTranslation(text: string, options: TranslateOptions, input
       targetLang,
       textLength: processedText.length,
       sourceHash: textHash,
+      profile: profileName,
+      provider: config.provider,
+      model: model,
       options: {
         stripHtml: options.stripHtml,
         file: options.file,

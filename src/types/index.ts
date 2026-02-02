@@ -20,6 +20,9 @@ export interface HistoryEntry {
   targetLang: string;
   textLength: number;
   sourceHash?: string;
+  profile?: string;
+  provider?: TranslatorProvider;
+  model?: string;
   options?: {
     stripHtml?: boolean;
     file?: string;
