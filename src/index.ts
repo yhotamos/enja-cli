@@ -16,7 +16,7 @@ program
   .description(`Description: ${pkgJson.description}`)
   .version(pkgJson.version, '-v, --version', 'output the current version');
 
-// 翻訳コマンド (デフォルト)
+// 翻訳コマンド
 program
   .argument('[text]', 'テキストを翻訳する')
   .option('-f, --file <path>', 'ファイルを翻訳する')
@@ -42,7 +42,7 @@ program
   $ enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY  # OpenAI API を使用して翻訳`
   )
   .addHelpText('afterAll', `\nEnja CLI v${pkgJson.version}`)
-  .addHelpText('afterAll', 'Copyright (c) 2025 yhotta240')
+  .addHelpText('afterAll', 'Copyright (c) 2025-2026 yhotta240')
   .addHelpText('afterAll', 'GitHub: https://github.com/yhotamos/enja-cli')
   .action(translate);
 
