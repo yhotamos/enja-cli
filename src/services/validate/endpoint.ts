@@ -5,7 +5,7 @@ type ValidateEndpointOptions = {
   allowPrivateEndpoint?: boolean;
 };
 
-function parseIPv4(hostname: string): number[] | null {
+function parseIPv4Octets(hostname: string): number[] | null {
   const m = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if (!m) return null;
   const octets = m.slice(1).map(n => Number(n));
@@ -13,7 +13,7 @@ function parseIPv4(hostname: string): number[] | null {
   return octets;
 }
 
-function isInCidr24Prefix(o: number[], a: number, b: number): boolean {
+function hasIPv4Prefix(o: number[], a: number, b: number): boolean {
   return o[0] === a && o[1] === b;
 }
 
@@ -30,7 +30,7 @@ function isIPv4Loopback(o: number[]): boolean {
 }
 
 function isIPv4LinkLocal(o: number[]): boolean {
-  return isInCidr24Prefix(o, 169, 254);
+  return hasIPv4Prefix(o, 169, 254);
 }
 
 function isIPv6Loopback(hostname: string): boolean {
@@ -44,8 +44,8 @@ function isIPv6LinkLocal(hostname: string): boolean {
 const LOCALHOST_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 
 const PRIVATE_IPV4_PREFIXES = new Set([
-  '10.',        // 10.0.0.0/8
-  '192.168.',   // 192.168.0.0/16
+  '10.', // 10.0.0.0/8
+  '192.168.', // 192.168.0.0/16
   // 172.16.0.0/12 は prefix だけでは表現しづらいので数値判定に寄せる
 ]);
 
@@ -70,16 +70,16 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
     throw new Error('エンドポイントURLは http:// または https:// で始まる必要があります');
   }
 
-  const ipv4 = parseIPv4(hostname);
+  const ipv4 = parseIPv4Octets(hostname);
   const isIPv4 = ipv4 !== null;
 
   const isLocalhost =
     LOCALHOST_HOSTS.has(hostname) ||
-    (isIPv4 ? isIPv4Loopback(ipv4) : false) ||
+    (isIPv4 ? isIPv4Loopback(ipv4 as number[]) : false) ||
     isIPv6Loopback(hostname);
 
   const isLinkLocal =
-    (isIPv4 ? isIPv4LinkLocal(ipv4) : false) ||
+    (isIPv4 ? isIPv4LinkLocal(ipv4 as number[]) : false) ||
     isIPv6LinkLocal(hostname);
 
   if (isLinkLocal) {
@@ -89,7 +89,7 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
   // RFC1918（IPv4）
   const isPrivateIpv4 =
     isIPv4
-      ? isIPv4InRFC1918(ipv4)
+      ? isIPv4InRFC1918(ipv4 as number[])
       : Array.from(PRIVATE_IPV4_PREFIXES).some(p => hostname.startsWith(p)); // 基本ここには来ないが保険
 
   // 既定は https 強制
