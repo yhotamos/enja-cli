@@ -3,6 +3,7 @@ const ALWAYS_BLOCK_HOSTS = new Set(['169.254.169.254']);
 type ValidateEndpointOptions = {
   allowLocalEndpoint?: boolean;
   allowPrivateEndpoint?: boolean;
+  allowHttp?: boolean;
 };
 
 function parseIPv4Octets(hostname: string): number[] | null {
@@ -50,7 +51,7 @@ const PRIVATE_IPV4_PREFIXES = new Set([
 ]);
 
 export function validateEndpoint(endpoint: string, options: ValidateEndpointOptions = {}): true {
-  const { allowLocalEndpoint = false, allowPrivateEndpoint = false } = options;
+  const { allowLocalEndpoint = false, allowPrivateEndpoint = false, allowHttp = false } = options;
 
   let url: URL;
   try {
@@ -94,8 +95,12 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
 
   // 既定は https 強制
   if (protocol === 'http:') {
-    if (!(allowLocalEndpoint && isLocalhost)) {
-      throw new Error('エンドポイントURLは https:// で始まる必要があります');
+    if (!(allowHttp || (allowLocalEndpoint && isLocalhost))) {
+      throw new Error(
+        'エンドポイントURLは https:// で始まる必要があります' +
+        '\nHTTPエンドポイントを使用する必要がある場合は，--allow-http オプションを使用してください' +
+        '\nローカルエンドポイントであれば --allow-local-endpoint オプションでも許可されます'
+      );
     }
   }
 

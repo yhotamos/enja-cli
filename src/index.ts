@@ -31,6 +31,7 @@ program
   .option('--model <name>', '使用するモデル名を指定 (例: gpt-4o-mini, gemini-2.5-flash-lite)')
   .option('--allow-local-endpoint', 'ローカルエンドポイントの使用を許可する (セキュリティリスクがあるため注意)')
   .option('--allow-private-endpoint', 'プライベートIPアドレスのエンドポイントを許可する (セキュリティリスクがあるため注意)')
+  .option('--allow-http', 'HTTP (非 TLS) エンドポイントを許可する (セキュリティリスクがあるため注意)')
   .showHelpAfterError()
   .addHelpText('after',
     `\nExamples:

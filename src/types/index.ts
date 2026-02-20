@@ -11,6 +11,7 @@ export interface TranslateOptions {
   profile?: string;
   allowLocalEndpoint?: boolean;
   allowPrivateEndpoint?: boolean;
+  allowHttp?: boolean;
 }
 
 export interface HistoryEntry {

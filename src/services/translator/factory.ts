@@ -36,6 +36,7 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
         validateEndpoint(endpoint, {
           allowLocalEndpoint: options?.allowLocalEndpoint ?? false,
           allowPrivateEndpoint: options?.allowPrivateEndpoint ?? false,
+          allowHttp: options?.allowHttp ?? false,
         });
         return { translator: new GASTranslator(endpoint, apiKey), config, activeProfile };
       }
