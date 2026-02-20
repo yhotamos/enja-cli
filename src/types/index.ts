@@ -9,6 +9,9 @@ export interface TranslateOptions {
   provider?: TranslatorProvider;
   model?: string;
   profile?: string;
+  allowLocalEndpoint?: boolean;
+  allowPrivateEndpoint?: boolean;
+  allowHttp?: boolean;
 }
 
 export interface HistoryEntry {

@@ -7,11 +7,16 @@ interface GASApiResponse {
   error?: string;
 }
 
+const GAS_ENDPOINT_URL_PATTERN: RegExp = /^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/(exec|dev)(\?.*)?$/;
+
 export class GASTranslator implements Translator {
   private apiUrl: string;
   private apiKey?: string;
 
   constructor(endpoint: string, apiKey?: string) {
+    if (!GAS_ENDPOINT_URL_PATTERN.test(endpoint)) {
+      throw new Error('無効なGASエンドポイントURLです');
+    }
     this.apiUrl = endpoint;
     this.apiKey = apiKey;
   }

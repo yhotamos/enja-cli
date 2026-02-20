@@ -5,6 +5,7 @@ import { ConfigProfile, TranslateOptions } from '../../types/index.js';
 import { OpenAITranslator } from './openai.js';
 import { GeminiTranslator } from './gemini.js';
 import { ConfigStorage } from '../config/storage.js';
+import { validateEndpoint } from '../validate/endpoint.js';
 
 interface TranslatorProvider {
   translator: Translator;
@@ -32,6 +33,11 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
         if (!endpoint) {
           throw new Error('エンドポイントURLが必要です');
         }
+        validateEndpoint(endpoint, {
+          allowLocalEndpoint: options?.allowLocalEndpoint ?? false,
+          allowPrivateEndpoint: options?.allowPrivateEndpoint ?? false,
+          allowHttp: options?.allowHttp ?? false,
+        });
         return { translator: new GASTranslator(endpoint, apiKey), config, activeProfile };
       }
     case 'openai':
