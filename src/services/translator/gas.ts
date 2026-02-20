@@ -7,7 +7,7 @@ interface GASApiResponse {
   error?: string;
 }
 
-const GAS_ENDPOINT_URL_PATTERN: RegExp = /^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/exec$/;
+const GAS_ENDPOINT_URL_PATTERN: RegExp = /^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/(exec|dev)(\?.*)?$/;
 
 export class GASTranslator implements Translator {
   private apiUrl: string;
