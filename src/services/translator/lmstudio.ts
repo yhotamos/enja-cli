@@ -1,10 +1,25 @@
 import { Translator, TranslationResult } from './index.js';
 
 type LMStudioError = {
-  message: string;
+  message?: string;
   type?: string;
   code?: string;
   param?: string;
+}
+
+type LMStudioOutputItem =
+  | string
+  | {
+    type?: string;
+    content?: any;
+    text?: string;
+    response?: string;
+    output?: any;
+  };
+
+interface LMStudioResponse {
+  output?: LMStudioOutputItem[];
+  error?: string | LMStudioError | { [k: string]: any };
 }
 
 export class LMStudioTranslator implements Translator {
@@ -47,7 +62,7 @@ export class LMStudioTranslator implements Translator {
     });
 
     const raw = await res.text();
-    const data = this.parseJsonSafe(raw, res);
+    const data = this.parseJsonSafe(raw, res) as LMStudioResponse | undefined;
 
     if (!res.ok) {
       // parseJsonSafe が既に data.error の基本チェックは行わないためここで処理
@@ -95,42 +110,68 @@ export class LMStudioTranslator implements Translator {
     return url;
   }
 
-  private parseJsonSafe(raw: string, res: any): any {
+  private parseJsonSafe(raw: string, res: any): LMStudioResponse | undefined {
     if (!raw) return undefined;
     try {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw) as LMStudioResponse;
+      return parsed;
     } catch (e) {
       if (!res.ok) {
         const snippet = raw ? `${raw.slice(0, 200)}...` : '';
-        throw new Error(`LMStudio: 非JSONレスポンス (HTTP ${res.status}) ${snippet}`);
+        throw new Error(`LMStudio: 非JSONレスポンス (HTTP ${res.status} ${res.statusText}) ${snippet}`);
       }
       throw new Error(`LMStudio: レスポンスの JSON 解析に失敗しました`);
     }
   }
 
-  private extractTranslatedFromOutput(data: any): string | null {
-    const output = data?.output?.[1];
-    if (!output) return null;
+  private extractTranslatedFromOutput(data?: LMStudioResponse): string | null {
+    if (!data || !Array.isArray(data.output) || data.output.length === 0) return null;
 
-    if (typeof output === 'string') return output;
-
-    if (Array.isArray(output)) {
-      return typeof output[0] === 'string' ? output[0] : null;
-    }
-
-    if (typeof output === 'object') {
-      const content = output.content;
-
-      if (typeof content === 'string') return content;
-      if (Array.isArray(content)) {
-        return typeof content[0] === 'string' ? content[0] : null;
+    for (const item of data.output) {
+      if (item && typeof item === 'object' && item.type === 'message') {
+        const found = this.extractFromItem(item);
+        if (found) return found;
       }
-      if (content && typeof content.text === 'string') return content.text;
-      if (content && typeof content.content === 'string') return content.content;
-
-      if (typeof output.text === 'string') return output.text;
     }
 
+    for (const item of data.output) {
+      const found = this.extractFromItem(item);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  private extractFromItem(item: LMStudioOutputItem | any): string | null {
+    if (!item && item !== '') return null;
+    if (typeof item === 'string') return item;
+    if (Array.isArray(item)) {
+      for (const v of item) {
+        const r = this.extractFromItem(v);
+        if (r) return r;
+      }
+      return null;
+    }
+    if (typeof item === 'object') {
+      if (typeof item === 'object' && typeof item.text === 'string') return item.text;
+      if (typeof item === 'object' && typeof item.response === 'string') return item.response;
+      if (typeof item.content === 'string') return item.content;
+      if (item.content && typeof item.content === 'object') {
+        if (typeof item.content.text === 'string') return item.content.text;
+        if (typeof item.content.content === 'string') return item.content.content;
+        const rec = this.extractFromItem(item.content);
+        if (rec) return rec;
+      }
+      if (Array.isArray(item.content)) {
+        for (const v of item.content) {
+          const r = this.extractFromItem(v);
+          if (r) return r;
+        }
+      }
+      if (Array.isArray(item.output)) {
+        const nested = this.extractTranslatedFromOutput({ output: item.output });
+        if (nested) return nested;
+      }
+    }
     return null;
   }
 }

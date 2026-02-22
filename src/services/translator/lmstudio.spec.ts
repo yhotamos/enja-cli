@@ -5,16 +5,20 @@ describe('LMStudioTranslator helpers', () => {
   const t = new LMStudioTranslator(undefined as any, 'model-x');
 
   it('parses valid JSON', () => {
-    const raw = JSON.stringify({ output: [{}, { type: 'message', content: 'こんにちは世界' }] });
+    const raw = JSON.stringify({ output: [{ type: 'reasoning', content: 'Translate to Japanese.' }, { type: 'message', content: 'こんにちは世界' }] });
     const data = (t as any).parseJsonSafe(raw, { ok: true, status: 200 });
     const translated = (t as any).extractTranslatedFromOutput(data);
+    // debug: show parsed data
+    // console.log('DEBUG parsed:', JSON.stringify(data));
     expect(translated).toBe('こんにちは世界');
   });
 
   it('extracts text field if present', () => {
-    const raw = JSON.stringify({ output: [{}, { type: 'message', content: { text: 'こんにちは世界' } }] });
+    const raw = JSON.stringify({ output: [{ type: 'reasoning', content: 'Translate to Japanese.' }, { type: 'message', content: { text: 'こんにちは世界' } }] });
     const data = (t as any).parseJsonSafe(raw, { ok: true, status: 200 });
     const translated = (t as any).extractTranslatedFromOutput(data);
+    // debug: show parsed data
+    // console.log('DEBUG parsed:', JSON.stringify(data));
     expect(translated).toBe('こんにちは世界');
   });
 
