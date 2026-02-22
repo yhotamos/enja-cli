@@ -7,11 +7,6 @@ type LMStudioError = {
   param?: string;
 }
 
-type LMStudioMessage = {
-  type: 'message';
-  content: string;
-}
-
 export class LMStudioTranslator implements Translator {
   public static readonly DEFAULT_ENDPOINT = 'http://localhost:1234/api/v1/chat';
   private baseUrl: string;
@@ -73,38 +68,10 @@ export class LMStudioTranslator implements Translator {
       throw new Error(`LMStudio: HTTP ${res.status} ${res.statusText}`);
     }
 
-    // POST /api/v1/chat の場合は data.output が配列で返る
-    // data.output[0] がシステムプロンプトのエコー，data.output[1] が翻訳結果になる
-    if (data && Array.isArray(data.output) && data.output.length >= 2) {
-      const output: LMStudioMessage | any = data.output[1];
-      if (output.type !== 'message') {
-        throw new Error('LMStudio: 予期しない出力形式です');
-      }
+    const translated = this.extractTranslatedFromOutput(data);
+    if (translated) return { text: translated.trim(), detectedSourceLang: sourceLang };
 
-      const content = output.content;
-      let translatedText: string | null = null;
-
-      if (typeof content === 'string') {
-        translatedText = content;
-      } else if (content && typeof content.text === 'string') {
-        translatedText = content.text; // text フィールドを優先
-      } else if (content && typeof content.content === 'string') {
-        translatedText = content.content;
-      } else if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'string') {
-        translatedText = content[0];
-      }
-
-      if (!translatedText) {
-        throw new Error('LMStudio: 翻訳結果が空です');
-      }
-
-      return { text: translatedText, detectedSourceLang: sourceLang };
-    }
-
-    if (data?.error) {
-      throw new Error(`LMStudio: ${data.error || '不明なエラーが発生しました'}`);
-    }
-
+    if (data?.error) throw new Error(`LMStudio: ${data.error || '不明なエラーが発生しました'}`);
     throw new Error('LMStudio: 出力が見つかりません');
   }
 
@@ -139,5 +106,31 @@ export class LMStudioTranslator implements Translator {
       }
       throw new Error(`LMStudio: レスポンスの JSON 解析に失敗しました`);
     }
+  }
+
+  private extractTranslatedFromOutput(data: any): string | null {
+    const output = data?.output?.[1];
+    if (!output) return null;
+
+    if (typeof output === 'string') return output;
+
+    if (Array.isArray(output)) {
+      return typeof output[0] === 'string' ? output[0] : null;
+    }
+
+    if (typeof output === 'object') {
+      const content = output.content;
+
+      if (typeof content === 'string') return content;
+      if (Array.isArray(content)) {
+        return typeof content[0] === 'string' ? content[0] : null;
+      }
+      if (content && typeof content.text === 'string') return content.text;
+      if (content && typeof content.content === 'string') return content.content;
+
+      if (typeof output.text === 'string') return output.text;
+    }
+
+    return null;
   }
 }
