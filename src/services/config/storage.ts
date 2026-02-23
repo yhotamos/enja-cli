@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.js';
 import { ConfigManager } from './index.js';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
+import { LMStudioTranslator } from '../translator/lmstudio.js';
 
 // プロバイダごとのデフォルト設定
 const DEFAULT_PROFILES_BY_PROVIDER: Record<TranslatorProvider, Partial<ConfigProfile>> = {
@@ -17,6 +18,10 @@ const DEFAULT_PROFILES_BY_PROVIDER: Record<TranslatorProvider, Partial<ConfigPro
     provider: 'gemini',
     model: 'gemini-2.5-flash-lite',
   },
+  lmstudio: {
+    provider: 'lmstudio',
+    endpoint: LMStudioTranslator.DEFAULT_ENDPOINT,
+  },
   custom: {
     provider: 'custom',
   },
@@ -29,6 +34,8 @@ const DEFAULT_APP_CONFIG: AppConfig = {
     default: { ...DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile },
   },
 };
+
+const VALID_PROVIDERS: TranslatorProvider[] = ['gas', 'custom', 'openai', 'gemini', 'lmstudio'];
 
 /** 設定の永続化を管理するクラス */
 export class ConfigStorage implements ConfigManager {
@@ -98,9 +105,8 @@ export class ConfigStorage implements ConfigManager {
         config.apiKey = value;
         break;
       case 'provider':
-        const validProviders = ['gas', 'custom', 'openai', 'gemini'];
-        if (!validProviders.includes(value)) {
-          throw new Error(`無効なプロバイダー (${value}): 'gas', 'custom', 'openai', 'gemini' のいずれかを指定してください`);
+        if (!VALID_PROVIDERS.includes(value as TranslatorProvider)) {
+          throw new Error(`無効なプロバイダー (${value}): ${VALID_PROVIDERS.join(', ')} のいずれかを指定してください`);
         }
         config.provider = value as TranslatorProvider;
         break;
@@ -182,9 +188,8 @@ export class ConfigStorage implements ConfigManager {
 
     // プロバイダーのバリデーション
     if (config?.provider) {
-      const validProviders: TranslatorProvider[] = ['gas', 'custom', 'openai', 'gemini'];
-      if (!validProviders.includes(config.provider as TranslatorProvider)) {
-        throw new Error(`無効なプロバイダー '${config.provider}': gas, custom, openai, gemini のいずれかを指定してください`);
+      if (!VALID_PROVIDERS.includes(config.provider as TranslatorProvider)) {
+        throw new Error(`無効なプロバイダー '${config.provider}': ${VALID_PROVIDERS.join(', ')} のいずれかを指定してください`);
       }
     }
 
@@ -262,9 +267,8 @@ export class ConfigStorage implements ConfigManager {
         profile.apiKey = value;
         break;
       case 'provider':
-        const validProviders = ['gas', 'custom', 'openai', 'gemini'];
-        if (!validProviders.includes(value)) {
-          throw new Error(`無効なプロバイダー (${value}): 'gas', 'custom', 'openai', 'gemini' のいずれかを指定してください`);
+        if (!VALID_PROVIDERS.includes(value as TranslatorProvider)) {
+          throw new Error(`無効なプロバイダー (${value}): ${VALID_PROVIDERS.join(', ')} のいずれかを指定してください`);
         }
         profile.provider = value as TranslatorProvider;
         break;

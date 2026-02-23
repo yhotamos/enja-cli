@@ -1,6 +1,6 @@
 const ALWAYS_BLOCK_HOSTS = new Set(['169.254.169.254']);
 
-type ValidateEndpointOptions = {
+export type ValidateEndpointOptions = {
   allowLocalEndpoint?: boolean;
   allowPrivateEndpoint?: boolean;
   allowHttp?: boolean;
@@ -57,7 +57,7 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
   try {
     url = new URL(endpoint);
   } catch {
-    throw new Error('エンドポイントURLが不正です');
+    throw new Error('エンドポイント URL が不正です');
   }
 
   const protocol = url.protocol;
@@ -68,7 +68,7 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
   }
 
   if (protocol !== 'https:' && protocol !== 'http:') {
-    throw new Error('エンドポイントURLは http:// または https:// で始まる必要があります');
+    throw new Error('エンドポイント URL は http:// または https:// で始まる必要があります');
   }
 
   const ipv4 = parseIPv4Octets(hostname);
@@ -97,8 +97,8 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
   if (protocol === 'http:') {
     if (!(allowHttp || (allowLocalEndpoint && isLocalhost))) {
       throw new Error(
-        'エンドポイントURLは https:// で始まる必要があります' +
-        '\nHTTPエンドポイントを使用する必要がある場合は，--allow-http オプションを使用してください' +
+        'エンドポイント URL は https:// で始まる必要があります' +
+        '\nHTTP エンドポイントを使用する必要がある場合は，--allow-http オプションを使用してください' +
         '\nローカルエンドポイントであれば --allow-local-endpoint オプションでも許可されます'
       );
     }
@@ -115,7 +115,7 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
   // RFC1918は既定で拒否
   if (isPrivateIpv4 && !allowPrivateEndpoint) {
     throw new Error(
-      'プライベートIPエンドポイントの使用は既定で許可されていません' +
+      'プライベート IP エンドポイントの使用は既定で許可されていません' +
       '\n使用する必要がある場合は，--allow-private-endpoint オプションを使用してください'
     );
   }

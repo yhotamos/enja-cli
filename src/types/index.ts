@@ -69,4 +69,4 @@ export interface ConfigOptions {
 
 export type ConfigKey = 'endpoint' | 'api-key' | 'provider' | 'model';
 
-export type TranslatorProvider = 'gas' | 'custom' | 'openai' | 'gemini';
+export type TranslatorProvider = 'gas' | 'custom' | 'openai' | 'gemini' | 'lmstudio';
