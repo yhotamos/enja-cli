@@ -3,12 +3,13 @@ import { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.
 import { ConfigManager } from './index.js';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
 import { LMStudioTranslator } from '../translator/lmstudio.js';
+import { GASTranslator } from '../translator/gas.js';
 
 // プロバイダごとのデフォルト設定
 const DEFAULT_PROFILES_BY_PROVIDER: Record<TranslatorProvider, Partial<ConfigProfile>> = {
   gas: {
     provider: 'gas',
-    endpoint: 'https://script.google.com/macros/s/AKfycbxOSbKD0aBTaQqIzHv00BMzp6WwrtWHBU3gJY0vhB2HblgUO-cgesfT1l-rrfttnWZzew/exec',
+    endpoint: GASTranslator.DEFAULT_ENDPOINT,
   },
   openai: {
     provider: 'openai',
