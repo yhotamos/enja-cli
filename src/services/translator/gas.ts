@@ -8,14 +8,14 @@ interface GASApiResponse {
 }
 
 export class GASTranslator implements Translator {
-  public static readonly DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxOSbKD0aBTaQqIzHv00BMzp6WwrtWHBU3gJY0vhB2HblgUO-cgesfT1l-rrfttnWZzew/exec';
+  public static readonly DEFAULT_ENDPOINT = process.env.GAS_DEFAULT_ENDPOINT || 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
   private static readonly ENDPOINT_URL_PATTERN: RegExp = /^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/(exec|dev)(\?.*)?$/;
   private apiUrl: string;
   private apiKey?: string;
 
-  constructor(endpoint: string, apiKey?: string) {
+  constructor(endpoint: string = GASTranslator.DEFAULT_ENDPOINT, apiKey?: string) {
     if (!GASTranslator.ENDPOINT_URL_PATTERN.test(endpoint)) {
-      throw new Error('無効なGASエンドポイントURLです');
+      throw new Error('無効な GAS エンドポイント URL です');
     }
     this.apiUrl = endpoint;
     this.apiKey = apiKey;
