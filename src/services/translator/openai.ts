@@ -2,10 +2,11 @@ import OpenAI from 'openai';
 import { Translator, TranslationResult } from './index.js';
 
 export class OpenAITranslator implements Translator {
+  public static readonly DEFAULT_MODEL = process.env.OPENAI_DEFAULT_MODEL || 'gpt-4o-mini';
   private client: OpenAI;
   private model: string;
 
-  constructor(apiKey: string, model: string = 'gpt-4o-mini') {
+  constructor(apiKey: string, model: string = OpenAITranslator.DEFAULT_MODEL) {
     this.client = new OpenAI({ apiKey });
     this.model = model;
   }

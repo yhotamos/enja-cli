@@ -3,20 +3,23 @@ import { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.
 import { ConfigManager } from './index.js';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
 import { LMStudioTranslator } from '../translator/lmstudio.js';
+import { GASTranslator } from '../translator/gas.js';
+import { OpenAITranslator } from '../translator/openai.js';
+import { GeminiTranslator } from '../translator/gemini.js';
 
 // プロバイダごとのデフォルト設定
 const DEFAULT_PROFILES_BY_PROVIDER: Record<TranslatorProvider, Partial<ConfigProfile>> = {
   gas: {
     provider: 'gas',
-    endpoint: 'https://script.google.com/macros/s/AKfycbxOSbKD0aBTaQqIzHv00BMzp6WwrtWHBU3gJY0vhB2HblgUO-cgesfT1l-rrfttnWZzew/exec',
+    endpoint: GASTranslator.DEFAULT_ENDPOINT,
   },
   openai: {
     provider: 'openai',
-    model: 'gpt-4o-mini',
+    model: OpenAITranslator.DEFAULT_MODEL,
   },
   gemini: {
     provider: 'gemini',
-    model: 'gemini-2.5-flash-lite',
+    model: GeminiTranslator.DEFAULT_MODEL,
   },
   lmstudio: {
     provider: 'lmstudio',

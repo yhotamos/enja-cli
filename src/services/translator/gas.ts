@@ -7,15 +7,15 @@ interface GASApiResponse {
   error?: string;
 }
 
-const GAS_ENDPOINT_URL_PATTERN: RegExp = /^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/(exec|dev)(\?.*)?$/;
-
 export class GASTranslator implements Translator {
+  public static readonly DEFAULT_ENDPOINT = process.env.GAS_DEFAULT_ENDPOINT || 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+  private static readonly ENDPOINT_URL_PATTERN: RegExp = /^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/(exec|dev)(\?.*)?$/;
   private apiUrl: string;
   private apiKey?: string;
 
-  constructor(endpoint: string, apiKey?: string) {
-    if (!GAS_ENDPOINT_URL_PATTERN.test(endpoint)) {
-      throw new Error('無効なGASエンドポイントURLです');
+  constructor(endpoint: string = GASTranslator.DEFAULT_ENDPOINT, apiKey?: string) {
+    if (!GASTranslator.ENDPOINT_URL_PATTERN.test(endpoint)) {
+      throw new Error('無効な GAS エンドポイント URL です');
     }
     this.apiUrl = endpoint;
     this.apiKey = apiKey;

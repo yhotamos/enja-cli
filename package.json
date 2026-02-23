@@ -16,27 +16,6 @@
     "watch": "tsup --watch",
     "test": "vitest"
   },
-  "tsup": {
-    "entry": [
-      "src/index.ts"
-    ],
-    "format": [
-      "esm"
-    ],
-    "bundle": true,
-    "minify": true,
-    "treeshake": true,
-    "external": [
-      "commander",
-      "kleur",
-      "ora"
-    ],
-    "dts": true,
-    "outDir": "dist",
-    "clean": true,
-    "sourcemap": true,
-    "target": "node18"
-  },
   "keywords": [
     "translation",
     "cli",
@@ -68,6 +47,7 @@
     "ora": "^9.0.0"
   },
   "devDependencies": {
+    "dotenv": "^17.3.1",
     "@types/node": "^24.10.1",
     "tsup": "^8.5.1",
     "tsx": "^4.20.6",
