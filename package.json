@@ -14,7 +14,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "typecheck": "tsc --noEmit",
-    "build": "npm run typecheck && tsup",
+    "build": "npm run lint && npm run typecheck && tsup",
     "build:dev": "tsup --sourcemap",
     "watch": "tsup --watch",
     "test": "vitest"
