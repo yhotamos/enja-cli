@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { readFileSync } from "fs";
 import { Command } from 'commander';
 import { translate } from "./commands/translate.js";
