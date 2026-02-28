@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import { promises as fsp } from 'fs';
 import { randomUUID } from 'crypto';
-import { HistoryEntry } from '../../types/index.js';
-import { HistoryManager } from './index.js';
+import type { HistoryEntry } from '../../types/index.js';
+import type { HistoryManager } from './index.js';
 import { getHistoryFilePath, getConfigDir } from '../../utils/paths.js';
 
 const MAX_HISTORY_ENTRIES = 100;
@@ -28,10 +28,14 @@ export class HistoryStorage implements HistoryManager {
     try {
       const data = await fsp.readFile(this.filePath, 'utf-8');
       return JSON.parse(data) as HistoryEntry[];
-    } catch (error: any) {
+    } catch (error: unknown) {
       // ファイルが存在しない場合は空配列を返す
-      if (error && error.code === 'ENOENT') {
-        return [];
+      if (
+        error instanceof Error &&
+        'code' in error &&
+        (error as NodeJS.ErrnoException).code === 'ENOENT'
+      ) {
+        return []
       }
       // それ以外の読み取り/パースエラーは警告を出して空配列を返す
       console.warn('履歴の読み込みに失敗しました．空配列を返します');
@@ -47,7 +51,7 @@ export class HistoryStorage implements HistoryManager {
       const data = JSON.stringify(entries, null, 2);
       await fsp.writeFile(tmpPath, data, 'utf-8');
       await fsp.rename(tmpPath, this.filePath);
-    } catch (error) {
+    } catch {
       throw new Error(`履歴ファイルの書き込みに失敗しました`);
     }
   }

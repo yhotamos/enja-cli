@@ -1,4 +1,4 @@
-import { Translator, TranslationResult } from './index.js';
+import type { Translator, TranslationResult } from './index.js';
 
 interface GASApiResponse {
   code: number;

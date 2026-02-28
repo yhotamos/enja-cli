@@ -1,5 +1,5 @@
 import kleur from 'kleur';
-import { HistoryEntry } from '../../types/index.js';
+import type { HistoryEntry } from '../../types/index.js';
 
 /** 履歴エントリをフォーマットして文字列として返す */
 export function formatHistory(entries: HistoryEntry[], detailed: boolean = false): string {

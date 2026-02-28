@@ -1,12 +1,13 @@
-import { Translator } from './index.js';
+import type { Translator } from './index.js';
 import { GASTranslator } from './gas.js';
 import { getConfig } from '../../config/index.js';
-import { ConfigProfile, TranslateOptions } from '../../types/index.js';
+import type { ConfigProfile, TranslateOptions } from '../../types/index.js';
 import { OpenAITranslator } from './openai.js';
 import { GeminiTranslator } from './gemini.js';
 import { LMStudioTranslator } from './lmstudio.js';
 import { ConfigStorage } from '../config/storage.js';
-import { validateEndpoint, ValidateEndpointOptions } from '../validate/endpoint.js';
+import type { ValidateEndpointOptions } from '../validate/endpoint.js';
+import { validateEndpoint } from '../validate/endpoint.js';
 
 interface TranslatorProvider {
   translator: Translator;

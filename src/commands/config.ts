@@ -1,13 +1,14 @@
-import { ConfigOptions } from '../types/index.js';
+import type { ConfigOptions } from '../types/index.js';
 import { ConfigStorage } from '../services/config/storage.js';
 import kleur from 'kleur';
+import type { Command } from 'commander';
 
 /** 設定コマンドの実行 */
 export async function config(
   profileOrSubcommand?: string,
   subcommandArg?: string,
   _options?: ConfigOptions,
-  command?: any
+  command?: Command
 ): Promise<void> {
   const storage = new ConfigStorage();
 
@@ -52,7 +53,7 @@ export async function config(
 
     // サブコマンド: add - プロファイル作成
     if (profileOrSubcommand === 'add' && subcommandArg) {
-      const profileConfig: any = {};
+      const profileConfig: Partial<ConfigOptions> = {};
       if (options?.provider) profileConfig.provider = options.provider;
       if (options?.endpoint) profileConfig.endpoint = options.endpoint;
       if (options?.apiKey) profileConfig.apiKey = options.apiKey;

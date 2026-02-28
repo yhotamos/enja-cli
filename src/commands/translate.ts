@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import ora from 'ora';
-import { TranslateOptions } from '../types/index.js';
+import type { TranslateOptions } from '../types/index.js';
 import { createTranslator } from '../services/translator/factory.js';
 import { HistoryStorage } from '../services/history/storage.js';
 import { hashText } from '../utils/hash.js';
@@ -75,7 +75,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
       try {
         fs.writeFileSync(options.output, translated, 'utf-8');
         console.log(`${kleur.green('✔')} ${options.output} に翻訳結果を保存しました`);
-      } catch (error) {
+      } catch {
         throw new Error(`ファイルへの書き込みに失敗しました (${options.output})`);
       }
     } else {
@@ -117,7 +117,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
       try {
         fs.writeFileSync(options.output, translated, 'utf-8');
         console.log(`${kleur.green('✔')} ${options.output} に翻訳結果を保存しました`);
-      } catch (error) {
+      } catch {
         throw new Error(`ファイルへの書き込みに失敗しました (${options.output})`);
       }
     } else {
