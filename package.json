@@ -11,8 +11,9 @@
     "enja": "dist/index.js"
   },
   "scripts": {
-    "build": "tsup --no-sourcemap",
-    "build:dev": "tsup",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && tsup",
+    "build:dev": "tsup --sourcemap",
     "watch": "tsup --watch",
     "test": "vitest"
   },
