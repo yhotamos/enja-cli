@@ -1,5 +1,6 @@
-import { ApiError, GenerateContentResponse, GoogleGenAI } from "@google/genai";
-import { Translator, TranslationResult } from './index.js';
+import type { GenerateContentResponse} from "@google/genai";
+import { ApiError, GoogleGenAI } from "@google/genai";
+import type { Translator, TranslationResult } from './index.js';
 
 export class GeminiTranslator implements Translator {
   public static readonly DEFAULT_MODEL = process.env.GEMINI_DEFAULT_MODEL || 'gemini-2.5-flash-lite';

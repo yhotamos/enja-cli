@@ -1,4 +1,4 @@
-import { HistoryEntry } from '../../types/index.js';
+import type { HistoryEntry } from '../../types/index.js';
 
 export interface HistoryManager {
   add(entry: Omit<HistoryEntry, 'id' | 'timestamp'>): Promise<void>;

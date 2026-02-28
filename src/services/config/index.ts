@@ -1,4 +1,4 @@
-import { ConfigProfile } from '../../types/index.js';
+import type { ConfigProfile } from '../../types/index.js';
 
 export interface ConfigManager {
   get(): Promise<ConfigProfile>;

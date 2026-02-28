@@ -1,4 +1,4 @@
-import { ConfigProfile, TranslateOptions, TranslatorProvider } from '../types/index.js';
+import type { ConfigProfile, TranslateOptions, TranslatorProvider } from '../types/index.js';
 import { ConfigStorage } from '../services/config/storage.js';
 
 export async function getConfig(options?: TranslateOptions): Promise<ConfigProfile> {
@@ -9,7 +9,7 @@ export async function getConfig(options?: TranslateOptions): Promise<ConfigProfi
   if (options?.profile) {
     try {
       fileConfig = await storage.getProfile(options.profile);
-    } catch (error) {
+    } catch {
       const profiles = await storage.listProfiles();
       throw new Error(
         `プロファイル '${options.profile}' が見つかりません\n利用可能なプロファイル: ${profiles.join(', ')}`

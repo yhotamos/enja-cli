@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.js';
-import { ConfigManager } from './index.js';
+import type { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.js';
+import type { ConfigManager } from './index.js';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
 import { LMStudioTranslator } from '../translator/lmstudio.js';
 import { GASTranslator } from '../translator/gas.js';
@@ -64,7 +64,7 @@ export class ConfigStorage implements ConfigManager {
       const config = JSON.parse(data);
 
       return config as AppConfig;
-    } catch (error) {
+    } catch {
       console.warn('設定読み込みに失敗しました．規定値を使用します');
       return { ...DEFAULT_APP_CONFIG };
     }
@@ -74,7 +74,7 @@ export class ConfigStorage implements ConfigManager {
     try {
       this.ensureConfigDir();
       fs.writeFileSync(this.filePath, JSON.stringify(config, null, 2), 'utf-8');
-    } catch (error) {
+    } catch {
       throw new Error(`設定ファイルの書き込みに失敗しました`);
     }
   }

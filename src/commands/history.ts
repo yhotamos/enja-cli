@@ -1,4 +1,4 @@
-import { HistoryOptions } from '../types/index.js';
+import type { HistoryOptions } from '../types/index.js';
 import { HistoryStorage } from '../services/history/storage.js';
 import { formatHistory } from '../services/history/formatter.js';
 import kleur from 'kleur';
