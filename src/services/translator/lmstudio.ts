@@ -1,4 +1,4 @@
-import { Translator, TranslationResult } from './index.js';
+import type { Translator, TranslationResult } from './index.js';
 
 type LMStudioError = {
   message?: string;
@@ -11,15 +11,15 @@ type LMStudioOutputItem =
   | string
   | {
     type?: string;
-    content?: any;
+    content?: unknown;
     text?: string;
     response?: string;
-    output?: any;
+    output?: unknown;
   };
 
 interface LMStudioResponse {
   output?: LMStudioOutputItem[];
-  error?: string | LMStudioError | { [k: string]: any };
+  error?: string | LMStudioError | { [k: string]: unknown };
 }
 
 export class LMStudioTranslator implements Translator {
@@ -94,7 +94,7 @@ export class LMStudioTranslator implements Translator {
     let url: URL;
     try {
       url = new URL(baseUrl);
-    } catch (e) {
+    } catch {
       throw new Error('LMStudio: エンドポイントの URL が不正です（例: http://localhost:1234/）');
     }
 
@@ -110,12 +110,12 @@ export class LMStudioTranslator implements Translator {
     return url;
   }
 
-  private parseJsonSafe(raw: string, res: any): LMStudioResponse | undefined {
+  private parseJsonSafe(raw: string, res: Response): LMStudioResponse | undefined {
     if (!raw) return undefined;
     try {
       const parsed = JSON.parse(raw) as LMStudioResponse;
       return parsed;
-    } catch (e) {
+    } catch {
       if (!res.ok) {
         const snippet = raw ? `${raw.slice(0, 200)}...` : '';
         throw new Error(`LMStudio: 非JSONレスポンス (HTTP ${res.status} ${res.statusText}) ${snippet}`);
@@ -141,7 +141,7 @@ export class LMStudioTranslator implements Translator {
     return null;
   }
 
-  private extractFromItem(item: LMStudioOutputItem | any): string | null {
+  private extractFromItem(item: LMStudioOutputItem): string | null {
     if (!item && item !== '') return null;
     if (typeof item === 'string') return item;
     if (Array.isArray(item)) {
@@ -156,9 +156,10 @@ export class LMStudioTranslator implements Translator {
       if (typeof item === 'object' && typeof item.response === 'string') return item.response;
       if (typeof item.content === 'string') return item.content;
       if (item.content && typeof item.content === 'object') {
-        if (typeof item.content.text === 'string') return item.content.text;
-        if (typeof item.content.content === 'string') return item.content.content;
-        const rec = this.extractFromItem(item.content);
+        const content = item.content as { [k: string]: unknown };
+        if (typeof content.text === 'string') return content.text;
+        if (typeof content.content === 'string') return content.content;
+        const rec = this.extractFromItem(content);
         if (rec) return rec;
       }
       if (Array.isArray(item.content)) {
