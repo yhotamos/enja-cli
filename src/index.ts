@@ -11,30 +11,30 @@ const program = new Command();
 program
   .name('enja')
   .usage('[arguments] [options]')
-  .description(`Description: ${pkgJson.description}`)
+  .description(pkgJson.description)
   .version(pkgJson.version, '-v, --version', 'output the current version');
 
 // 翻訳コマンド
 program
-  .argument('[text]', 'テキストを翻訳する')
+  .argument('[text]', '翻訳するテキスト（省略した場合はファイルまたは標準入力から読み込む）')
   .option('-f, --file <path>', 'ファイルを翻訳する')
   .option('-o, --output <path>', 'ファイルに出力する (デフォルト: 標準出力)')
   .option('-s, --strip-html', 'HTMLタグを除去してから翻訳する')
   .option('-N, --no-cache', 'キャッシュを使用せずに再翻訳する')
   .option('-F, --flip', '翻訳方向を逆にする (default: 英語→日本語)')
   .option('-p, --profile <name>', '使用するプロファイルを指定')
-  .option('--endpoint <url>', 'カスタム翻訳エンドポイントを指定')
-  .option('--api-key <key>', 'API キーを指定')
-  .option('--provider <name>', '翻訳プロバイダーを指定 (gas, custom, openai, gemini)')
-  .option('--model <name>', '使用するモデル名を指定 (例: gpt-4o-mini, gemini-2.5-flash-lite)')
-  .option('--allow-local-endpoint', 'ローカルエンドポイントの使用を許可する (セキュリティリスクがあるため注意)')
-  .option('--allow-private-endpoint', 'プライベートIPアドレスのエンドポイントを許可する (セキュリティリスクがあるため注意)')
-  .option('--allow-http', 'HTTP (非 TLS) エンドポイントを許可する (セキュリティリスクがあるため注意)')
+  .option('--endpoint <url>', '一時的にカスタム翻訳エンドポイントを指定（現在のプロファイルに適用）')
+  .option('--api-key <key>', '一時的に API キーを指定（現在のプロファイルに適用）')
+  .option('--provider <name>', '一時的に翻訳プロバイダーを指定 (例: gas, openai, gemini, lmstudio; 現在のプロファイルに適用)')
+  .option('--model <name>', '一時的に使用するモデル名を指定 (例: gpt-4o-mini, gemini-2.5-flash-lite; 現在のプロファイルに適用)')
+  .option('--allow-local-endpoint', 'localhost（127.0.0.1）のエンドポイントを許可する')
+  .option('--allow-private-endpoint', 'プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する')
+  .option('--allow-http', 'HTTP（非 TLS）のエンドポイントを許可する')
   .showHelpAfterError()
   .addHelpText('after',
     `\nExamples:
   $ enja "Hello, world!"     # 引数で渡された文字列を翻訳
-  $ git --help | enja        # パイプ(標準入力)で渡されたテキストを翻訳
+  $ docker --help | enja        # パイプ(標準入力)で渡されたテキストを翻訳
   $ enja -f input.txt        # ファイルからテキストを読み込んで翻訳
   $ enja -f input.txt -o output.txt  # ファイルから読み込み，翻訳結果をファイルに保存
   $ cat README.md | enja -o japanese.md  # パイプとファイル出力の組み合わせ
@@ -50,7 +50,7 @@ program
 // 履歴コマンド
 program
   .command('history')
-  .description('Description: 翻訳履歴を表示する')
+  .description('翻訳履歴を表示する')
   .argument('[id]', 'ID で履歴を表示する（完全 ID または短縮 ID）')
   .option('-d, --detail', '詳細表示')
   .option('-n, --number <number>', '表示件数', '10')
@@ -62,7 +62,7 @@ program
 program
   .command('config')
   .usage('[profile|subcommand] [subcommandArg] [options]')
-  .description('Description: 設定とプロファイルを管理する')
+  .description('設定とプロファイルを管理する')
   .argument('[profile|subcommand]', `プロファイル名またはサブコマンド
 
 Profiles:
@@ -76,7 +76,7 @@ Subcommands:
   add <profile> [options]        新しいプロファイルを作成
   `)
   .argument('[subcommandArg]', 'サブコマンド (use, rm, delete, add) の引数として指定するプロファイル名')
-  .option('--provider <name>', 'プロファイルのプロバイダーを設定 (gas, custom, openai, gemini)')
+  .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
   .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
   .option('--api-key <api-key>', 'プロファイルの API キーを設定')
   .option('--model <name>', 'プロファイルのモデルを設定')
@@ -84,10 +84,7 @@ Subcommands:
   .option('--reset', 'プロファイル全体をリセット')
   .addHelpText('after', `
   --provider Names:
-    gas                Google Apps Script の LanguageApp を使用した翻訳（デフォルト）
-    custom             カスタム翻訳エンドポイントを使用
-    openai             OpenAI API を使用した翻訳
-    gemini             Gemini API を使用した翻訳
+    gas, custom, openai, gemini, lmstudio
 
   --unset Keys:
     provider, endpoint, api-key, model
