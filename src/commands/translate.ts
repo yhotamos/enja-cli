@@ -31,9 +31,13 @@ export async function translate(text: string | undefined, options: TranslateOpti
       return;
     }
 
-    console.error('error: 入力が提供されていません');
-    console.error('使い方: enja <テキスト> または enja -f <ファイル> または パイプ入力');
-    process.exit(1);
+    throw new Error(
+      '翻訳するテキストが提供されていません\n\n' +
+      '使用例:\n' +
+      '  enja "Hello, world!"     # 引数で渡された文字列を翻訳\n' +
+      '  enja -f input.txt        # ファイルからテキストを読み込んで翻訳\n' +
+      '  cat README.md | enja     # パイプ(標準入力)で渡されたテキストを翻訳'
+    );
   } catch (error) {
     console.error(`error: ${formatErrorMessage(error)}`);
     process.exit(1);
