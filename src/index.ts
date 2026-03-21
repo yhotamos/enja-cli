@@ -71,11 +71,11 @@ Profiles:
   <profile> [options] 指定したプロファイルの設定を変更
 
 Subcommands:
-  ls, list                       全プロファイルを一覧表示
-  use <profile>                  アクティブプロファイルを変更
-  rm <profile>, delete <profile> プロファイルを削除
-  rename <from> <to>             プロファイル名を変更
-  add <profile> [options]        新しいプロファイルを作成
+  ls, list                         全プロファイルを一覧表示
+  use <profile>                    アクティブプロファイルを変更
+  rm <profile>, delete <profile>   プロファイルを削除
+  rename <oldProfile> <newProfile> プロファイル名を変更
+  add <profile> [options]          新しいプロファイルを作成
   `)
   .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
   .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
