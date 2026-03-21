@@ -78,7 +78,10 @@ export async function config(
     }
 
     // サブコマンド: rename - プロファイル名変更
-    if (profileOrSubcommand === 'rename' && subcommandArg && subcommandArg2) {
+    if (profileOrSubcommand === 'rename' && subcommandArg) {
+      if (!subcommandArg2) {
+        throw new Error('新しいプロファイル名を指定してください\n使用例:\n  enja config rename <oldProfile> <newProfile>');
+      }
       if (argsLength > 3) {
         throw new Error('引数が多すぎます\n使用例:\n  enja config rename <oldProfile> <newProfile>');
       }
