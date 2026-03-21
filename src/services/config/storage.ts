@@ -333,6 +333,9 @@ export class ConfigStorage implements ConfigManager {
 
   /** プロファイル名を変更 */
   async renameProfile(from: string, to: string): Promise<void> {
+    if (from === 'default') {
+      throw new Error(`'default' プロファイルは名前を変更できません`);
+    }
     if (from === to) return;
 
     // 名前のバリデーション
