@@ -183,18 +183,19 @@ export async function config(
     }
 
     // 不正な引数
-    console.error('error: 無効なコマンド形式です');
-    console.log('\n使用例:');
-    console.log('  enja config                                  現在の設定を表示');
-    console.log('  enja config ls                               プロファイル一覧');
-    console.log('  enja config work                             プロファイル表示');
-    console.log('  enja config use work                         プロファイル切り替え');
-    console.log('  enja config work --provider openai           設定変更');
-    console.log('  enja config add personal --provider gemini   プロファイル作成');
-    process.exit(1);
-
+    throw new Error(
+      '無効なコマンド形式です．\n' +
+      '使用例:\n' +
+      '  enja config                                  現在の設定を表示\n' +
+      '  enja config ls                               プロファイル一覧\n' +
+      '  enja config work                             プロファイル表示\n' +
+      '  enja config use work                         プロファイル切り替え\n' +
+      '  enja config work --provider openai           設定変更\n' +
+      '  enja config add personal --provider gemini   プロファイル作成\n' +
+      '  enja config rename oldProfile newProfile     プロファイル名変更\n'
+    );
   } catch (error) {
-    console.error(error instanceof Error ? `error: ${error.message}` : error);
+    console.error(`error: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 }
