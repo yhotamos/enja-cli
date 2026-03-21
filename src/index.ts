@@ -27,8 +27,8 @@ program
   .option('--api-key <key>', '一時的に API キーを指定（現在のプロファイルに適用）')
   .option('--provider <name>', '一時的に翻訳プロバイダーを指定 (例: gas, openai, gemini, lmstudio; 現在のプロファイルに適用)')
   .option('--model <name>', '一時的に使用するモデル名を指定 (例: gpt-4o-mini, gemini-2.5-flash-lite; 現在のプロファイルに適用)')
-  .option('--allow-localhost', 'localhost（127.0.0.1）のエンドポイントを許可する')
-  .option('--allow-private-network', 'プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する')
+  .option('--allow-local-endpoint', 'localhost（127.0.0.1）のエンドポイントを許可する')
+  .option('--allow-private-endpoint', 'プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する')
   .option('--allow-http', 'HTTP（非 TLS）のエンドポイントを許可する')
   .showHelpAfterError()
   .addHelpText('after',

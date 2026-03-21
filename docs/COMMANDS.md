@@ -26,8 +26,8 @@ enja [text] [options]
 - `--api-key <key>` 一時的に API キーを指定（現在のプロファイルに適用）
 - `--provider <name>` 一時的に翻訳プロバイダーを指定（例: gas, openai, gemini, lmstudio; 現在のプロファイルに適用）
 - `--model <name>` 一時的に翻訳モデルを指定（openai, gemini, lmstudioのみ; 現在のプロファイルに適用）
-- `--allow-localhost` - localhost（127.0.0.1）のエンドポイントを許可する
-- `--allow-private-network` - プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する
+- `--allow-local-endpoint` - localhost（127.0.0.1）のエンドポイントを許可する
+- `--allow-private-endpoint` - プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する
 - `--allow-http` - HTTP（非 TLS）のエンドポイントを許可する
 - `-h, --help` - ヘルプを表示
 
