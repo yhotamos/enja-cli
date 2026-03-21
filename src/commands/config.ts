@@ -6,8 +6,6 @@ import type { Command } from 'commander';
 /** 設定コマンドの実行 */
 export async function config(
   profileOrSubcommand?: string,
-  subcommandArg?: string,
-  subcommandArg2?: string,
   _options?: ConfigOptions,
   command?: Command
 ): Promise<void> {
@@ -22,6 +20,11 @@ export async function config(
   const options: ConfigOptions = { ...parentOpts, ...commandOpts };
 
   try {
+    // ヘルプに表示したくないため，追加位置引数は `command.args` から取得する
+    const argsFromCommand = command?.args ?? [];
+    const argsLength = argsFromCommand.length;
+    const [, subcommandArg, subcommandArg2] = argsFromCommand;
+
     // サブコマンド: ls - プロファイル一覧
     if (profileOrSubcommand === 'ls' || profileOrSubcommand === 'list') {
       const profiles = await storage.listProfiles();
@@ -40,6 +43,9 @@ export async function config(
 
     // サブコマンド: use - プロファイル切り替え
     if (profileOrSubcommand === 'use' && subcommandArg) {
+      if (argsLength > 2) {
+        throw new Error('引数が多すぎます\n使用例:\n  enja config use <profile>');
+      }
       await storage.useProfile(subcommandArg);
       console.log(`${kleur.green('✔')} アクティブプロファイルを '${subcommandArg}' に設定しました`);
       return;
@@ -47,6 +53,9 @@ export async function config(
 
     // サブコマンド: rm - プロファイル削除
     if ((profileOrSubcommand === 'rm' || profileOrSubcommand === 'delete') && subcommandArg) {
+      if (argsLength > 2) {
+        throw new Error('引数が多すぎます\n使用例:\n  enja config rm <profile>');
+      }
       await storage.deleteProfile(subcommandArg);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を削除しました`);
       return;
@@ -54,6 +63,9 @@ export async function config(
 
     // サブコマンド: add - プロファイル作成
     if (profileOrSubcommand === 'add' && subcommandArg) {
+      if (argsLength > 2) {
+        throw new Error('引数が多すぎます\n使用例:\n  enja config add <profile> [options]');
+      }
       const profileConfig: Partial<ConfigOptions> = {};
       if (options?.provider) profileConfig.provider = options.provider;
       if (options?.endpoint) profileConfig.endpoint = options.endpoint;
@@ -67,6 +79,9 @@ export async function config(
 
     // サブコマンド: rename - プロファイル名変更
     if (profileOrSubcommand === 'rename' && subcommandArg && subcommandArg2) {
+      if (argsLength > 3) {
+        throw new Error('引数が多すぎます\n使用例:\n  enja config rename <oldProfile> <newProfile>');
+      }
       await storage.renameProfile(subcommandArg, subcommandArg2);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を '${subcommandArg2}' に変更しました`);
       return;
@@ -76,11 +91,12 @@ export async function config(
     if (!profileOrSubcommand) {
       // プロファイル名なしでオプションが指定された場合はエラー
       if (options?.provider || options?.endpoint || options?.apiKey || options?.model || options?.reset || options?.unset) {
-        console.error('error: プロファイル名を指定してください');
-        console.log('\n使用例:');
-        console.log('  enja config work --provider openai           プロファイルの設定を変更');
-        console.log('  enja config add personal --provider gemini   プロファイルを作成');
-        process.exit(1);
+        throw new Error(
+          'プロファイル名を指定してください\n' +
+          '使用例:\n' +
+          '  enja config work --provider openai           プロファイルの設定を変更\n' +
+          '  enja config add personal --provider gemini   プロファイルを作成'
+        );
       }
 
       const activeProfile = await storage.getActiveProfileName();
