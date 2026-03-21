@@ -72,10 +72,7 @@ export async function history(id: string, options: HistoryOptions): Promise<void
       }
 
       if (matches.length > 1) {
-        console.error('error: 指定された短縮IDは複数の履歴に一致しました．完全なIDを指定してください．');
-        const output = formatHistory(matches, false);
-        console.error(output);
-        process.exit(1);
+        throw new Error(`指定された短縮IDは複数の履歴に一致しました．完全なIDを指定してください．\n${formatHistory(matches, false)}`);
       }
 
       // 単一マッチなら削除
