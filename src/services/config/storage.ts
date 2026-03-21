@@ -40,7 +40,7 @@ const DEFAULT_APP_CONFIG: AppConfig = {
 
 const VALID_PROVIDERS: TranslatorProvider[] = ['gas', 'custom', 'openai', 'gemini', 'lmstudio'];
 
-const RESERVED_WORDS = ['ls', 'list', 'use', 'rm', 'delete', 'add', 'rename', 'provider', 'endpoint', 'api-key', 'model'];
+const RESERVED_WORDS = ['ls', 'list', 'use', 'rm', 'delete', 'add', 'rename', 'provider', 'endpoint', 'api-key', 'model', 'default'];
 
 /** 設定の永続化を管理するクラス */
 export class ConfigStorage implements ConfigManager {
