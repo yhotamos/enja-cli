@@ -2,6 +2,8 @@
 
 ## `enja` コマンド
 
+テキストを翻訳する
+
 ### 使い方
 
 ```bash
@@ -10,7 +12,7 @@ enja [text] [options]
 
 ### Arguments
 
-- `text` - テキストを翻訳する
+- `text` - 翻訳するテキスト（省略した場合は標準入力から読み込む）
 
 ### Options
 
@@ -20,10 +22,13 @@ enja [text] [options]
 - `-N, --no-cache` - キャッシュを使用せずに再翻訳する
 - `-F, --flip` - 翻訳方向を逆にする (デフォルト: 英語 → 日本語)
 - `-p, --profile <name>` - 使用するプロファイルを指定
-- `--endpoint <url>` - カスタム翻訳エンドポイントを指定
-- `--api-key <key>` - API キーを指定
-- `--provider <name>` - 翻訳プロバイダーを指定 (gas, custom, openai, gemini)
-- `--model <name>` - 翻訳モデルを指定 (openai, gemini のみ)
+- `--endpoint <url>` 一時的にカスタム翻訳エンドポイントを指定（現在のプロファイルに適用）
+- `--api-key <key>` 一時的に API キーを指定（現在のプロファイルに適用）
+- `--provider <name>` 一時的に翻訳プロバイダーを指定（例: gas, openai, gemini, lmstudio; 現在のプロファイルに適用）
+- `--model <name>` 一時的に翻訳モデルを指定（openai, gemini, lmstudioのみ; 現在のプロファイルに適用）
+- `--allow-localhost` - localhost（127.0.0.1）のエンドポイントを許可する
+- `--allow-private-network` - プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する
+- `--allow-http` - HTTP（非 TLS）のエンドポイントを許可する
 - `-h, --help` - ヘルプを表示
 
 ### Examples
@@ -33,7 +38,7 @@ enja [text] [options]
 enja "Hello, world!"
 
 # パイプで渡されたテキストを翻訳
-git --help | enja
+docker --help | enja
 
 # ファイルから読み込んで翻訳
 enja -f input.txt
@@ -135,12 +140,10 @@ enja config [profile|subcommand] [subcommandArg] [options]
 - `profile|subcommand` - プロファイル名またはサブコマンド
 
   Profiles:
-
   - `<profile>` - 指定したプロファイルの詳細を表示
   - `<profile> [options]` - 指定したプロファイルの設定を変更
 
   Subcommands:
-
   - `ls`, `list` - 全プロファイルを一覧表示
   - `use <profile>` - アクティブプロファイルを変更
   - `rm <profile>`, `delete <profile>` - プロファイルを削除
@@ -153,7 +156,7 @@ enja config [profile|subcommand] [subcommandArg] [options]
 `--provider`, `--endpoint`, `--api-key`, `--model` はプロファイル名または `add` と一緒に使用します．  
 `--unset`, `--reset` はプロファイル名と一緒に使用します．
 
-- `--provider <name>` - プロファイルのプロバイダーを設定 (gas, custom, openai, gemini)
+- `--provider <name>` - プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)
 - `--endpoint <url>` - プロファイルのエンドポイントを設定
 - `--api-key <api-key>` - プロファイルの API キーを設定
 - `--model <name>` - プロファイルのモデルを設定
@@ -167,6 +170,7 @@ enja config [profile|subcommand] [subcommandArg] [options]
 - `custom` - カスタム翻訳エンドポイントを使用
 - `openai` - OpenAI API を使用した翻訳
 - `gemini` - Gemini API を使用した翻訳
+- `lmstudio` - LM Studio API を使用した翻訳
 
 #### `--unset` Keys
 
