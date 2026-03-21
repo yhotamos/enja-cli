@@ -30,7 +30,6 @@ program
   .option('--allow-local-endpoint', 'localhost（127.0.0.1）のエンドポイントを許可する')
   .option('--allow-private-endpoint', 'プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する')
   .option('--allow-http', 'HTTP（非 TLS）のエンドポイントを許可する')
-  .showHelpAfterError()
   .addHelpText('after',
     `\nExamples:
   $ enja "Hello, world!"     # 引数で渡された文字列を翻訳

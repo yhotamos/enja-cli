@@ -27,6 +27,10 @@ export async function config(
 
     // サブコマンド: ls - プロファイル一覧
     if (profileOrSubcommand === 'ls' || profileOrSubcommand === 'list') {
+      if (argsLength > 1) {
+        throw new Error('引数が多すぎます\n\n使用例:\n  enja config ls');
+      }
+
       const profiles = await storage.listProfiles();
       const activeProfile = await storage.getActiveProfileName();
 
@@ -42,9 +46,12 @@ export async function config(
     }
 
     // サブコマンド: use - プロファイル切り替え
-    if (profileOrSubcommand === 'use' && subcommandArg) {
+    if (profileOrSubcommand === 'use') {
+      if (!subcommandArg) {
+        throw new Error('プロファイル名を指定してください\n\n使用例:\n  enja config use <profile>');
+      }
       if (argsLength > 2) {
-        throw new Error('引数が多すぎます\n使用例:\n  enja config use <profile>');
+        throw new Error('引数が多すぎます\n\n使用例:\n  enja config use <profile>');
       }
       await storage.useProfile(subcommandArg);
       console.log(`${kleur.green('✔')} アクティブプロファイルを '${subcommandArg}' に設定しました`);
@@ -52,9 +59,12 @@ export async function config(
     }
 
     // サブコマンド: rm - プロファイル削除
-    if ((profileOrSubcommand === 'rm' || profileOrSubcommand === 'delete') && subcommandArg) {
+    if (profileOrSubcommand === 'rm' || profileOrSubcommand === 'delete') {
+      if (!subcommandArg) {
+        throw new Error('プロファイル名を指定してください\n\n使用例:\n  enja config rm <profile>');
+      }
       if (argsLength > 2) {
-        throw new Error('引数が多すぎます\n使用例:\n  enja config rm <profile>');
+        throw new Error('引数が多すぎます\n\n使用例:\n  enja config rm <profile>');
       }
       await storage.deleteProfile(subcommandArg);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を削除しました`);
@@ -62,9 +72,12 @@ export async function config(
     }
 
     // サブコマンド: add - プロファイル作成
-    if (profileOrSubcommand === 'add' && subcommandArg) {
+    if (profileOrSubcommand === 'add') {
+      if (!subcommandArg) {
+        throw new Error('プロファイル名を指定してください\n\n使用例:\n  enja config add <profile> [options]');
+      }
       if (argsLength > 2) {
-        throw new Error('引数が多すぎます\n使用例:\n  enja config add <profile> [options]');
+        throw new Error('引数が多すぎます\n\n使用例:\n  enja config add <profile> [options]');
       }
       const profileConfig: Partial<ConfigOptions> = {};
       if (options?.provider) profileConfig.provider = options.provider;
@@ -78,12 +91,15 @@ export async function config(
     }
 
     // サブコマンド: rename - プロファイル名変更
-    if (profileOrSubcommand === 'rename' && subcommandArg) {
+    if (profileOrSubcommand === 'rename') {
+      if (!subcommandArg) {
+        throw new Error('変更前のプロファイル名を指定してください\n\n使用例:\n  enja config rename <oldProfile> <newProfile>');
+      }
       if (!subcommandArg2) {
-        throw new Error('新しいプロファイル名を指定してください\n使用例:\n  enja config rename <oldProfile> <newProfile>');
+        throw new Error('新しいプロファイル名を指定してください\n\n使用例:\n  enja config rename <oldProfile> <newProfile>');
       }
       if (argsLength > 3) {
-        throw new Error('引数が多すぎます\n使用例:\n  enja config rename <oldProfile> <newProfile>');
+        throw new Error('引数が多すぎます\n\n使用例:\n  enja config rename <oldProfile> <newProfile>');
       }
       await storage.renameProfile(subcommandArg, subcommandArg2);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を '${subcommandArg2}' に変更しました`);
@@ -95,7 +111,7 @@ export async function config(
       // プロファイル名なしでオプションが指定された場合はエラー
       if (options?.provider || options?.endpoint || options?.apiKey || options?.model || options?.reset || options?.unset) {
         throw new Error(
-          'プロファイル名を指定してください\n' +
+          'プロファイル名を指定してください\n\n' +
           '使用例:\n' +
           '  enja config work --provider openai           プロファイルの設定を変更\n' +
           '  enja config add personal --provider gemini   プロファイルを作成'
@@ -167,18 +183,23 @@ export async function config(
     }
 
     // 不正な引数
-    console.error('error: 無効なコマンド形式です');
-    console.log('\n使用例:');
-    console.log('  enja config                                  現在の設定を表示');
-    console.log('  enja config ls                               プロファイル一覧');
-    console.log('  enja config work                             プロファイル表示');
-    console.log('  enja config use work                         プロファイル切り替え');
-    console.log('  enja config work --provider openai           設定変更');
-    console.log('  enja config add personal --provider gemini   プロファイル作成');
-    process.exit(1);
-
+    throw new Error(
+      '無効なコマンド形式です．\n\n' +
+      '使用例:\n' +
+      '  enja config                                  現在の設定を表示\n' +
+      '  enja config ls                               プロファイル一覧\n' +
+      '  enja config work                             プロファイル表示\n' +
+      '  enja config use work                         プロファイル切り替え\n' +
+      '  enja config work --provider openai           設定変更\n' +
+      '  enja config add personal --provider gemini   プロファイル作成\n' +
+      '  enja config rename oldProfile newProfile     プロファイル名変更\n'
+    );
   } catch (error) {
-    console.error(error instanceof Error ? `error: ${error.message}` : error);
+    if (error instanceof Error) {
+      console.error(`error: ${error.message}`);
+    } else {
+      console.error(error);
+    }
     process.exit(1);
   }
 }
