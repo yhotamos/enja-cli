@@ -27,6 +27,10 @@ export async function config(
 
     // サブコマンド: ls - プロファイル一覧
     if (profileOrSubcommand === 'ls' || profileOrSubcommand === 'list') {
+      if (argsLength > 1) {
+        throw new Error('引数が多すぎます\n使用例:\n  enja config ls');
+      }
+
       const profiles = await storage.listProfiles();
       const activeProfile = await storage.getActiveProfileName();
 
@@ -42,7 +46,10 @@ export async function config(
     }
 
     // サブコマンド: use - プロファイル切り替え
-    if (profileOrSubcommand === 'use' && subcommandArg) {
+    if (profileOrSubcommand === 'use') {
+      if (!subcommandArg) {
+        throw new Error('プロファイル名を指定してください\n使用例:\n  enja config use <profile>');
+      }
       if (argsLength > 2) {
         throw new Error('引数が多すぎます\n使用例:\n  enja config use <profile>');
       }
@@ -52,7 +59,10 @@ export async function config(
     }
 
     // サブコマンド: rm - プロファイル削除
-    if ((profileOrSubcommand === 'rm' || profileOrSubcommand === 'delete') && subcommandArg) {
+    if (profileOrSubcommand === 'rm' || profileOrSubcommand === 'delete') {
+      if (!subcommandArg) {
+        throw new Error('プロファイル名を指定してください\n使用例:\n  enja config rm <profile>');
+      }
       if (argsLength > 2) {
         throw new Error('引数が多すぎます\n使用例:\n  enja config rm <profile>');
       }
@@ -62,7 +72,10 @@ export async function config(
     }
 
     // サブコマンド: add - プロファイル作成
-    if (profileOrSubcommand === 'add' && subcommandArg) {
+    if (profileOrSubcommand === 'add') {
+      if (!subcommandArg) {
+        throw new Error('プロファイル名を指定してください\n使用例:\n  enja config add <profile> [options]');
+      }
       if (argsLength > 2) {
         throw new Error('引数が多すぎます\n使用例:\n  enja config add <profile> [options]');
       }
@@ -78,7 +91,10 @@ export async function config(
     }
 
     // サブコマンド: rename - プロファイル名変更
-    if (profileOrSubcommand === 'rename' && subcommandArg) {
+    if (profileOrSubcommand === 'rename') {
+      if (!subcommandArg) {
+        throw new Error('変更前のプロファイル名を指定してください\n使用例:\n  enja config rename <oldProfile> <newProfile>');
+      }
       if (!subcommandArg2) {
         throw new Error('新しいプロファイル名を指定してください\n使用例:\n  enja config rename <oldProfile> <newProfile>');
       }
