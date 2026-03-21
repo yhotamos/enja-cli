@@ -61,8 +61,9 @@ program
 // 設定コマンド
 program
   .command('config')
-  .usage('[profile|subcommand] [subcommandArg] [options]')
+  .usage('[profile|subcommand] [options]')
   .description('設定とプロファイルを管理する')
+  .allowExcessArguments(true)
   .argument('[profile|subcommand]', `プロファイル名またはサブコマンド
 
 Profiles:
@@ -70,12 +71,12 @@ Profiles:
   <profile> [options] 指定したプロファイルの設定を変更
 
 Subcommands:
-  ls, list                       全プロファイルを一覧表示
-  use <profile>                  アクティブプロファイルを変更
-  rm <profile>, delete <profile> プロファイルを削除
-  add <profile> [options]        新しいプロファイルを作成
+  ls, list                         全プロファイルを一覧表示
+  use <profile>                    アクティブプロファイルを変更
+  rm <profile>, delete <profile>   プロファイルを削除
+  rename <oldProfile> <newProfile> プロファイル名を変更
+  add <profile> [options]          新しいプロファイルを作成
   `)
-  .argument('[subcommandArg]', 'サブコマンド (use, rm, delete, add) の引数として指定するプロファイル名')
   .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
   .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
   .option('--api-key <api-key>', 'プロファイルの API キーを設定')
