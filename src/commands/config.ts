@@ -7,6 +7,7 @@ import type { Command } from 'commander';
 export async function config(
   profileOrSubcommand?: string,
   subcommandArg?: string,
+  subcommandArg2?: string,
   _options?: ConfigOptions,
   command?: Command
 ): Promise<void> {
@@ -61,6 +62,13 @@ export async function config(
 
       await storage.createProfile(subcommandArg, profileConfig);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を作成しました`);
+      return;
+    }
+
+    // サブコマンド: rename - プロファイル名変更
+    if (profileOrSubcommand === 'rename' && subcommandArg && subcommandArg2) {
+      await storage.renameProfile(subcommandArg, subcommandArg2);
+      console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を '${subcommandArg2}' に変更しました`);
       return;
     }
 

@@ -73,9 +73,11 @@ Subcommands:
   ls, list                       全プロファイルを一覧表示
   use <profile>                  アクティブプロファイルを変更
   rm <profile>, delete <profile> プロファイルを削除
+  rename <from> <to>             プロファイル名を変更
   add <profile> [options]        新しいプロファイルを作成
   `)
-  .argument('[subcommandArg]', 'サブコマンド (use, rm, delete, add) の引数として指定するプロファイル名')
+  .argument('[subcommandArg]', 'サブコマンド (use, rm, delete, add, rename) の引数として指定するプロファイル名')
+  .argument('[subcommandArg2]', "サブコマンドの追加引数（rename の場合は新しいプロファイル名）")
   .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
   .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
   .option('--api-key <api-key>', 'プロファイルの API キーを設定')
