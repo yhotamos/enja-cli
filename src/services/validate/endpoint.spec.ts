@@ -8,6 +8,7 @@ describe('validateEndpoint', () => {
     expect(validateEndpoint('https://example.com?query=1')).toBe(true);
     expect(validateEndpoint('https://example.com:443')).toBe(true);
     expect(validateEndpoint('HTTPS://example.com')).toBe(true);
+    expect(validateEndpoint('HTTP://example.com', { allowHttp: true })).toBe(true);
   });
 
   it('rejects plain http by default and allows with option', () => {
@@ -70,6 +71,8 @@ describe('validateEndpoint', () => {
         allowHttp: true,
       })
     ).toBe(true);
+
+    expect(validateEndpoint('http://localhost:3000', { allowLocalEndpoint: true })).toBe(true);
   });
 
   // 不正入力
