@@ -98,63 +98,6 @@ export class ConfigStorage implements ConfigManager {
     return await this.readConfig();
   }
 
-  /** 設定を保存 */
-  async set(key: string, value: string): Promise<void> {
-    const config = await this.readConfig();
-
-    switch (key) {
-      case 'endpoint':
-        config.endpoint = value;
-        break;
-      case 'api-key':
-        config.apiKey = value;
-        break;
-      case 'provider':
-        if (!VALID_PROVIDERS.includes(value as TranslatorProvider)) {
-          throw new Error(`無効なプロバイダー (${value}): ${VALID_PROVIDERS.join(', ')} のいずれかを指定してください`);
-        }
-        config.provider = value as TranslatorProvider;
-        break;
-      case 'model':
-        config.model = value;
-        break;
-      default:
-        throw new Error(`無効な設定キー (${key})`);
-    }
-
-    await this.writeConfig(config);
-  }
-
-  /** 指定したキーを削除（デフォルトに戻す） */
-  async unset(key: string): Promise<void> {
-    const config = await this.readConfig();
-    const provider = config.provider || 'gas';
-    const defaultConfig = DEFAULT_PROFILES_BY_PROVIDER[provider] as ConfigProfile;
-    switch (key) {
-      case 'endpoint':
-        config.endpoint = defaultConfig.endpoint;
-        break;
-      case 'api-key':
-        config.apiKey = defaultConfig.apiKey;
-        break;
-      case 'provider':
-        config.provider = defaultConfig.provider;
-        break;
-      case 'model':
-        config.model = defaultConfig.model;
-        break;
-      default:
-        throw new Error(`無効な設定キー (${key})`);
-    }
-
-    await this.writeConfig(config);
-  }
-
-  /** 設定をリセット */
-  async reset(): Promise<void> {
-    await this.writeConfig({ ...DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile });
-  }
-
   // プロファイル管理メソッド
 
   /** アクティブプロファイル名を取得 */
