@@ -60,20 +60,21 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
     throw new Error('エンドポイント URL が不正です');
   }
 
+  const protocol = url.protocol;
+
+  if (protocol !== 'https:' && protocol !== 'http:') {
+    throw new Error('エンドポイント URL は http:// または https:// で始まる必要があります');
+  }
+
   // URL に user:pass@host の形式で認証情報が含まれていないか確認
   if (url.username || url.password) {
     throw new Error('エンドポイント URL に認証情報を埋め込むことは許可されていません');
   }
 
-  const protocol = url.protocol;
   const hostname = url.hostname;
 
   if (ALWAYS_BLOCK_HOSTS.has(hostname)) {
     throw new Error('指定されたエンドポイントはセキュリティ上の理由により許可されていません');
-  }
-
-  if (protocol !== 'https:' && protocol !== 'http:') {
-    throw new Error('エンドポイント URL は http:// または https:// で始まる必要があります');
   }
 
   const ipv4 = parseIPv4Octets(hostname);
