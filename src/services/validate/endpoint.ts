@@ -60,6 +60,11 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
     throw new Error('エンドポイント URL が不正です');
   }
 
+  // URL に user:pass@host の形式で認証情報が含まれていないか確認
+  if (url.username || url.password) {
+    throw new Error('エンドポイント URL に認証情報を埋め込むことは許可されていません');
+  }
+
   const protocol = url.protocol;
   const hostname = url.hostname;
 
