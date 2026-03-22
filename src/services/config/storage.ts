@@ -275,36 +275,36 @@ export class ConfigStorage implements ConfigManager {
   }
 
   /** プロファイル名を変更 */
-  async renameProfile(from: string, to: string): Promise<void> {
-    if (from === 'default') {
+  async renameProfile(oldProfileName: string, newProfileName: string): Promise<void> {
+    if (oldProfileName === 'default') {
       throw new Error(`'default' プロファイルは名前を変更できません`);
     }
-    if (from === to) return;
+    if (oldProfileName === newProfileName) return;
 
     // 名前のバリデーション
-    if (RESERVED_WORDS.includes(to.toLowerCase())) {
-      throw new Error(`プロファイル名 '${to}' は予約語のため使用できません`);
+    if (RESERVED_WORDS.includes(newProfileName.toLowerCase())) {
+      throw new Error(`プロファイル名 '${newProfileName}' は予約語のため使用できません`);
     }
-    if (!to.match(/^[a-zA-Z0-9_-]+$/)) {
-      throw new Error(`無効なプロファイル名 (${to}): 英数字，ハイフン，アンダースコアのみ使用できます`);
+    if (!newProfileName.match(/^[a-zA-Z0-9_-]+$/)) {
+      throw new Error(`無効なプロファイル名 (${newProfileName}): 英数字，ハイフン，アンダースコアのみ使用できます`);
     }
 
     const appConfig = await this.readAppConfig();
 
-    if (!appConfig.profiles[from]) {
-      throw new Error(`プロファイル '${from}' が見つかりません`);
+    if (!appConfig.profiles[oldProfileName]) {
+      throw new Error(`プロファイル '${oldProfileName}' が見つかりません`);
     }
-    if (appConfig.profiles[to]) {
-      throw new Error(`プロファイル '${to}' は既に存在します`);
+    if (appConfig.profiles[newProfileName]) {
+      throw new Error(`プロファイル '${newProfileName}' は既に存在します`);
     }
 
     // 実際のリネーム操作
-    appConfig.profiles[to] = appConfig.profiles[from];
-    delete appConfig.profiles[from];
+    appConfig.profiles[newProfileName] = appConfig.profiles[oldProfileName];
+    delete appConfig.profiles[oldProfileName];
 
     // アクティブプロファイルの更新
-    if (appConfig.activeProfile === from) {
-      appConfig.activeProfile = to;
+    if (appConfig.activeProfile === oldProfileName) {
+      appConfig.activeProfile = newProfileName;
     }
 
     await this.writeAppConfig(appConfig);
