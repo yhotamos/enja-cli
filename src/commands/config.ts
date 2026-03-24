@@ -205,10 +205,14 @@ export async function config(
       '  enja config                                  現在の設定を表示\n' +
       '  enja config ls                               プロファイル一覧\n' +
       '  enja config work                             プロファイル表示\n' +
-      '  enja config use work                         プロファイル切り替え\n' +
       '  enja config work --provider openai           設定変更\n' +
+      '  enja config use work                         プロファイル切り替え\n' +
       '  enja config add personal --provider gemini   プロファイル作成\n' +
-      '  enja config rename oldProfile newProfile     プロファイル名変更\n'
+      '  enja config rename oldProfile newProfile     プロファイル名変更\n' +
+      '  enja config copy srcProfile destProfile      プロファイル複製\n' +
+      '  enja config rm oldProfile                    プロファイル削除\n' +
+      '  enja config work --reset                     プロファイルリセット\n' +
+      '  enja config work --unset api-key             設定リセット\n'
     );
   } catch (error) {
     if (error instanceof Error) {
