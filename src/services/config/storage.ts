@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import type { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.js';
 import type { ConfigManager } from './index.js';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
+import { validateProfileName } from '../validate/profile.js';
 import { LMStudioTranslator } from '../translator/lmstudio.js';
 import { GASTranslator } from '../translator/gas.js';
 import { OpenAITranslator } from '../translator/openai.js';
@@ -39,8 +40,6 @@ const DEFAULT_APP_CONFIG: AppConfig = {
 };
 
 const VALID_PROVIDERS: TranslatorProvider[] = ['gas', 'custom', 'openai', 'gemini', 'lmstudio'];
-
-const RESERVED_WORDS = ['ls', 'list', 'use', 'rm', 'delete', 'add', 'rename', 'copy', 'provider', 'endpoint', 'api-key', 'model', 'default'];
 
 /** 設定の永続化を管理するクラス */
 export class ConfigStorage implements ConfigManager {
@@ -318,19 +317,5 @@ export class ConfigStorage implements ConfigManager {
     appConfig.profiles[targetProfileName] = { ...appConfig.profiles[sourceProfileName] };
 
     await this.writeAppConfig(appConfig);
-  }
-}
-
-/**
- * プロファイル名のバリデーション
- * @param name プロファイル名
- * @throws 無効なプロファイル名の場合にエラーをスロー
- */
-function validateProfileName(name: string): void {
-  if (RESERVED_WORDS.includes(name.toLowerCase())) {
-    throw new Error(`プロファイル名 '${name}' は予約語のため使用できません`);
-  }
-  if (!name.match(/^[a-zA-Z0-9_-]+$/)) {
-    throw new Error(`無効なプロファイル名 (${name}): 英数字，ハイフン，アンダースコアのみ使用できます`);
   }
 }
