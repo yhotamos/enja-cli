@@ -40,7 +40,7 @@ const DEFAULT_APP_CONFIG: AppConfig = {
 
 const VALID_PROVIDERS: TranslatorProvider[] = ['gas', 'custom', 'openai', 'gemini', 'lmstudio'];
 
-const RESERVED_WORDS = ['ls', 'list', 'use', 'rm', 'delete', 'add', 'rename', 'provider', 'endpoint', 'api-key', 'model', 'default'];
+const RESERVED_WORDS = ['ls', 'list', 'use', 'rm', 'delete', 'add', 'rename', 'copy', 'provider', 'endpoint', 'api-key', 'model', 'default'];
 
 /** 設定の永続化を管理するクラス */
 export class ConfigStorage implements ConfigManager {
@@ -306,6 +306,34 @@ export class ConfigStorage implements ConfigManager {
     if (appConfig.activeProfile === oldProfileName) {
       appConfig.activeProfile = newProfileName;
     }
+
+    await this.writeAppConfig(appConfig);
+  }
+
+  /** プロファイルをコピー */
+  async copyProfile(sourceProfileName: string, targetProfileName: string): Promise<void> {
+    if (sourceProfileName === targetProfileName) {
+      throw new Error(`コピー元とコピー先のプロファイル名が同じです`);
+    }
+
+    // 名前のバリデーション
+    if (RESERVED_WORDS.includes(targetProfileName.toLowerCase())) {
+      throw new Error(`プロファイル名 '${targetProfileName}' は予約語のため使用できません`);
+    }
+    if (!targetProfileName.match(/^[a-zA-Z0-9_-]+$/)) {
+      throw new Error(`無効なプロファイル名 (${targetProfileName}): 英数字，ハイフン，アンダースコアのみ使用できます`);
+    }
+
+    const appConfig = await this.readAppConfig();
+
+    if (!appConfig.profiles[sourceProfileName]) {
+      throw new Error(`プロファイル '${sourceProfileName}' が見つかりません`);
+    }
+    if (appConfig.profiles[targetProfileName]) {
+      throw new Error(`プロファイル '${targetProfileName}' は既に存在します`);
+    }
+
+    appConfig.profiles[targetProfileName] = { ...appConfig.profiles[sourceProfileName] };
 
     await this.writeAppConfig(appConfig);
   }

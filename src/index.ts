@@ -36,8 +36,7 @@ program
     $ docker --help | enja     # 標準入力を翻訳
     $ enja -f input.txt -o output.txt  # ファイル入出力
     $ enja "Hello" -p work     # プロファイルを指定して翻訳
-    $ enja "Hello" --provider openai --api-key YOUR_API_KEY  # 一時的にプロバイダーを指定して翻訳
-    `
+    $ enja "Hello" --provider openai --api-key YOUR_API_KEY  # 一時的にプロバイダーを指定して翻訳`
   )
   .addHelpText('afterAll', `\nEnja CLI v${pkgJson.version}`)
   .addHelpText('afterAll', 'Copyright (c) 2025-2026 yhotta240')
@@ -72,6 +71,7 @@ Subcommands:
   use <profile>           アクティブプロファイルを変更
   add <profile> [options] 新しいプロファイルを作成
   rename <old> <new>      プロファイル名を変更
+  copy <source> <target>  プロファイルをコピー
   delete, rm <profile>    プロファイルを削除
   `)
   .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
@@ -98,6 +98,7 @@ Examples:
   $ enja config use work                        work をアクティブに設定
   $ enja config work --provider openai          work の provider を設定
   $ enja config add personal --provider gemini  personal プロファイルを作成
+  $ enja config copy personal work              personal プロファイルを work にコピー
   $ enja "Hello" -p work                        work プロファイルで翻訳`
   )
   .action(config);

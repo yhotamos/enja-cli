@@ -106,6 +106,22 @@ export async function config(
       return;
     }
 
+    // サブコマンド: copy - プロファイルコピー
+    if (profileOrSubcommand === 'copy') {
+      if (!subcommandArg) {
+        throw new Error('コピー元のプロファイル名を指定してください\n\n使用例:\n  enja config copy <sourceProfile> <targetProfile>');
+      }
+      if (!subcommandArg2) {
+        throw new Error('コピー先のプロファイル名を指定してください\n\n使用例:\n  enja config copy <sourceProfile> <targetProfile>');
+      }
+      if (argsLength > 3) {
+        throw new Error('引数が多すぎます\n\n使用例:\n  enja config copy <sourceProfile> <targetProfile>');
+      }
+      await storage.copyProfile(subcommandArg, subcommandArg2);
+      console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を '${subcommandArg2}' にコピーしました`);
+      return;
+    }
+
     // 引数なし: 現在のプロファイルを表示
     if (!profileOrSubcommand) {
       // プロファイル名なしでオプションが指定された場合はエラー

@@ -12,4 +12,5 @@ export interface ConfigManager {
   unsetProfileConfig(profileName: string, key: string): Promise<void>;
   resetProfile(profileName: string): Promise<void>;
   renameProfile(oldProfileName: string, newProfileName: string): Promise<void>;
+  copyProfile(sourceProfileName: string, targetProfileName: string): Promise<void>;
 }
