@@ -32,14 +32,12 @@ program
   .option('--allow-http', 'HTTP（非 TLS）のエンドポイントを許可する')
   .addHelpText('after',
     `\nExamples:
-  $ enja "Hello, world!"     # 引数で渡された文字列を翻訳
-  $ docker --help | enja        # パイプ(標準入力)で渡されたテキストを翻訳
-  $ enja -f input.txt        # ファイルからテキストを読み込んで翻訳
-  $ enja -f input.txt -o output.txt  # ファイルから読み込み，翻訳結果をファイルに保存
-  $ cat README.md | enja -o japanese.md  # パイプとファイル出力の組み合わせ
-  $ curl -s https://example.com | enja -s  # HTMLタグを除去して翻訳
-  $ enja "Hello" -p work     # work プロファイルを使用して翻訳
-  $ enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY  # OpenAI API を使用して翻訳`
+    $ enja "Hello, world!"     # 文字列を翻訳
+    $ docker --help | enja     # 標準入力を翻訳
+    $ enja -f input.txt -o output.txt  # ファイル入出力
+    $ enja "Hello" -p work     # プロファイル指定
+    $ enja "Hello" --provider openai --api-key YOUR_API_KEY  # プロバイダー指定
+    `
   )
   .addHelpText('afterAll', `\nEnja CLI v${pkgJson.version}`)
   .addHelpText('afterAll', 'Copyright (c) 2025-2026 yhotta240')
@@ -70,11 +68,11 @@ Profiles:
   <profile> [options] 指定したプロファイルの設定を変更
 
 Subcommands:
-  ls, list                         全プロファイルを一覧表示
-  use <profile>                    アクティブプロファイルを変更
-  rm <profile>, delete <profile>   プロファイルを削除
-  rename <oldProfile> <newProfile> プロファイル名を変更
-  add <profile> [options]          新しいプロファイルを作成
+  list, ls                全プロファイルを一覧表示
+  use <profile>           アクティブプロファイルを変更
+  add <profile> [options] 新しいプロファイルを作成
+  rename <old> <new>      プロファイル名を変更
+  delete, rm <profile>    プロファイルを削除
   `)
   .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
   .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
@@ -99,7 +97,6 @@ Examples:
   $ enja config work                               work プロファイルを表示
   $ enja config use work                           work をアクティブに設定
   $ enja config work --provider openai             work の provider を設定
-  $ enja config work --provider openai --model gpt-4o  複数設定を同時変更
   $ enja config add personal --provider gemini     personal プロファイルを作成
   $ enja "Hello" -p work                           work プロファイルで翻訳`
   )
