@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import type { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.js';
 import type { ConfigManager } from './index.js';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
+import { validateProfileName } from '../validate/profile.js';
 import { LMStudioTranslator } from '../translator/lmstudio.js';
 import { GASTranslator } from '../translator/gas.js';
 import { OpenAITranslator } from '../translator/openai.js';
@@ -39,8 +40,6 @@ const DEFAULT_APP_CONFIG: AppConfig = {
 };
 
 const VALID_PROVIDERS: TranslatorProvider[] = ['gas', 'custom', 'openai', 'gemini', 'lmstudio'];
-
-const RESERVED_WORDS = ['ls', 'list', 'use', 'rm', 'delete', 'add', 'rename', 'provider', 'endpoint', 'api-key', 'model', 'default'];
 
 /** 設定の永続化を管理するクラス */
 export class ConfigStorage implements ConfigManager {
@@ -124,14 +123,8 @@ export class ConfigStorage implements ConfigManager {
 
   /** プロファイルを作成 */
   async createProfile(name: string, config?: Partial<ConfigProfile>): Promise<void> {
-    // 予約語チェック
-    if (RESERVED_WORDS.includes(name.toLowerCase())) {
-      throw new Error(`プロファイル名 '${name}' は予約語のため使用できません`);
-    }
 
-    if (!name.match(/^[a-zA-Z0-9_-]+$/)) {
-      throw new Error(`無効なプロファイル名 (${name}): 英数字，ハイフン，アンダースコアのみ使用できます`);
-    }
+    validateProfileName(name);
 
     // プロバイダーのバリデーション
     if (config?.provider) {
@@ -281,13 +274,7 @@ export class ConfigStorage implements ConfigManager {
     }
     if (oldProfileName === newProfileName) return;
 
-    // 名前のバリデーション
-    if (RESERVED_WORDS.includes(newProfileName.toLowerCase())) {
-      throw new Error(`プロファイル名 '${newProfileName}' は予約語のため使用できません`);
-    }
-    if (!newProfileName.match(/^[a-zA-Z0-9_-]+$/)) {
-      throw new Error(`無効なプロファイル名 (${newProfileName}): 英数字，ハイフン，アンダースコアのみ使用できます`);
-    }
+    validateProfileName(newProfileName);
 
     const appConfig = await this.readAppConfig();
 
@@ -306,6 +293,28 @@ export class ConfigStorage implements ConfigManager {
     if (appConfig.activeProfile === oldProfileName) {
       appConfig.activeProfile = newProfileName;
     }
+
+    await this.writeAppConfig(appConfig);
+  }
+
+  /** プロファイルをコピー */
+  async copyProfile(sourceProfileName: string, targetProfileName: string): Promise<void> {
+    if (sourceProfileName === targetProfileName) {
+      throw new Error(`コピー元とコピー先のプロファイル名が同じです`);
+    }
+
+    validateProfileName(targetProfileName);
+
+    const appConfig = await this.readAppConfig();
+
+    if (!appConfig.profiles[sourceProfileName]) {
+      throw new Error(`プロファイル '${sourceProfileName}' が見つかりません`);
+    }
+    if (appConfig.profiles[targetProfileName]) {
+      throw new Error(`プロファイル '${targetProfileName}' は既に存在します`);
+    }
+
+    appConfig.profiles[targetProfileName] = { ...appConfig.profiles[sourceProfileName] };
 
     await this.writeAppConfig(appConfig);
   }

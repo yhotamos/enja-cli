@@ -106,6 +106,22 @@ export async function config(
       return;
     }
 
+    // サブコマンド: copy - プロファイルコピー
+    if (profileOrSubcommand === 'copy') {
+      if (!subcommandArg) {
+        throw new Error('コピー元のプロファイル名を指定してください\n\n使用例:\n  enja config copy <sourceProfile> <targetProfile>');
+      }
+      if (!subcommandArg2) {
+        throw new Error('コピー先のプロファイル名を指定してください\n\n使用例:\n  enja config copy <sourceProfile> <targetProfile>');
+      }
+      if (argsLength > 3) {
+        throw new Error('引数が多すぎます\n\n使用例:\n  enja config copy <sourceProfile> <targetProfile>');
+      }
+      await storage.copyProfile(subcommandArg, subcommandArg2);
+      console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を '${subcommandArg2}' にコピーしました`);
+      return;
+    }
+
     // 引数なし: 現在のプロファイルを表示
     if (!profileOrSubcommand) {
       // プロファイル名なしでオプションが指定された場合はエラー
@@ -189,10 +205,14 @@ export async function config(
       '  enja config                                  現在の設定を表示\n' +
       '  enja config ls                               プロファイル一覧\n' +
       '  enja config work                             プロファイル表示\n' +
-      '  enja config use work                         プロファイル切り替え\n' +
       '  enja config work --provider openai           設定変更\n' +
+      '  enja config use work                         プロファイル切り替え\n' +
       '  enja config add personal --provider gemini   プロファイル作成\n' +
-      '  enja config rename oldProfile newProfile     プロファイル名変更\n'
+      '  enja config rename oldProfile newProfile     プロファイル名変更\n' +
+      '  enja config copy srcProfile destProfile      プロファイル複製\n' +
+      '  enja config rm oldProfile                    プロファイル削除\n' +
+      '  enja config work --reset                     プロファイルリセット\n' +
+      '  enja config work --unset api-key             設定リセット\n'
     );
   } catch (error) {
     if (error instanceof Error) {
