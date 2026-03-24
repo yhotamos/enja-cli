@@ -144,12 +144,11 @@ enja config [profile|subcommand] [subcommandArg] [options]
   - `<profile> [options]` - 指定したプロファイルの設定を変更
 
   Subcommands:
-  - `ls`, `list` - 全プロファイルを一覧表示
+  - `list, ls` - 全プロファイルを一覧表示
   - `use <profile>` - アクティブプロファイルを変更
-  - `rm <profile>`, `delete <profile>` - プロファイルを削除
   - `add <profile> [options]` - 新しいプロファイルを作成
-
-- `subcommandArg` - サブコマンド (use, rm, delete, add) の引数として指定するプロファイル名
+  - `rename <old> <new>` - プロファイル名を変更
+  - `delete, rm <profile>` - プロファイルを削除
 
 ### Options
 
@@ -179,32 +178,39 @@ enja config [profile|subcommand] [subcommandArg] [options]
 ### Examples
 
 ```bash
-# 現在のプロファイルを表示
+# 現在のプロファイルの設定を表示
 enja config
 
 # 全プロファイルを一覧表示
-enja config ls
 enja config list
+enja config ls
 
 # 指定したプロファイルの詳細を表示
 enja config work-profile
+
+# アクティブプロファイルを変更
+enja config use work-profile
 
 # 新しいプロファイルを作成（デフォルトで gas プロバイダー）
 enja config add work-profile
 
 # OpenAI を使用するプロファイルを作成
-enja config add personal-profile --provider openai --api-key YOUR_KEY --model gpt-4o
+enja config add personal-profile --provider openai --api-key YOUR_OPENAI_API_KEY --model gpt-4o
 
 # Gemini を使用するプロファイルを作成
-enja config add gemini-profile --provider gemini --api-key YOUR_KEY --model gemini-1.5-flash
+enja config add gemini-profile --provider gemini --api-key YOUR_GEMINI_API_KEY --model gemini-1.5-flash
+
+# LM Studio を使用するプロファイルを作成
+enja config add lmstudio-profile --provider lmstudio --endpoint http://127.0.0.1:1234 --model openai/gpt-oss-20b
 
 # カスタムエンドポイントを使用するプロファイルを作成
 enja config add custom-profile --provider custom --endpoint https://api.example.com/translate --api-key YOUR_KEY
 
-# アクティブプロファイルを変更
-enja config use work-profile
+# プロファイル名を変更
+enja config rename old-profile new-profile
 
 # プロファイルを削除
+enja config delete work-profile
 enja config rm work-profile
 
 # プロファイルの provider を変更
@@ -214,7 +220,7 @@ enja config work-profile --provider openai
 enja config work-profile --model gpt-4o-mini
 
 # プロファイルの API キーを変更
-enja config work-profile --api-key NEW_KEY
+enja config work-profile --api-key NEW_API_KEY
 
 # プロファイルの API キーをリセット
 enja config work-profile --unset api-key
@@ -223,7 +229,7 @@ enja config work-profile --unset api-key
 enja config work-profile --reset
 
 # 複数の設定を同時に変更
-enja config work-profile --provider openai --api-key NEW_KEY --model gpt-4o
+enja config work-profile --provider openai --api-key NEW_API_KEY --model gpt-4o
 ```
 
 ### 設定ファイルの場所
