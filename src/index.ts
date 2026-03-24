@@ -35,8 +35,8 @@ program
     $ enja "Hello, world!"     # 文字列を翻訳
     $ docker --help | enja     # 標準入力を翻訳
     $ enja -f input.txt -o output.txt  # ファイル入出力
-    $ enja "Hello" -p work     # プロファイル指定
-    $ enja "Hello" --provider openai --api-key YOUR_API_KEY  # プロバイダー指定
+    $ enja "Hello" -p work     # プロファイルを指定して翻訳
+    $ enja "Hello" --provider openai --api-key YOUR_API_KEY  # 一時的にプロバイダーを指定して翻訳
     `
   )
   .addHelpText('afterAll', `\nEnja CLI v${pkgJson.version}`)
@@ -92,13 +92,13 @@ Subcommands:
       --unset, --reset はプロファイル名と一緒に使用してください
 
 Examples:
-  $ enja config                                    現在の設定を表示
-  $ enja config ls                                 プロファイル一覧
-  $ enja config work                               work プロファイルを表示
-  $ enja config use work                           work をアクティブに設定
-  $ enja config work --provider openai             work の provider を設定
-  $ enja config add personal --provider gemini     personal プロファイルを作成
-  $ enja "Hello" -p work                           work プロファイルで翻訳`
+  $ enja config                                 現在の設定を表示
+  $ enja config ls                              プロファイル一覧
+  $ enja config work                            work プロファイルを表示
+  $ enja config use work                        work をアクティブに設定
+  $ enja config work --provider openai          work の provider を設定
+  $ enja config add personal --provider gemini  personal プロファイルを作成
+  $ enja "Hello" -p work                        work プロファイルで翻訳`
   )
   .action(config);
 
