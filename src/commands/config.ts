@@ -135,7 +135,7 @@ export async function config(
       if (options?.apiKey) profileConfig.apiKey = options.apiKey;
       if (options?.model) profileConfig.model = options.model;
 
-      await storage.createProfile(subcommandArg, profileConfig);
+      await storage.addProfile(subcommandArg, profileConfig);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を作成しました`);
       return;
     }

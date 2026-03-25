@@ -64,8 +64,21 @@ export class ConfigStorage implements ConfigManager {
     return Object.keys(appConfig.profiles);
   }
 
-  /** プロファイルを作成 */
-  async createProfile(name: string, config?: Partial<ConfigProfile>): Promise<void> {
+  /** アクティブプロファイルを変更 */
+  async useProfile(name: string): Promise<void> {
+    const appConfig = await this.readAppConfig();
+
+    if (!appConfig.profiles[name]) {
+      const availableProfiles = Object.keys(appConfig.profiles).join(', ');
+      throw new Error(`プロファイル '${name}' が見つかりません\n利用可能なプロファイル: ${availableProfiles}`);
+    }
+
+    appConfig.activeProfile = name;
+    await this.writeAppConfig(appConfig);
+  }
+
+  /** プロファイルを追加 */
+  async addProfile(name: string, config?: Partial<ConfigProfile>): Promise<void> {
 
     validateProfileName(name);
 
@@ -97,6 +110,58 @@ export class ConfigStorage implements ConfigManager {
     await this.writeAppConfig(appConfig);
   }
 
+  /** プロファイル名を変更 */
+  async renameProfile(oldProfileName: string, newProfileName: string): Promise<void> {
+    if (oldProfileName === 'default') {
+      throw new Error(`'default' プロファイルは名前を変更できません`);
+    }
+    if (oldProfileName === newProfileName) return;
+
+    validateProfileName(newProfileName);
+
+    const appConfig = await this.readAppConfig();
+
+    if (!appConfig.profiles[oldProfileName]) {
+      throw new Error(`プロファイル '${oldProfileName}' が見つかりません`);
+    }
+    if (appConfig.profiles[newProfileName]) {
+      throw new Error(`プロファイル '${newProfileName}' は既に存在します`);
+    }
+
+    // 実際のリネーム操作
+    appConfig.profiles[newProfileName] = appConfig.profiles[oldProfileName];
+    delete appConfig.profiles[oldProfileName];
+
+    // アクティブプロファイルの更新
+    if (appConfig.activeProfile === oldProfileName) {
+      appConfig.activeProfile = newProfileName;
+    }
+
+    await this.writeAppConfig(appConfig);
+  }
+
+  /** プロファイルをコピー */
+  async copyProfile(sourceProfileName: string, targetProfileName: string): Promise<void> {
+    if (sourceProfileName === targetProfileName) {
+      throw new Error(`コピー元とコピー先のプロファイル名が同じです`);
+    }
+
+    validateProfileName(targetProfileName);
+
+    const appConfig = await this.readAppConfig();
+
+    if (!appConfig.profiles[sourceProfileName]) {
+      throw new Error(`プロファイル '${sourceProfileName}' が見つかりません`);
+    }
+    if (appConfig.profiles[targetProfileName]) {
+      throw new Error(`プロファイル '${targetProfileName}' は既に存在します`);
+    }
+
+    appConfig.profiles[targetProfileName] = { ...appConfig.profiles[sourceProfileName] };
+
+    await this.writeAppConfig(appConfig);
+  }
+
   /** プロファイルを削除 */
   async deleteProfile(name: string): Promise<void> {
     if (name === 'default') {
@@ -116,19 +181,6 @@ export class ConfigStorage implements ConfigManager {
       appConfig.activeProfile = 'default';
     }
 
-    await this.writeAppConfig(appConfig);
-  }
-
-  /** アクティブプロファイルを変更 */
-  async useProfile(name: string): Promise<void> {
-    const appConfig = await this.readAppConfig();
-
-    if (!appConfig.profiles[name]) {
-      const availableProfiles = Object.keys(appConfig.profiles).join(', ');
-      throw new Error(`プロファイル '${name}' が見つかりません\n利用可能なプロファイル: ${availableProfiles}`);
-    }
-
-    appConfig.activeProfile = name;
     await this.writeAppConfig(appConfig);
   }
 
@@ -209,58 +261,6 @@ export class ConfigStorage implements ConfigManager {
     const defaultProfile = this.getDefaultProfile();
 
     appConfig.profiles[profileName] = { ...defaultProfile };
-    await this.writeAppConfig(appConfig);
-  }
-
-  /** プロファイル名を変更 */
-  async renameProfile(oldProfileName: string, newProfileName: string): Promise<void> {
-    if (oldProfileName === 'default') {
-      throw new Error(`'default' プロファイルは名前を変更できません`);
-    }
-    if (oldProfileName === newProfileName) return;
-
-    validateProfileName(newProfileName);
-
-    const appConfig = await this.readAppConfig();
-
-    if (!appConfig.profiles[oldProfileName]) {
-      throw new Error(`プロファイル '${oldProfileName}' が見つかりません`);
-    }
-    if (appConfig.profiles[newProfileName]) {
-      throw new Error(`プロファイル '${newProfileName}' は既に存在します`);
-    }
-
-    // 実際のリネーム操作
-    appConfig.profiles[newProfileName] = appConfig.profiles[oldProfileName];
-    delete appConfig.profiles[oldProfileName];
-
-    // アクティブプロファイルの更新
-    if (appConfig.activeProfile === oldProfileName) {
-      appConfig.activeProfile = newProfileName;
-    }
-
-    await this.writeAppConfig(appConfig);
-  }
-
-  /** プロファイルをコピー */
-  async copyProfile(sourceProfileName: string, targetProfileName: string): Promise<void> {
-    if (sourceProfileName === targetProfileName) {
-      throw new Error(`コピー元とコピー先のプロファイル名が同じです`);
-    }
-
-    validateProfileName(targetProfileName);
-
-    const appConfig = await this.readAppConfig();
-
-    if (!appConfig.profiles[sourceProfileName]) {
-      throw new Error(`プロファイル '${sourceProfileName}' が見つかりません`);
-    }
-    if (appConfig.profiles[targetProfileName]) {
-      throw new Error(`プロファイル '${targetProfileName}' は既に存在します`);
-    }
-
-    appConfig.profiles[targetProfileName] = { ...appConfig.profiles[sourceProfileName] };
-
     await this.writeAppConfig(appConfig);
   }
 
