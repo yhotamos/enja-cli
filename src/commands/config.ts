@@ -1,7 +1,57 @@
-import type { ConfigOptions } from '../types/index.js';
-import { ConfigStorage } from '../services/config/storage.js';
 import kleur from 'kleur';
 import type { Command } from 'commander';
+import { ConfigStorage } from '../services/config/storage.js';
+import type { ConfigOptions } from '../types/index.js';
+
+export function configCommand(program: Command): void {
+  program
+    .command('config')
+    .usage('[profile|subcommand] [options]')
+    .description('設定とプロファイルを管理する')
+    .allowExcessArguments(true)
+    .argument('[profile|subcommand]', `プロファイル名またはサブコマンド
+
+Profiles:
+  <profile>           指定したプロファイルの詳細を表示
+  <profile> [options] 指定したプロファイルの設定を変更
+
+Subcommands:
+  list, ls                全プロファイルを一覧表示
+  use <profile>           アクティブプロファイルを変更
+  add <profile> [options] 新しいプロファイルを作成
+  rename <old> <new>      プロファイル名を変更
+  copy <source> <target>  プロファイルをコピー
+  delete, rm <profile>    プロファイルを削除
+  `)
+    .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
+    .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
+    .option('--api-key <api-key>', 'プロファイルの API キーを設定')
+    .option('--model <name>', 'プロファイルのモデルを設定')
+    .option('--unset <key>', 'プロファイルの指定した設定をリセット')
+    .option('--reset', 'プロファイル全体をリセット')
+    .addHelpText('after', `
+  --provider Names:
+    gas, custom, openai, gemini, lmstudio
+
+  --unset Keys:
+    provider, endpoint, api-key, model
+
+  注意: --provider, --endpoint, --api-key, --model オプションは
+      プロファイル名または 'add' サブコマンドと一緒に使用してください
+      --unset, --reset はプロファイル名と一緒に使用してください
+
+Examples:
+  $ enja config                                 現在の設定を表示
+  $ enja config ls                              プロファイル一覧
+  $ enja config work                            work プロファイルを表示
+  $ enja config use work                        work をアクティブに設定
+  $ enja config work --provider openai          work の provider を設定
+  $ enja config add personal --provider gemini  personal プロファイルを作成
+  $ enja config copy personal work              personal プロファイルを work にコピー
+  $ enja "Hello" -p work                        work プロファイルで翻訳`
+    )
+    .action(config);
+}
 
 /** 設定コマンドの実行 */
 export async function config(

@@ -1,10 +1,39 @@
 import * as fs from 'fs';
 import ora from 'ora';
-import type { TranslateOptions } from '../types/index.js';
+import kleur from 'kleur';
+import type { Command } from 'commander';
 import { createTranslator } from '../services/translator/factory.js';
 import { HistoryStorage } from '../services/history/storage.js';
 import { hashText } from '../utils/hash.js';
-import kleur from 'kleur';
+import type { TranslateOptions } from '../types/index.js';
+
+/** トップレベル引数として翻訳を登録（サブコマンド化しない） */
+export function translateCommand(program: Command): void {
+  program
+    .argument('[text]', '翻訳するテキスト（省略した場合はファイルまたは標準入力から読み込む）')
+    .option('-f, --file <path>', 'ファイルを翻訳する')
+    .option('-o, --output <path>', 'ファイルに出力する (デフォルト: 標準出力)')
+    .option('-s, --strip-html', 'HTMLタグを除去してから翻訳する')
+    .option('-N, --no-cache', 'キャッシュを使用せずに再翻訳する')
+    .option('-F, --flip', '翻訳方向を逆にする (default: 英語→日本語)')
+    .option('-p, --profile <name>', '使用するプロファイルを指定')
+    .option('--endpoint <url>', '一時的にカスタム翻訳エンドポイントを指定（現在のプロファイルに適用）')
+    .option('--api-key <key>', '一時的に API キーを指定（現在のプロファイルに適用）')
+    .option('--provider <name>', '一時的に翻訳プロバイダーを指定 (例: gas, openai, gemini, lmstudio; 現在のプロファイルに適用)')
+    .option('--model <name>', '一時的に使用するモデル名を指定 (例: gpt-4o-mini, gemini-2.5-flash-lite; 現在のプロファイルに適用)')
+    .option('--allow-local-endpoint', 'localhost（127.0.0.1）のエンドポイントを許可する')
+    .option('--allow-private-endpoint', 'プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する')
+    .option('--allow-http', 'HTTP（非 TLS）のエンドポイントを許可する')
+    .addHelpText('after',
+      `\nExamples:
+    $ enja "Hello, world!"     # 文字列を翻訳
+    $ docker --help | enja     # 標準入力を翻訳
+    $ enja -f input.txt -o output.txt  # ファイル入出力
+    $ enja "Hello" -p work     # プロファイルを指定して翻訳
+    $ enja "Hello" --provider openai --api-key YOUR_API_KEY  # 一時的にプロバイダーを指定して翻訳`
+    )
+    .action(translate);
+}
 
 export async function translate(text: string | undefined, options: TranslateOptions): Promise<void> {
   try {
