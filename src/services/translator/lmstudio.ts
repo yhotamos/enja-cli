@@ -1,3 +1,4 @@
+import type { ConfigProfile } from '../../types/index.js';
 import type { Translator, TranslationResult } from './index.js';
 
 type LMStudioError = {
@@ -23,7 +24,15 @@ interface LMStudioResponse {
 }
 
 export class LMStudioTranslator implements Translator {
-  public static readonly DEFAULT_ENDPOINT = 'http://localhost:1234/api/v1/chat';
+  static readonly DEFAULT_ENDPOINT = 'http://localhost:1234/api/v1/chat';
+
+  static getDefaultProfile(): ConfigProfile {
+    return {
+      provider: 'lmstudio',
+      endpoint: LMStudioTranslator.DEFAULT_ENDPOINT,
+    }
+  }
+
   private baseUrl: string;
   private model: string;
   private apiKey?: string;
@@ -175,4 +184,5 @@ export class LMStudioTranslator implements Translator {
     }
     return null;
   }
+
 }

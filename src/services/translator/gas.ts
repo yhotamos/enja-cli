@@ -1,3 +1,4 @@
+import type { ConfigProfile } from '../../types/index.js';
 import type { Translator, TranslationResult } from './index.js';
 
 interface GASApiResponse {
@@ -8,8 +9,17 @@ interface GASApiResponse {
 }
 
 export class GASTranslator implements Translator {
-  public static readonly DEFAULT_ENDPOINT = process.env.GAS_DEFAULT_ENDPOINT || 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+  static readonly DEFAULT_ENDPOINT = process.env.GAS_DEFAULT_ENDPOINT || 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
   private static readonly ENDPOINT_URL_PATTERN: RegExp = /^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/(exec|dev)(\?.*)?$/;
+
+  static getDefaultProfile(): ConfigProfile {
+    return {
+      provider: 'gas',
+      endpoint: GASTranslator.DEFAULT_ENDPOINT,
+    };
+  }
+
   private apiUrl: string;
   private apiKey?: string;
 

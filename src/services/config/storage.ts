@@ -8,34 +8,22 @@ import { GASTranslator } from '../translator/gas.js';
 import { OpenAITranslator } from '../translator/openai.js';
 import { GeminiTranslator } from '../translator/gemini.js';
 
-// プロバイダごとのデフォルト設定
-const DEFAULT_PROFILES_BY_PROVIDER: Record<TranslatorProvider, Partial<ConfigProfile>> = {
-  gas: {
-    provider: 'gas',
-    endpoint: GASTranslator.DEFAULT_ENDPOINT,
-  },
-  openai: {
-    provider: 'openai',
-    model: OpenAITranslator.DEFAULT_MODEL,
-  },
-  gemini: {
-    provider: 'gemini',
-    model: GeminiTranslator.DEFAULT_MODEL,
-  },
-  lmstudio: {
-    provider: 'lmstudio',
-    endpoint: LMStudioTranslator.DEFAULT_ENDPOINT,
-  },
-  custom: {
-    provider: 'custom',
-  },
-};
+const DEFAULT_PROVIDER: TranslatorProvider = 'gas';
 
-const DEFAULT_APP_CONFIG: AppConfig = {
+// プロバイダごとのデフォルト設定
+const defaultProfileFactories: Record<TranslatorProvider, () => ConfigProfile> = {
+  gas: GASTranslator.getDefaultProfile,
+  openai: OpenAITranslator.getDefaultProfile,
+  gemini: GeminiTranslator.getDefaultProfile,
+  lmstudio: LMStudioTranslator.getDefaultProfile,
+  custom: (): ConfigProfile => ({ provider: 'custom' }),
+}
+
+const defaultAppConfig: AppConfig = {
   version: '1.1',
   activeProfile: 'default',
   profiles: {
-    default: { ...DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile },
+    default: defaultProfileFactories[DEFAULT_PROVIDER](),
   },
 };
 
@@ -47,49 +35,6 @@ export class ConfigStorage implements ConfigManager {
 
   constructor() {
     this.filePath = getConfigFilePath();
-  }
-
-  private ensureConfigDir(): void {
-    const configDir = getConfigDir();
-    if (!fs.existsSync(configDir)) {
-      fs.mkdirSync(configDir, { recursive: true });
-    }
-  }
-
-  private async readAppConfig(): Promise<AppConfig> {
-    try {
-      if (!fs.existsSync(this.filePath)) {
-        return { ...DEFAULT_APP_CONFIG };
-      }
-      const data = fs.readFileSync(this.filePath, 'utf-8');
-      const config = JSON.parse(data);
-
-      return config as AppConfig;
-    } catch {
-      console.warn('設定読み込みに失敗しました．規定値を使用します');
-      return { ...DEFAULT_APP_CONFIG };
-    }
-  }
-
-  private async writeAppConfig(config: AppConfig): Promise<void> {
-    try {
-      this.ensureConfigDir();
-      fs.writeFileSync(this.filePath, JSON.stringify(config, null, 2), 'utf-8');
-    } catch {
-      throw new Error(`設定ファイルの書き込みに失敗しました`);
-    }
-  }
-
-  private async readConfig(): Promise<ConfigProfile> {
-    const appConfig = await this.readAppConfig();
-    const activeProfile = appConfig.profiles[appConfig.activeProfile];
-    return activeProfile || { ...DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile };
-  }
-
-  private async writeConfig(config: ConfigProfile): Promise<void> {
-    const appConfig = await this.readAppConfig();
-    appConfig.profiles[appConfig.activeProfile] = config;
-    await this.writeAppConfig(appConfig);
   }
 
   /** 設定を取得 */
@@ -140,8 +85,8 @@ export class ConfigStorage implements ConfigManager {
     }
 
     // プロバイダに応じたデフォルト設定を取得
-    const provider = config?.provider || 'gas';
-    const defaultProfile = DEFAULT_PROFILES_BY_PROVIDER[provider] as ConfigProfile;
+    const provider = config?.provider || DEFAULT_PROVIDER;
+    const defaultProfile = this.getDefaultProfileByProvider(provider);
 
     // 指定された設定で上書き
     const newProfile: ConfigProfile = {
@@ -231,8 +176,8 @@ export class ConfigStorage implements ConfigManager {
     }
 
     const profile = appConfig.profiles[profileName];
-    const provider = profile.provider || 'gas';
-    const defaultProfile = DEFAULT_PROFILES_BY_PROVIDER[provider] as ConfigProfile;
+    const provider = profile.provider || DEFAULT_PROVIDER;
+    const defaultProfile = this.getDefaultProfileByProvider(provider);
 
     switch (key) {
       case 'provider':
@@ -261,7 +206,7 @@ export class ConfigStorage implements ConfigManager {
     if (!appConfig.profiles[profileName]) {
       throw new Error(`プロファイル '${profileName}' が見つかりません`);
     }
-    const defaultProfile = DEFAULT_PROFILES_BY_PROVIDER['gas'] as ConfigProfile;
+    const defaultProfile = this.getDefaultProfile();
 
     appConfig.profiles[profileName] = { ...defaultProfile };
     await this.writeAppConfig(appConfig);
@@ -316,6 +261,57 @@ export class ConfigStorage implements ConfigManager {
 
     appConfig.profiles[targetProfileName] = { ...appConfig.profiles[sourceProfileName] };
 
+    await this.writeAppConfig(appConfig);
+  }
+
+  private getDefaultProfile(): ConfigProfile {
+    return defaultProfileFactories[DEFAULT_PROVIDER]();
+  }
+
+  private getDefaultProfileByProvider(provider: TranslatorProvider): ConfigProfile {
+    return defaultProfileFactories[provider]();
+  }
+
+  private ensureConfigDir(): void {
+    const configDir = getConfigDir();
+    if (!fs.existsSync(configDir)) {
+      fs.mkdirSync(configDir, { recursive: true });
+    }
+  }
+
+  private async readAppConfig(): Promise<AppConfig> {
+    try {
+      if (!fs.existsSync(this.filePath)) {
+        return { ...defaultAppConfig };
+      }
+      const data = fs.readFileSync(this.filePath, 'utf-8');
+      const config = JSON.parse(data);
+
+      return config as AppConfig;
+    } catch {
+      console.warn('設定読み込みに失敗しました．規定値を使用します');
+      return { ...defaultAppConfig };
+    }
+  }
+
+  private async writeAppConfig(config: AppConfig): Promise<void> {
+    try {
+      this.ensureConfigDir();
+      fs.writeFileSync(this.filePath, JSON.stringify(config, null, 2), 'utf-8');
+    } catch {
+      throw new Error(`設定ファイルの書き込みに失敗しました`);
+    }
+  }
+
+  private async readConfig(): Promise<ConfigProfile> {
+    const appConfig = await this.readAppConfig();
+    const activeProfile = appConfig.profiles[appConfig.activeProfile];
+    return activeProfile || this.getDefaultProfile();
+  }
+
+  private async writeConfig(config: ConfigProfile): Promise<void> {
+    const appConfig = await this.readAppConfig();
+    appConfig.profiles[appConfig.activeProfile] = config;
     await this.writeAppConfig(appConfig);
   }
 }

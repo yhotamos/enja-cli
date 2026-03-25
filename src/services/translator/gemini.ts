@@ -1,14 +1,23 @@
-import type { GenerateContentResponse} from "@google/genai";
 import { ApiError, GoogleGenAI } from "@google/genai";
+import type { GenerateContentResponse } from "@google/genai";
 import type { Translator, TranslationResult } from './index.js';
+import type { ConfigProfile } from "../../types/index.js";
 
 export class GeminiTranslator implements Translator {
-  public static readonly DEFAULT_MODEL = process.env.GEMINI_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+  static readonly DEFAULT_MODEL = process.env.GEMINI_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
+
+  static getDefaultProfile(): ConfigProfile {
+    return {
+      provider: 'gemini',
+      model: GeminiTranslator.DEFAULT_MODEL,
+    };
+  }
+
   private client: GoogleGenAI;
   private model: string;
 
   constructor(apiKey: string, model: string = GeminiTranslator.DEFAULT_MODEL) {
-    this.client = new GoogleGenAI({ apiKey: apiKey });
+    this.client = new GoogleGenAI({ apiKey });
     this.model = model;
   }
 
