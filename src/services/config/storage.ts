@@ -27,8 +27,6 @@ const defaultAppConfig: AppConfig = {
   },
 };
 
-const VALID_PROVIDERS: TranslatorProvider[] = ['gas', 'custom', 'openai', 'gemini', 'lmstudio'];
-
 /** 設定の永続化を管理するクラス */
 export class ConfigStorage implements ConfigManager {
   private filePath: string;
@@ -71,10 +69,11 @@ export class ConfigStorage implements ConfigManager {
 
     validateProfileName(name);
 
-    // プロバイダーのバリデーション
+    // プロバイダーのバリデーション（defaultProfileFactories にキーが存在するかで判定）
     if (config?.provider) {
-      if (!VALID_PROVIDERS.includes(config.provider as TranslatorProvider)) {
-        throw new Error(`無効なプロバイダー '${config.provider}': ${VALID_PROVIDERS.join(', ')} のいずれかを指定してください`);
+      if (!this.isTranslatorProvider(config.provider)) {
+        const available = Object.keys(defaultProfileFactories).join(', ');
+        throw new Error(`無効なプロバイダー '${config.provider}': ${available} のいずれかを指定してください`);
       }
     }
 
@@ -152,10 +151,11 @@ export class ConfigStorage implements ConfigManager {
         profile.apiKey = value;
         break;
       case 'provider':
-        if (!VALID_PROVIDERS.includes(value as TranslatorProvider)) {
-          throw new Error(`無効なプロバイダー (${value}): ${VALID_PROVIDERS.join(', ')} のいずれかを指定してください`);
+        if (!this.isTranslatorProvider(value)) {
+          const available = Object.keys(defaultProfileFactories).join(', ');
+          throw new Error(`無効なプロバイダー (${value}): ${available} のいずれかを指定してください`);
         }
-        profile.provider = value as TranslatorProvider;
+        profile.provider = value;
         break;
       case 'model':
         profile.model = value;
@@ -272,6 +272,10 @@ export class ConfigStorage implements ConfigManager {
     return defaultProfileFactories[provider]();
   }
 
+  private isTranslatorProvider(value: string): value is TranslatorProvider {
+    return value in defaultProfileFactories;
+  }
+
   private ensureConfigDir(): void {
     const configDir = getConfigDir();
     if (!fs.existsSync(configDir)) {
@@ -287,7 +291,7 @@ export class ConfigStorage implements ConfigManager {
       const data = fs.readFileSync(this.filePath, 'utf-8');
       const config = JSON.parse(data);
 
-      return config as AppConfig;
+      return config;
     } catch {
       console.warn('設定読み込みに失敗しました．規定値を使用します');
       return { ...defaultAppConfig };
