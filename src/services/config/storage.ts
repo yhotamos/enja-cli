@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import type { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.js';
-import type { ConfigManager } from './index.js';
+import { promises as fs } from 'fs';
 import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
 import { validateProfileName } from '../validate/profile.js';
 import { LMStudioTranslator } from '../translator/lmstudio.js';
 import { GASTranslator } from '../translator/gas.js';
 import { OpenAITranslator } from '../translator/openai.js';
 import { GeminiTranslator } from '../translator/gemini.js';
+import type { ConfigManager } from './index.js';
+import type { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.js';
 
 const DEFAULT_PROVIDER: TranslatorProvider = 'gas';
 
@@ -264,6 +264,14 @@ export class ConfigStorage implements ConfigManager {
     await this.writeAppConfig(appConfig);
   }
 
+  private static isAppConfig(obj: unknown): obj is AppConfig {
+    if (!obj || typeof obj !== 'object') return false;
+    if (!('profiles' in obj) || !('activeProfile' in obj)) return false;
+    if (typeof obj.activeProfile !== 'string') return false;
+    if (typeof obj.profiles !== 'object' || obj.profiles === null) return false;
+    return true;
+  }
+
   private getDefaultProfile(): ConfigProfile {
     return defaultProfileFactories[DEFAULT_PROVIDER]();
   }
@@ -276,22 +284,20 @@ export class ConfigStorage implements ConfigManager {
     return value in defaultProfileFactories;
   }
 
-  private ensureConfigDir(): void {
+  private async ensureConfigDir(): Promise<void> {
     const configDir = getConfigDir();
-    if (!fs.existsSync(configDir)) {
-      fs.mkdirSync(configDir, { recursive: true });
-    }
+    await fs.mkdir(configDir, { recursive: true });
   }
 
   private async readAppConfig(): Promise<AppConfig> {
     try {
-      if (!fs.existsSync(this.filePath)) {
-        return { ...defaultAppConfig };
+      const data = await fs.readFile(this.filePath, 'utf-8');
+      const parsed = JSON.parse(data);
+      if (ConfigStorage.isAppConfig(parsed)) {
+        return parsed;
       }
-      const data = fs.readFileSync(this.filePath, 'utf-8');
-      const config = JSON.parse(data);
-
-      return config;
+      console.warn('設定ファイルの形式が不正です．規定値を使用します');
+      return { ...defaultAppConfig };
     } catch {
       console.warn('設定読み込みに失敗しました．規定値を使用します');
       return { ...defaultAppConfig };
@@ -300,8 +306,11 @@ export class ConfigStorage implements ConfigManager {
 
   private async writeAppConfig(config: AppConfig): Promise<void> {
     try {
-      this.ensureConfigDir();
-      fs.writeFileSync(this.filePath, JSON.stringify(config, null, 2), 'utf-8');
+      await this.ensureConfigDir();
+      const tmpPath = `${this.filePath}.${Date.now()}.tmp`;
+      const data = JSON.stringify(config, null, 2);
+      await fs.writeFile(tmpPath, data, 'utf-8');
+      await fs.rename(tmpPath, this.filePath);
     } catch {
       throw new Error(`設定ファイルの書き込みに失敗しました`);
     }
