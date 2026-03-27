@@ -1,7 +1,20 @@
-import type { HistoryOptions } from '../types/index.js';
+import kleur from 'kleur';
+import type { Command } from 'commander';
 import { HistoryStorage } from '../services/history/storage.js';
 import { formatHistory } from '../services/history/formatter.js';
-import kleur from 'kleur';
+import type { HistoryOptions } from '../types/index.js';
+
+export function historyCommand(program: Command): void {
+  program
+    .command('history')
+    .description('翻訳履歴を表示する')
+    .argument('[id]', 'ID で履歴を表示する（完全 ID または短縮 ID）')
+    .option('-d, --detail', '詳細表示')
+    .option('-n, --number <number>', '表示件数', '10')
+    .option('--delete <id>', '特定の履歴を削除する')
+    .option('--clear', '履歴をクリア')
+    .action(history);
+}
 
 /** 履歴コマンドの実行 */
 export async function history(id: string, options: HistoryOptions): Promise<void> {
