@@ -21,8 +21,8 @@ Subcommands:
   add <profile> [options] 新しいプロファイルを作成
   rename <old> <new>      プロファイル名を変更
   copy <source> <target>  プロファイルをコピー
-  delete, rm <profile>    プロファイルを削除
-  `)
+  delete, rm <profile>    プロファイルを削除`
+    )
     .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
     .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
     .option('--api-key <api-key>', 'プロファイルの API キーを設定')
@@ -236,7 +236,7 @@ export async function config(
 
     // プロファイル + --reset: プロファイルをリセット
     if (profileOrSubcommand && options?.reset) {
-      await storage.resetProfile(profileOrSubcommand);
+      await storage.resetProfileConfig(profileOrSubcommand);
       console.log(`${kleur.green('✔')} プロファイル '${profileOrSubcommand}' をリセットしました`);
       return;
     }

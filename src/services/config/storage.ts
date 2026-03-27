@@ -252,7 +252,7 @@ export class ConfigStorage implements ConfigManager {
   }
 
   /** プロファイル全体をリセット */
-  async resetProfile(profileName: string): Promise<void> {
+  async resetProfileConfig(profileName: string): Promise<void> {
     const appConfig = await this.readAppConfig();
 
     if (!appConfig.profiles[profileName]) {

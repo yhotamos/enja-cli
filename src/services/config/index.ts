@@ -12,5 +12,5 @@ export interface ConfigManager {
   deleteProfile(name: string): Promise<void>;
   setProfileConfig(profileName: string, key: string, value: string): Promise<void>;
   unsetProfileConfig(profileName: string, key: string): Promise<void>;
-  resetProfile(profileName: string): Promise<void>;
+  resetProfileConfig(profileName: string): Promise<void>;
 }
