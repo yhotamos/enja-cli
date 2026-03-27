@@ -41,14 +41,13 @@ Subcommands:
       --unset, --reset はプロファイル名と一緒に使用してください
 
 Examples:
-  $ enja config                                 現在の設定を表示
-  $ enja config ls                              プロファイル一覧
-  $ enja config work                            work プロファイルを表示
-  $ enja config use work                        work をアクティブに設定
-  $ enja config work --provider openai          work の provider を設定
-  $ enja config add personal --provider gemini  personal プロファイルを作成
-  $ enja config copy personal work              personal プロファイルを work にコピー
-  $ enja "Hello" -p work                        work プロファイルで翻訳`
+  $ enja config              現在の設定を表示
+  $ enja config ls           プロファイル一覧
+  $ enja config work         work プロファイルを表示
+  $ enja config use work     work をアクティブに設定
+  $ enja config add personal personal プロファイルを作成
+  $ enja config rm personal  プロファイルを削除
+  $ enja "Hello" -p work     work プロファイルで翻訳`
     )
     .action(config);
 }
@@ -260,7 +259,7 @@ export async function config(
       '  enja config add personal --provider gemini   プロファイル作成\n' +
       '  enja config rename oldProfile newProfile     プロファイル名変更\n' +
       '  enja config copy srcProfile destProfile      プロファイル複製\n' +
-      '  enja config rm oldProfile                    プロファイル削除\n' +
+      '  enja config rm profileName                    プロファイル削除\n' +
       '  enja config work --reset                     プロファイルリセット\n' +
       '  enja config work --unset api-key             設定リセット\n'
     );
