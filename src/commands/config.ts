@@ -1,5 +1,6 @@
 import kleur from 'kleur';
 import type { Command } from 'commander';
+import { selectProfile, confirmDeleteProfile } from '../services/config/prompts.js';
 import { ConfigStorage } from '../services/config/storage.js';
 import type { ConfigOptions } from '../types/index.js';
 
@@ -97,7 +98,13 @@ export async function config(
     // サブコマンド: use - プロファイル切り替え
     if (profileOrSubcommand === 'use') {
       if (!subcommandArg) {
-        throw new Error('プロファイル名を指定してください\n\n使用例:\n  enja config use <profile>');
+        const profiles = await storage.listProfiles();
+        const activeProfile = await storage.getActiveProfileName();
+
+        const selected = await selectProfile(profiles, activeProfile);
+        await storage.useProfile(selected);
+        console.log(`${kleur.green('✔')} アクティブプロファイルを '${selected}' に設定しました`);
+        return;
       }
       if (argsLength > 2) {
         throw new Error('引数が多すぎます\n\n使用例:\n  enja config use <profile>');
@@ -110,11 +117,19 @@ export async function config(
     // サブコマンド: rm - プロファイル削除
     if (profileOrSubcommand === 'rm' || profileOrSubcommand === 'delete') {
       if (!subcommandArg) {
-        throw new Error('プロファイル名を指定してください\n\n使用例:\n  enja config rm <profile>');
+        const profiles = await storage.listProfiles();
+        const activeProfile = await storage.getActiveProfileName();
+
+        const selected = await selectProfile(profiles, activeProfile);
+        if (!await confirmDeleteProfile(selected)) return;
+        await storage.deleteProfile(selected);
+        console.log(`${kleur.green('✔')} プロファイル '${selected}' を削除しました`);
+        return;
       }
       if (argsLength > 2) {
         throw new Error('引数が多すぎます\n\n使用例:\n  enja config rm <profile>');
       }
+      if (!await confirmDeleteProfile(subcommandArg)) return;
       await storage.deleteProfile(subcommandArg);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を削除しました`);
       return;
