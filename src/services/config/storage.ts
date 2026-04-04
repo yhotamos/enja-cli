@@ -1,6 +1,7 @@
 import { promises as fs } from 'node:fs';
 import type { AppConfig, ConfigProfile, TranslatorProvider } from '../../types/index.js';
 import { getConfigDir, getConfigFilePath } from '../../utils/paths.js';
+import { CustomTranslator } from '../translator/custom.js';
 import { GASTranslator } from '../translator/gas.js';
 import { GeminiTranslator } from '../translator/gemini.js';
 import { LMStudioTranslator } from '../translator/lmstudio.js';
@@ -16,7 +17,7 @@ const defaultProfileFactories: Record<TranslatorProvider, () => ConfigProfile> =
   openai: OpenAITranslator.getDefaultProfile,
   gemini: GeminiTranslator.getDefaultProfile,
   lmstudio: LMStudioTranslator.getDefaultProfile,
-  custom: (): ConfigProfile => ({ provider: 'custom' }),
+  custom: CustomTranslator.getDefaultProfile,
 };
 
 const defaultAppConfig: AppConfig = {
