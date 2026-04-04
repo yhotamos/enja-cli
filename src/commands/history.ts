@@ -1,7 +1,7 @@
-import kleur from 'kleur';
 import type { Command } from 'commander';
-import { HistoryStorage } from '../services/history/storage.js';
+import kleur from 'kleur';
 import { formatHistory } from '../services/history/formatter.js';
+import { HistoryStorage } from '../services/history/storage.js';
 import type { HistoryOptions } from '../types/index.js';
 
 export function historyCommand(program: Command): void {
@@ -112,7 +112,6 @@ export async function history(id: string, options: HistoryOptions): Promise<void
 
     const output = formatHistory(entries, options.detail);
     console.log(output);
-
   } catch (error) {
     console.error(error instanceof Error ? `error: ${error.message}` : error);
     process.exit(1);

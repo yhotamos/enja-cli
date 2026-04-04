@@ -11,10 +11,10 @@
     "enja": "dist/index.js"
   },
   "scripts": {
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
+    "check": "biome check src",
+    "check:fix": "biome check --write --unsafe src",
     "typecheck": "tsc --noEmit",
-    "build": "npm run lint && npm run typecheck && tsup",
+    "build": "npm run check && npm run typecheck && tsup",
     "build:dev": "tsup --sourcemap",
     "watch": "tsup --watch",
     "test": "vitest"
@@ -51,13 +51,12 @@
     "ora": "^9.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.10",
     "@types/node": "^24.10.1",
     "dotenv": "^17.3.1",
-    "eslint": "^10.0.2",
     "tsup": "^8.5.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.18"
   }
 }

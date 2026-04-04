@@ -9,8 +9,8 @@ export type ValidateEndpointOptions = {
 function parseIPv4Octets(hostname: string): number[] | null {
   const m = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if (!m) return null;
-  const octets = m.slice(1).map(n => Number(n));
-  if (octets.some(n => !Number.isInteger(n) || n < 0 || n > 255)) return null;
+  const octets = m.slice(1).map((n) => Number(n));
+  if (octets.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return null;
   return octets;
 }
 
@@ -80,32 +80,24 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
   const ipv4 = parseIPv4Octets(hostname);
   const isIPv4 = ipv4 !== null;
 
-  const isLocalhost =
-    LOCALHOST_HOSTS.has(hostname) ||
-    (isIPv4 ? isIPv4Loopback(ipv4 as number[]) : false) ||
-    isIPv6Loopback(hostname);
+  const isLocalhost = LOCALHOST_HOSTS.has(hostname) || (isIPv4 ? isIPv4Loopback(ipv4 as number[]) : false) || isIPv6Loopback(hostname);
 
-  const isLinkLocal =
-    (isIPv4 ? isIPv4LinkLocal(ipv4 as number[]) : false) ||
-    isIPv6LinkLocal(hostname);
+  const isLinkLocal = (isIPv4 ? isIPv4LinkLocal(ipv4 as number[]) : false) || isIPv6LinkLocal(hostname);
 
   if (isLinkLocal) {
     throw new Error('指定されたエンドポイントはリンクローカルアドレスのため許可されていません');
   }
 
   // RFC1918（IPv4）
-  const isPrivateIpv4 =
-    isIPv4
-      ? isIPv4InRFC1918(ipv4 as number[])
-      : Array.from(PRIVATE_IPV4_PREFIXES).some(p => hostname.startsWith(p)); // 基本ここには来ないが保険
+  const isPrivateIpv4 = isIPv4 ? isIPv4InRFC1918(ipv4 as number[]) : Array.from(PRIVATE_IPV4_PREFIXES).some((p) => hostname.startsWith(p)); // 基本ここには来ないが保険
 
   // 既定は https 強制
   if (protocol === 'http:') {
     if (!(allowHttp || (allowLocalEndpoint && isLocalhost))) {
       throw new Error(
         'エンドポイント URL は https:// で始まる必要があります' +
-        '\nHTTP エンドポイントを使用する必要がある場合は，--allow-http オプションを使用してください' +
-        '\nローカルエンドポイントであれば --allow-local-endpoint オプションでも許可されます'
+          '\nHTTP エンドポイントを使用する必要がある場合は，--allow-http オプションを使用してください' +
+          '\nローカルエンドポイントであれば --allow-local-endpoint オプションでも許可されます',
       );
     }
   }
@@ -114,7 +106,7 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
   if (isLocalhost && !allowLocalEndpoint) {
     throw new Error(
       'ローカルエンドポイントの使用はセキュリティリスクがあるため許可されていません' +
-      '\nローカルエンドポイントを使用する必要がある場合は，--allow-local-endpoint オプションを使用してください'
+        '\nローカルエンドポイントを使用する必要がある場合は，--allow-local-endpoint オプションを使用してください',
     );
   }
 
@@ -122,7 +114,7 @@ export function validateEndpoint(endpoint: string, options: ValidateEndpointOpti
   if (isPrivateIpv4 && !allowPrivateEndpoint) {
     throw new Error(
       'プライベート IP エンドポイントの使用は既定で許可されていません' +
-      '\n使用する必要がある場合は，--allow-private-endpoint オプションを使用してください'
+        '\n使用する必要がある場合は，--allow-private-endpoint オプションを使用してください',
     );
   }
 

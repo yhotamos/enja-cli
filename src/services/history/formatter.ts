@@ -21,12 +21,7 @@ function formatSimple(entries: HistoryEntry[]): string {
     const srcPreview = getPreview(entry.sourceText, 20);
     const tgtPreview = getPreview(entry.translatedText || '', 20);
 
-    const infoLine = [
-      kleur.cyan(`[${index + 1}]`),
-      entry.id.substring(0, 8),
-      date,
-      profileInfo || null
-    ].filter(Boolean).join(' | ');
+    const infoLine = [kleur.cyan(`[${index + 1}]`), entry.id.substring(0, 8), date, profileInfo || null].filter(Boolean).join(' | ');
 
     lines.push(infoLine);
     lines.push(`    ${entry.sourceLang} → ${entry.targetLang} | ${srcPreview} → ${tgtPreview}`);
@@ -58,8 +53,10 @@ function formatDetailed(entries: HistoryEntry[]): string {
       const opts = [
         entry.options.inputMethod && `input=${entry.options.inputMethod}`,
         entry.options.stripHtml && 'stripHtml=true',
-        entry.options.file && `file=${entry.options.file}`
-      ].filter(Boolean).join(', ');
+        entry.options.file && `file=${entry.options.file}`,
+      ]
+        .filter(Boolean)
+        .join(', ');
 
       if (opts) lines.push(`${kleur.cyan('Options:'.padEnd(labelWidth))} ${opts}`);
     }
@@ -77,15 +74,11 @@ function formatDate(timestamp: string): string {
 
 function getPreview(text: string, maxLength: number): string {
   const normalized = text.replace(/[\r\n]+/g, ' ');
-  return normalized.length > maxLength ? normalized.substring(0, maxLength) + '...' : normalized;
+  return normalized.length > maxLength ? `${normalized.substring(0, maxLength)}...` : normalized;
 }
 
 function getProfileInfo(entry: HistoryEntry): string {
-  return [
-    entry.profile,
-    entry.provider,
-    entry.model
-  ]
+  return [entry.profile, entry.provider, entry.model]
     .filter((val): val is string => Boolean(val))
     .map((val) => kleur.magenta(val))
     .join(kleur.dim('・'));

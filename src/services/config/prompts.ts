@@ -1,8 +1,8 @@
+import { confirm, select } from '@inquirer/prompts';
 import kleur from 'kleur';
-import { select, confirm } from '@inquirer/prompts';
 
 export async function selectProfile(profiles: string[], activeProfile: string): Promise<string> {
-  const choices = profiles.map(profile => ({
+  const choices = profiles.map((profile) => ({
     name: profile === activeProfile ? kleur.green(`${profile} (active)`) : profile,
     value: profile,
   }));

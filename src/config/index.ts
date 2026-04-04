@@ -1,5 +1,5 @@
-import type { ConfigProfile, TranslateOptions, TranslatorProvider } from '../types/index.js';
 import { ConfigStorage } from '../services/config/storage.js';
+import type { ConfigProfile, TranslateOptions, TranslatorProvider } from '../types/index.js';
 
 export async function getConfig(options?: TranslateOptions): Promise<ConfigProfile> {
   const storage = new ConfigStorage();
@@ -11,9 +11,7 @@ export async function getConfig(options?: TranslateOptions): Promise<ConfigProfi
       fileConfig = await storage.getProfile(options.profile);
     } catch {
       const profiles = await storage.listProfiles();
-      throw new Error(
-        `プロファイル '${options.profile}' が見つかりません\n利用可能なプロファイル: ${profiles.join(', ')}`
-      );
+      throw new Error(`プロファイル '${options.profile}' が見つかりません\n利用可能なプロファイル: ${profiles.join(', ')}`);
     }
   } else {
     // アクティブプロファイルを取得
@@ -21,22 +19,13 @@ export async function getConfig(options?: TranslateOptions): Promise<ConfigProfi
   }
 
   // 優先順位: コマンドラインオプション > プロファイル > デフォルト値
-  const provider: TranslatorProvider =
-    options?.provider ||
-    fileConfig.provider ||
-    'gas';
+  const provider: TranslatorProvider = options?.provider || fileConfig.provider || 'gas';
 
-  const endpoint: string | undefined =
-    options?.endpoint ||
-    fileConfig.endpoint;
+  const endpoint: string | undefined = options?.endpoint || fileConfig.endpoint;
 
-  const apiKey: string | undefined =
-    options?.apiKey ||
-    fileConfig.apiKey;
+  const apiKey: string | undefined = options?.apiKey || fileConfig.apiKey;
 
-  const model: string | undefined =
-    options?.model ||
-    fileConfig.model;
+  const model: string | undefined = options?.model || fileConfig.model;
 
   return {
     endpoint,
