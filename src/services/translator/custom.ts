@@ -23,7 +23,7 @@ export class CustomTranslator implements Translator {
   }
 
   async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
-    const headers: Record<string, string> = {
+    const headers: HeadersInit = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
@@ -37,8 +37,8 @@ export class CustomTranslator implements Translator {
       headers,
       body: JSON.stringify({
         text,
-        source_lang: sourceLang,
-        target_lang: targetLang,
+        sourceLang,
+        targetLang,
         ...(this.model ? { model: this.model } : {}),
       }),
     });
