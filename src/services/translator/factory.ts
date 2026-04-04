@@ -3,6 +3,7 @@ import type { ConfigProfile, TranslateOptions } from '../../types/index.js';
 import { ConfigStorage } from '../config/storage.js';
 import type { ValidateEndpointOptions } from '../validate/endpoint.js';
 import { validateEndpoint } from '../validate/endpoint.js';
+import { CustomTranslator } from './custom.js';
 import { GASTranslator } from './gas.js';
 import { GeminiTranslator } from './gemini.js';
 import type { Translator } from './index.js';
@@ -37,8 +38,15 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
   };
 
   switch (config.provider) {
-    case 'gas':
     case 'custom': {
+      const { endpoint, apiKey, model } = config;
+      if (!endpoint) {
+        throw new Error('エンドポイント URL が必要です');
+      }
+      validateEndpoint(endpoint, validateEndpointOptions);
+      return { translator: new CustomTranslator(endpoint, apiKey, model), config, activeProfile };
+    }
+    case 'gas': {
       const { endpoint, apiKey } = config;
       if (!endpoint) {
         throw new Error('エンドポイント URL が必要です');
