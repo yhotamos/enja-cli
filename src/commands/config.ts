@@ -1,6 +1,6 @@
-import kleur from 'kleur';
 import type { Command } from 'commander';
-import { selectProfile, confirmDeleteProfile } from '../services/config/prompts.js';
+import kleur from 'kleur';
+import { confirmDeleteProfile, selectProfile } from '../services/config/prompts.js';
 import { ConfigStorage } from '../services/config/storage.js';
 import type { ConfigOptions } from '../types/index.js';
 
@@ -10,7 +10,9 @@ export function configCommand(program: Command): void {
     .usage('[profile|subcommand] [options]')
     .description('設定とプロファイルを管理する')
     .allowExcessArguments(true)
-    .argument('[profile|subcommand]', `プロファイル名またはサブコマンド
+    .argument(
+      '[profile|subcommand]',
+      `プロファイル名またはサブコマンド
 
 Profiles:
   <profile>           指定したプロファイルの詳細を表示
@@ -22,7 +24,7 @@ Subcommands:
   add <profile> [options] 新しいプロファイルを作成
   rename <old> <new>      プロファイル名を変更
   copy <source> <target>  プロファイルをコピー
-  delete, rm <profile>    プロファイルを削除`
+  delete, rm <profile>    プロファイルを削除`,
     )
     .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
     .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
@@ -30,7 +32,9 @@ Subcommands:
     .option('--model <name>', 'プロファイルのモデルを設定')
     .option('--unset <key>', 'プロファイルの指定した設定をリセット')
     .option('--reset', 'プロファイル全体をリセット')
-    .addHelpText('after', `
+    .addHelpText(
+      'after',
+      `
   --provider Names:
     gas, custom, openai, gemini, lmstudio
 
@@ -48,17 +52,13 @@ Examples:
   $ enja config use work     work をアクティブに設定
   $ enja config add personal personal プロファイルを作成
   $ enja config rm personal  プロファイルを削除
-  $ enja "Hello" -p work     work プロファイルで翻訳`
+  $ enja "Hello" -p work     work プロファイルで翻訳`,
     )
     .action(config);
 }
 
 /** 設定コマンドの実行 */
-export async function config(
-  profileOrSubcommand?: string,
-  _options?: ConfigOptions,
-  command?: Command
-): Promise<void> {
+export async function config(profileOrSubcommand?: string, _options?: ConfigOptions, command?: Command): Promise<void> {
   const storage = new ConfigStorage();
 
   // Commander.jsでは，サブコマンドのオプションが正しく認識されていない場合，
@@ -121,7 +121,7 @@ export async function config(
         const activeProfile = await storage.getActiveProfileName();
 
         const selected = await selectProfile(profiles, activeProfile);
-        if (!await confirmDeleteProfile(selected)) return;
+        if (!(await confirmDeleteProfile(selected))) return;
         await storage.deleteProfile(selected);
         console.log(`${kleur.green('✔')} プロファイル '${selected}' を削除しました`);
         return;
@@ -129,7 +129,7 @@ export async function config(
       if (argsLength > 2) {
         throw new Error('引数が多すぎます\n\n使用例:\n  enja config rm <profile>');
       }
-      if (!await confirmDeleteProfile(subcommandArg)) return;
+      if (!(await confirmDeleteProfile(subcommandArg))) return;
       await storage.deleteProfile(subcommandArg);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を削除しました`);
       return;
@@ -192,9 +192,9 @@ export async function config(
       if (options?.provider || options?.endpoint || options?.apiKey || options?.model || options?.reset || options?.unset) {
         throw new Error(
           'プロファイル名を指定してください\n\n' +
-          '使用例:\n' +
-          '  enja config work --provider openai           プロファイルの設定を変更\n' +
-          '  enja config add personal --provider gemini   プロファイルを作成'
+            '使用例:\n' +
+            '  enja config work --provider openai           プロファイルの設定を変更\n' +
+            '  enja config add personal --provider gemini   プロファイルを作成',
         );
       }
 
@@ -236,9 +236,16 @@ export async function config(
     }
 
     // プロファイル名のみ: そのプロファイルを表示 (オプションが指定されていない場合のみ)
-    if (profileOrSubcommand && !subcommandArg &&
-      !options?.reset && !options?.unset &&
-      !options?.provider && !options?.endpoint && !options?.apiKey && !options?.model) {
+    if (
+      profileOrSubcommand &&
+      !subcommandArg &&
+      !options?.reset &&
+      !options?.unset &&
+      !options?.provider &&
+      !options?.endpoint &&
+      !options?.apiKey &&
+      !options?.model
+    ) {
       const config = await storage.getProfile(profileOrSubcommand);
       console.log(`${kleur.bold('Profile:')} ${profileOrSubcommand}`);
       console.log(`${kleur.blue('provider:')} ${config.provider}`);
@@ -265,18 +272,18 @@ export async function config(
     // 不正な引数
     throw new Error(
       '無効なコマンド形式です．\n\n' +
-      '使用例:\n' +
-      '  enja config                                  現在の設定を表示\n' +
-      '  enja config ls                               プロファイル一覧\n' +
-      '  enja config work                             プロファイル表示\n' +
-      '  enja config work --provider openai           設定変更\n' +
-      '  enja config use work                         プロファイル切り替え\n' +
-      '  enja config add personal --provider gemini   プロファイル作成\n' +
-      '  enja config rename oldProfile newProfile     プロファイル名変更\n' +
-      '  enja config copy srcProfile destProfile      プロファイル複製\n' +
-      '  enja config rm profileName                    プロファイル削除\n' +
-      '  enja config work --reset                     プロファイルリセット\n' +
-      '  enja config work --unset api-key             設定リセット\n'
+        '使用例:\n' +
+        '  enja config                                  現在の設定を表示\n' +
+        '  enja config ls                               プロファイル一覧\n' +
+        '  enja config work                             プロファイル表示\n' +
+        '  enja config work --provider openai           設定変更\n' +
+        '  enja config use work                         プロファイル切り替え\n' +
+        '  enja config add personal --provider gemini   プロファイル作成\n' +
+        '  enja config rename oldProfile newProfile     プロファイル名変更\n' +
+        '  enja config copy srcProfile destProfile      プロファイル複製\n' +
+        '  enja config rm profileName                    プロファイル削除\n' +
+        '  enja config work --reset                     プロファイルリセット\n' +
+        '  enja config work --unset api-key             設定リセット\n',
     );
   } catch (error) {
     if (error instanceof Error) {

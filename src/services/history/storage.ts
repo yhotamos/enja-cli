@@ -1,9 +1,9 @@
-import * as fs from 'fs';
-import { promises as fsp } from 'fs';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
+import * as fs from 'node:fs';
+import { promises as fsp } from 'node:fs';
 import type { HistoryEntry } from '../../types/index.js';
+import { getConfigDir, getHistoryFilePath } from '../../utils/paths.js';
 import type { HistoryManager } from './index.js';
-import { getHistoryFilePath, getConfigDir } from '../../utils/paths.js';
 
 const MAX_HISTORY_ENTRIES = 100;
 
@@ -30,12 +30,8 @@ export class HistoryStorage implements HistoryManager {
       return JSON.parse(data) as HistoryEntry[];
     } catch (error: unknown) {
       // ファイルが存在しない場合は空配列を返す
-      if (
-        error instanceof Error &&
-        'code' in error &&
-        (error as NodeJS.ErrnoException).code === 'ENOENT'
-      ) {
-        return []
+      if (error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return [];
       }
       // それ以外の読み取り/パースエラーは警告を出して空配列を返す
       console.warn('履歴の読み込みに失敗しました．空配列を返します');
@@ -90,7 +86,7 @@ export class HistoryStorage implements HistoryManager {
   /** 履歴を削除 */
   async deleteById(id: string): Promise<boolean> {
     const entries = await this.readHistory();
-    const filteredEntries = entries.filter(entry => entry.id !== id);
+    const filteredEntries = entries.filter((entry) => entry.id !== id);
     // 変更がなければ書き込みを行わない
     if (filteredEntries.length === entries.length) return false;
     await this.writeHistory(filteredEntries);
@@ -105,25 +101,21 @@ export class HistoryStorage implements HistoryManager {
   /** IDで履歴を検索 */
   async findById(id: string): Promise<HistoryEntry | null> {
     const entries = await this.readHistory();
-    return entries.find(entry => entry.id === id) || null;
+    return entries.find((entry) => entry.id === id) || null;
   }
 
   /**
-   * 短縮IDで履歴を検索（先頭一致）  
+   * 短縮IDで履歴を検索（先頭一致）
    * 複数マッチする可能性があるため配列を返す
    */
   async findByShortId(id: string): Promise<HistoryEntry[]> {
     const entries = await this.readHistory();
-    return entries.filter(entry => entry.id.startsWith(id));
+    return entries.filter((entry) => entry.id.startsWith(id));
   }
 
   /** ハッシュと翻訳方向で履歴を検索 */
   async findByHash(hash: string, sourceLang: string, targetLang: string): Promise<HistoryEntry | null> {
     const entries = await this.readHistory();
-    return entries.find(entry =>
-      entry.sourceHash === hash &&
-      entry.sourceLang === sourceLang &&
-      entry.targetLang === targetLang
-    ) || null;
+    return entries.find((entry) => entry.sourceHash === hash && entry.sourceLang === sourceLang && entry.targetLang === targetLang) || null;
   }
 }

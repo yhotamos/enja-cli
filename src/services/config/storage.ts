@@ -1,12 +1,12 @@
-import { promises as fs } from 'fs';
-import { getConfigFilePath, getConfigDir } from '../../utils/paths.js';
-import { validateProfileName } from '../validate/profile.js';
-import { LMStudioTranslator } from '../translator/lmstudio.js';
+import { promises as fs } from 'node:fs';
+import type { AppConfig, ConfigProfile, TranslatorProvider } from '../../types/index.js';
+import { getConfigDir, getConfigFilePath } from '../../utils/paths.js';
 import { GASTranslator } from '../translator/gas.js';
-import { OpenAITranslator } from '../translator/openai.js';
 import { GeminiTranslator } from '../translator/gemini.js';
+import { LMStudioTranslator } from '../translator/lmstudio.js';
+import { OpenAITranslator } from '../translator/openai.js';
+import { validateProfileName } from '../validate/profile.js';
 import type { ConfigManager } from './index.js';
-import type { ConfigProfile, TranslatorProvider, AppConfig } from '../../types/index.js';
 
 const DEFAULT_PROVIDER: TranslatorProvider = 'gas';
 
@@ -17,7 +17,7 @@ const defaultProfileFactories: Record<TranslatorProvider, () => ConfigProfile> =
   gemini: GeminiTranslator.getDefaultProfile,
   lmstudio: LMStudioTranslator.getDefaultProfile,
   custom: (): ConfigProfile => ({ provider: 'custom' }),
-}
+};
 
 const defaultAppConfig: AppConfig = {
   version: '1.1',
@@ -79,7 +79,6 @@ export class ConfigStorage implements ConfigManager {
 
   /** プロファイルを追加 */
   async addProfile(name: string, config?: Partial<ConfigProfile>): Promise<void> {
-
     validateProfileName(name);
 
     // プロバイダーのバリデーション（defaultProfileFactories にキーが存在するかで判定）
@@ -320,11 +319,5 @@ export class ConfigStorage implements ConfigManager {
     const appConfig = await this.readAppConfig();
     const activeProfile = appConfig.profiles[appConfig.activeProfile];
     return activeProfile || this.getDefaultProfile();
-  }
-
-  private async writeConfig(config: ConfigProfile): Promise<void> {
-    const appConfig = await this.readAppConfig();
-    appConfig.profiles[appConfig.activeProfile] = config;
-    await this.writeAppConfig(appConfig);
   }
 }

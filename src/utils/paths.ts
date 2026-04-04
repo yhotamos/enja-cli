@@ -1,5 +1,5 @@
-import * as path from 'path';
-import * as os from 'os';
+import * as os from 'node:os';
+import * as path from 'node:path';
 
 /** OS の設定ディレクトリのパスを取得 */
 export function getConfigDir(): string {

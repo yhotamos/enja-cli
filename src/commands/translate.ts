@@ -1,11 +1,11 @@
-import * as fs from 'fs';
-import ora from 'ora';
-import kleur from 'kleur';
+import * as fs from 'node:fs';
 import type { Command } from 'commander';
-import { createTranslator } from '../services/translator/factory.js';
+import kleur from 'kleur';
+import ora from 'ora';
 import { HistoryStorage } from '../services/history/storage.js';
-import { hashText } from '../utils/hash.js';
+import { createTranslator } from '../services/translator/factory.js';
 import type { TranslateOptions } from '../types/index.js';
+import { hashText } from '../utils/hash.js';
 
 /** トップレベル引数として翻訳を登録（サブコマンド化しない） */
 export function translateCommand(program: Command): void {
@@ -24,13 +24,14 @@ export function translateCommand(program: Command): void {
     .option('--allow-local-endpoint', 'localhost（127.0.0.1）のエンドポイントを許可する')
     .option('--allow-private-endpoint', 'プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する')
     .option('--allow-http', 'HTTP（非 TLS）のエンドポイントを許可する')
-    .addHelpText('after',
+    .addHelpText(
+      'after',
       `\nExamples:
     $ enja "Hello, world!"     # 文字列を翻訳
     $ docker --help | enja     # 標準入力を翻訳
     $ enja -f input.txt -o output.txt  # ファイル入出力
     $ enja "Hello" -p work     # プロファイルを指定して翻訳
-    $ enja "Hello" --provider openai --api-key YOUR_API_KEY  # 一時的にプロバイダーを指定して翻訳`
+    $ enja "Hello" --provider openai --api-key YOUR_API_KEY  # 一時的にプロバイダーを指定して翻訳`,
     )
     .action(translate);
 }
@@ -62,10 +63,10 @@ export async function translate(text: string | undefined, options: TranslateOpti
 
     throw new Error(
       '翻訳するテキストが提供されていません\n\n' +
-      '使用例:\n' +
-      '  enja "Hello, world!"     # 引数で渡された文字列を翻訳\n' +
-      '  enja -f input.txt        # ファイルからテキストを読み込んで翻訳\n' +
-      '  cat README.md | enja     # パイプ(標準入力)で渡されたテキストを翻訳'
+        '使用例:\n' +
+        '  enja "Hello, world!"     # 引数で渡された文字列を翻訳\n' +
+        '  enja -f input.txt        # ファイルからテキストを読み込んで翻訳\n' +
+        '  cat README.md | enja     # パイプ(標準入力)で渡されたテキストを翻訳',
     );
   } catch (error) {
     console.error(`error: ${formatErrorMessage(error)}`);

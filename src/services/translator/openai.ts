@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import type { Translator, TranslationResult } from './index.js';
 import type { ConfigProfile } from '../../types/index.js';
+import type { TranslationResult, Translator } from './index.js';
 
 export class OpenAITranslator implements Translator {
   public static readonly DEFAULT_MODEL = process.env.OPENAI_DEFAULT_MODEL || 'gpt-4o-mini';
@@ -68,8 +68,8 @@ export class OpenAITranslator implements Translator {
 
   private mapLanguageCode(code: string): string {
     const languageMap: Record<string, string> = {
-      'en': 'English',
-      'ja': 'Japanese',
+      en: 'English',
+      ja: 'Japanese',
     };
 
     return languageMap[code.toLowerCase()] || code;

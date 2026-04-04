@@ -1,7 +1,7 @@
-import { ApiError, GoogleGenAI } from "@google/genai";
-import type { GenerateContentResponse } from "@google/genai";
-import type { Translator, TranslationResult } from './index.js';
-import type { ConfigProfile } from "../../types/index.js";
+import type { GenerateContentResponse } from '@google/genai';
+import { ApiError, GoogleGenAI } from '@google/genai';
+import type { ConfigProfile } from '../../types/index.js';
+import type { TranslationResult, Translator } from './index.js';
 
 export class GeminiTranslator implements Translator {
   static readonly DEFAULT_MODEL = process.env.GEMINI_DEFAULT_MODEL || 'gemini-2.5-flash-lite';
@@ -37,7 +37,7 @@ export class GeminiTranslator implements Translator {
         contents: text,
         config: {
           systemInstruction: systemPrompt,
-        }
+        },
       });
 
       const translatedText = response.text;
@@ -63,8 +63,8 @@ export class GeminiTranslator implements Translator {
 
   private mapLanguageCode(code: string): string {
     const languageMap: Record<string, string> = {
-      'en': 'English',
-      'ja': 'Japanese',
+      en: 'English',
+      ja: 'Japanese',
     };
 
     return languageMap[code.toLowerCase()] || code;

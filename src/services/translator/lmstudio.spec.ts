@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { LMStudioTranslator } from './lmstudio.js';
 
 type TestHelpers = {
@@ -11,14 +11,24 @@ describe('LMStudioTranslator helpers', () => {
   const h = t as unknown as TestHelpers;
 
   it('parses valid JSON', () => {
-    const raw = JSON.stringify({ output: [{ type: 'reasoning', content: 'Translate to Japanese.' }, { type: 'message', content: 'こんにちは世界' }] });
+    const raw = JSON.stringify({
+      output: [
+        { type: 'reasoning', content: 'Translate to Japanese.' },
+        { type: 'message', content: 'こんにちは世界' },
+      ],
+    });
     const data = h.parseJsonSafe(raw, { ok: true, status: 200 });
     const translated = h.extractTranslatedFromOutput(data);
     expect(translated).toBe('こんにちは世界');
   });
 
   it('extracts text field if present', () => {
-    const raw = JSON.stringify({ output: [{ type: 'reasoning', content: 'Translate to Japanese.' }, { type: 'message', content: { text: 'こんにちは世界' } }] });
+    const raw = JSON.stringify({
+      output: [
+        { type: 'reasoning', content: 'Translate to Japanese.' },
+        { type: 'message', content: { text: 'こんにちは世界' } },
+      ],
+    });
     const data = h.parseJsonSafe(raw, { ok: true, status: 200 });
     const translated = h.extractTranslatedFromOutput(data);
     expect(translated).toBe('こんにちは世界');

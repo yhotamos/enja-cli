@@ -1,5 +1,5 @@
 import type { ConfigProfile } from '../../types/index.js';
-import type { Translator, TranslationResult } from './index.js';
+import type { TranslationResult, Translator } from './index.js';
 
 interface GASApiResponse {
   code: number;
@@ -41,7 +41,7 @@ export class GASTranslator implements Translator {
     };
 
     if (this.apiKey) {
-      headers['Authorization'] = `Bearer ${this.apiKey}`;
+      headers.Authorization = `Bearer ${this.apiKey}`;
     }
 
     const response = await fetch(this.apiUrl, {
@@ -54,7 +54,7 @@ export class GASTranslator implements Translator {
       throw new Error(`HTTP ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json() as GASApiResponse;
+    const data = (await response.json()) as GASApiResponse;
 
     if (data.code !== 200 || !data.translatedText) {
       throw new Error(`${data.error || '翻訳に失敗しました'}`);

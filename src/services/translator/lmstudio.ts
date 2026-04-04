@@ -1,22 +1,22 @@
 import type { ConfigProfile } from '../../types/index.js';
-import type { Translator, TranslationResult } from './index.js';
+import type { TranslationResult, Translator } from './index.js';
 
 type LMStudioError = {
   message?: string;
   type?: string;
   code?: string;
   param?: string;
-}
+};
 
 type LMStudioOutputItem =
   | string
   | {
-    type?: string;
-    content?: unknown;
-    text?: string;
-    response?: string;
-    output?: unknown;
-  };
+      type?: string;
+      content?: unknown;
+      text?: string;
+      response?: string;
+      output?: unknown;
+    };
 
 interface LMStudioResponse {
   output?: LMStudioOutputItem[];
@@ -30,7 +30,7 @@ export class LMStudioTranslator implements Translator {
     return {
       provider: 'lmstudio',
       endpoint: LMStudioTranslator.DEFAULT_ENDPOINT,
-    }
+    };
   }
 
   private baseUrl: string;
@@ -54,8 +54,8 @@ export class LMStudioTranslator implements Translator {
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ...(this.apiKey ? { 'Authorization': `Bearer ${this.apiKey}` } : {}),
+      Accept: 'application/json',
+      ...(this.apiKey ? { Authorization: `Bearer ${this.apiKey}` } : {}),
     };
 
     const body: BodyInit = JSON.stringify({
@@ -184,5 +184,4 @@ export class LMStudioTranslator implements Translator {
     }
     return null;
   }
-
 }

@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 /** テキストの SHA-256 ハッシュを計算して返す */
 export function hashText(text: string): string {
