@@ -24,8 +24,8 @@ enja [text] [options]
 - `-p, --profile <name>` - 使用するプロファイルを指定
 - `--endpoint <url>` 一時的にカスタム翻訳エンドポイントを指定（現在のプロファイルに適用）
 - `--api-key <key>` 一時的に API キーを指定（現在のプロファイルに適用）
-- `--provider <name>` 一時的に翻訳プロバイダーを指定（例: gas, openai, gemini, lmstudio; 現在のプロファイルに適用）
-- `--model <name>` 一時的に翻訳モデルを指定（openai, gemini, lmstudioのみ; 現在のプロファイルに適用）
+- `--provider <name>` 一時的に翻訳プロバイダーを指定（現在のプロファイルに適用）
+- `--model <name>` 一時的に翻訳モデルを指定（現在のプロファイルに適用）
 - `--allow-local-endpoint` - localhost（127.0.0.1）のエンドポイントを許可する
 - `--allow-private-endpoint` - プライベートネットワーク（例: 192.168.x.x）のエンドポイントを許可する
 - `--allow-http` - HTTP（非 TLS）のエンドポイントを許可する
@@ -166,10 +166,11 @@ enja config [profile|subcommand] [subcommandArg] [options]
 #### `--provider` Names
 
 - `gas` - Google Apps Script の LanguageApp を使用した翻訳（デフォルト）
-- `custom` - カスタム翻訳エンドポイントを使用
 - `openai` - OpenAI API を使用した翻訳
 - `gemini` - Gemini API を使用した翻訳
 - `lmstudio` - LM Studio API を使用した翻訳
+- `ollama` - Ollama API を使用した翻訳
+- `custom` - カスタム翻訳エンドポイントを使用
 
 #### `--unset` Keys
 
@@ -202,6 +203,15 @@ enja config add gemini-profile --provider gemini --api-key YOUR_GEMINI_API_KEY -
 
 # LM Studio を使用するプロファイルを作成
 enja config add lmstudio-profile --provider lmstudio --endpoint http://127.0.0.1:1234 --model openai/gpt-oss-20b
+
+# ローカル Ollama を使用するプロファイルを作成
+enja config add ollama-local --provider ollama --endpoint http://localhost:11434/ --model gpt-oss:20b
+
+# Ollama のクラウドモデルを使用するプロファイルを作成（APIキーで直接アクセス）
+enja config add ollama-cloud-direct --provider ollama --endpoint https://ollama.com/ --api-key YOUR_OLLAMA_API_KEY --model gpt-oss:120b-cloud
+
+# Ollama のクラウドモデルを使用するプロファイルを作成（ローカルの Ollama 経由でアクセス）
+enja config add ollama-cloud-via-local --provider ollama --endpoint http://localhost:11434/ --model gpt-oss:120b-cloud
 
 # カスタムエンドポイントを使用するプロファイルを作成
 enja config add custom-profile --provider custom --endpoint https://api.example.com/translate --api-key YOUR_KEY
