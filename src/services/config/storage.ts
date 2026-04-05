@@ -5,6 +5,7 @@ import { CustomTranslator } from '../translator/custom.js';
 import { GASTranslator } from '../translator/gas.js';
 import { GeminiTranslator } from '../translator/gemini.js';
 import { LMStudioTranslator } from '../translator/lmstudio.js';
+import { OllamaTranslator } from '../translator/ollama.js';
 import { OpenAITranslator } from '../translator/openai.js';
 import { validateProfileName } from '../validate/profile.js';
 import type { ConfigManager } from './index.js';
@@ -17,6 +18,7 @@ const defaultProfileFactories: Record<TranslatorProvider, () => ConfigProfile> =
   openai: OpenAITranslator.getDefaultProfile,
   gemini: GeminiTranslator.getDefaultProfile,
   lmstudio: LMStudioTranslator.getDefaultProfile,
+  ollama: OllamaTranslator.getDefaultProfile,
   custom: CustomTranslator.getDefaultProfile,
 };
 
