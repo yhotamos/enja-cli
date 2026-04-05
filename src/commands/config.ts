@@ -14,7 +14,7 @@ export function configCommand(program: Command): void {
       '[profile|subcommand]',
       `プロファイル名またはサブコマンド
 
-Profiles:
+Profile:
   <profile>           指定したプロファイルの詳細を表示
   <profile> [options] 指定したプロファイルの設定を変更
 
@@ -26,7 +26,7 @@ Subcommands:
   copy <source> <target>  プロファイルをコピー
   delete, rm <profile>    プロファイルを削除`,
     )
-    .option('--provider <name>', 'プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)')
+    .option('--provider <name>', 'プロファイルのプロバイダーを設定')
     .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
     .option('--api-key <api-key>', 'プロファイルの API キーを設定')
     .option('--model <name>', 'プロファイルのモデルを設定')
@@ -36,7 +36,7 @@ Subcommands:
       'after',
       `
   --provider Names:
-    gas, custom, openai, gemini, lmstudio
+    gas, openai, gemini, lmstudio, ollama, custom
 
   --unset Keys:
     provider, endpoint, api-key, model
