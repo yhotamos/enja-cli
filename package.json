@@ -1,6 +1,6 @@
 {
   "name": "@yhotamos/enja-cli",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "英語を日本語に翻訳するシンプルなコマンドラインツール",
   "type": "module",
   "main": "dist/index.js",
