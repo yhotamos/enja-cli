@@ -298,10 +298,8 @@ export class ConfigStorage implements ConfigManager {
       if (ConfigStorage.isAppConfig(parsed)) {
         return parsed;
       }
-      console.warn('設定ファイルの形式が不正です．規定値を使用します');
       return { ...defaultAppConfig };
     } catch {
-      console.warn('設定読み込みに失敗しました．規定値を使用します');
       return { ...defaultAppConfig };
     }
   }
