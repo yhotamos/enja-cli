@@ -17,6 +17,9 @@ export class GASTranslator implements Translator {
     return {
       provider: 'gas',
       endpoint: GASTranslator.DEFAULT_ENDPOINT,
+      allowLocalEndpoint: false,
+      allowPrivateEndpoint: false,
+      allowHttp: false,
     };
   }
 

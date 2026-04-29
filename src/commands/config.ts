@@ -30,6 +30,9 @@ Subcommands:
     .option('--endpoint <url>', 'プロファイルのエンドポイントを設定')
     .option('--api-key <api-key>', 'プロファイルの API キーを設定')
     .option('--model <name>', 'プロファイルのモデルを設定')
+    .option('--allow-local-endpoint', 'プロファイルで localhost のエンドポイントを許可')
+    .option('--allow-private-endpoint', 'プロファイルでプライベート IP のエンドポイントを許可')
+    .option('--allow-http', 'プロファイルで HTTP のエンドポイントを許可')
     .option('--unset <key>', 'プロファイルの指定した設定をリセット')
     .option('--reset', 'プロファイル全体をリセット')
     .addHelpText(
@@ -39,7 +42,7 @@ Subcommands:
     gas, openai, gemini, lmstudio, ollama, custom
 
   --unset Keys:
-    provider, endpoint, api-key, model
+    provider, endpoint, api-key, model, allow-local-endpoint, allow-private-endpoint, allow-http
 
   注意: --provider, --endpoint, --api-key, --model オプションは
       プロファイル名または 'add' サブコマンドと一緒に使用してください
@@ -148,6 +151,9 @@ export async function config(profileOrSubcommand?: string, _options?: ConfigOpti
       if (options?.endpoint) profileConfig.endpoint = options.endpoint;
       if (options?.apiKey) profileConfig.apiKey = options.apiKey;
       if (options?.model) profileConfig.model = options.model;
+      if (options?.allowLocalEndpoint) profileConfig.allowLocalEndpoint = options.allowLocalEndpoint;
+      if (options?.allowPrivateEndpoint) profileConfig.allowPrivateEndpoint = options.allowPrivateEndpoint;
+      if (options?.allowHttp) profileConfig.allowHttp = options.allowHttp;
 
       await storage.addProfile(subcommandArg, profileConfig);
       console.log(`${kleur.green('✔')} プロファイル '${subcommandArg}' を作成しました`);
@@ -205,11 +211,26 @@ export async function config(profileOrSubcommand?: string, _options?: ConfigOpti
       console.log(`${kleur.blue('endpoint:')} ${config.endpoint || '(not set)'}`);
       console.log(`${kleur.blue('apiKey:')} ${config.apiKey ? maskApiKey(config.apiKey) : '(not set)'}`);
       console.log(`${kleur.blue('model:')} ${config.model || '(not set)'}`);
+      console.log('\nPermissions:');
+      const flag = (label: string, v?: boolean) => `${kleur.blue(label)} ${v ? kleur.green('enabled') : kleur.gray('disabled')}`;
+      console.log(flag('local endpoint:', config.allowLocalEndpoint));
+      console.log(flag('private endpoint:', config.allowPrivateEndpoint));
+      console.log(flag('http:', config.allowHttp));
       return;
     }
 
     // プロファイル + オプション: プロファイルの設定を変更 (プロファイル表示より先に判定)
-    if (profileOrSubcommand && !subcommandArg && (options?.provider || options?.endpoint || options?.apiKey || options?.model)) {
+    if (
+      profileOrSubcommand &&
+      !subcommandArg &&
+      (options?.provider ||
+        options?.endpoint ||
+        options?.apiKey ||
+        options?.model ||
+        options?.allowLocalEndpoint ||
+        options?.allowPrivateEndpoint ||
+        options?.allowHttp)
+    ) {
       let updated = false;
 
       if (options.provider) {
@@ -228,6 +249,18 @@ export async function config(profileOrSubcommand?: string, _options?: ConfigOpti
         await storage.setProfileConfig(profileOrSubcommand, 'model', options.model);
         updated = true;
       }
+      if (options.allowLocalEndpoint) {
+        await storage.setProfileConfig(profileOrSubcommand, 'allow-local-endpoint', 'true');
+        updated = true;
+      }
+      if (options.allowPrivateEndpoint) {
+        await storage.setProfileConfig(profileOrSubcommand, 'allow-private-endpoint', 'true');
+        updated = true;
+      }
+      if (options.allowHttp) {
+        await storage.setProfileConfig(profileOrSubcommand, 'allow-http', 'true');
+        updated = true;
+      }
 
       if (updated) {
         console.log(`${kleur.green('✔')} プロファイル '${profileOrSubcommand}' の設定を更新しました`);
@@ -244,7 +277,10 @@ export async function config(profileOrSubcommand?: string, _options?: ConfigOpti
       !options?.provider &&
       !options?.endpoint &&
       !options?.apiKey &&
-      !options?.model
+      !options?.model &&
+      !options?.allowLocalEndpoint &&
+      !options?.allowPrivateEndpoint &&
+      !options?.allowHttp
     ) {
       const config = await storage.getProfile(profileOrSubcommand);
       console.log(`${kleur.bold('Profile:')} ${profileOrSubcommand}`);
@@ -252,6 +288,11 @@ export async function config(profileOrSubcommand?: string, _options?: ConfigOpti
       console.log(`${kleur.blue('endpoint:')} ${config.endpoint || '(not set)'}`);
       console.log(`${kleur.blue('apiKey:')} ${config.apiKey ? maskApiKey(config.apiKey) : '(not set)'}`);
       console.log(`${kleur.blue('model:')} ${config.model || '(not set)'}`);
+      console.log('\nPermissions:');
+      const flag = (label: string, v?: boolean) => `${kleur.blue(label)} ${v ? kleur.green('enabled') : kleur.gray('disabled')}`;
+      console.log(flag('local endpoint:', config.allowLocalEndpoint));
+      console.log(flag('private endpoint:', config.allowPrivateEndpoint));
+      console.log(flag('http:', config.allowHttp));
       return;
     }
 

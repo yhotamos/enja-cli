@@ -9,6 +9,9 @@ export class OpenAITranslator implements Translator {
     return {
       provider: 'openai',
       model: OpenAITranslator.DEFAULT_MODEL,
+      allowLocalEndpoint: false,
+      allowPrivateEndpoint: false,
+      allowHttp: false,
     };
   }
 

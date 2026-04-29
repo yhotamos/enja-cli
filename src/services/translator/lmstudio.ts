@@ -30,6 +30,9 @@ export class LMStudioTranslator implements Translator {
     return {
       provider: 'lmstudio',
       endpoint: LMStudioTranslator.DEFAULT_ENDPOINT,
+      allowLocalEndpoint: false,
+      allowPrivateEndpoint: false,
+      allowHttp: false,
     };
   }
 

@@ -13,4 +13,7 @@ export const RESERVED_WORDS: string[] = [
   'api-key',
   'model',
   'default',
+  'allow-local-endpoint',
+  'allow-private-endpoint',
+  'allow-http',
 ];

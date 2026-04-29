@@ -50,9 +50,9 @@ export async function createTranslator(options?: TranslateOptions): Promise<Tran
     activeProfile = await storage.getActiveProfileName();
   }
 
-  const allowLocalEndpoint = options?.allowLocalEndpoint ?? false;
-  const allowPrivateEndpoint = options?.allowPrivateEndpoint ?? false;
-  const allowHttp = options?.allowHttp ?? false;
+  const allowLocalEndpoint = options?.allowLocalEndpoint ?? config.allowLocalEndpoint ?? false;
+  const allowPrivateEndpoint = options?.allowPrivateEndpoint ?? config.allowPrivateEndpoint ?? false;
+  const allowHttp = options?.allowHttp ?? config.allowHttp ?? false;
   const validateEndpointOptions: ValidateEndpointOptions = {
     allowLocalEndpoint,
     allowPrivateEndpoint,

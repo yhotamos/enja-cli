@@ -5,6 +5,9 @@ export class CustomTranslator implements Translator {
   static getDefaultProfile(): ConfigProfile {
     return {
       provider: 'custom',
+      allowLocalEndpoint: false,
+      allowPrivateEndpoint: false,
+      allowHttp: false,
     };
   }
 

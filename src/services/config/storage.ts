@@ -1,5 +1,5 @@
 import { promises as fs } from 'node:fs';
-import type { AppConfig, ConfigProfile, TranslatorProvider } from '../../types/index.js';
+import type { AppConfig, ConfigKey, ConfigProfile, TranslatorProvider } from '../../types/index.js';
 import { getConfigDir, getConfigFilePath } from '../../utils/paths.js';
 import { CustomTranslator } from '../translator/custom.js';
 import { GASTranslator } from '../translator/gas.js';
@@ -187,7 +187,7 @@ export class ConfigStorage implements ConfigManager {
   }
 
   /** プロファイルの設定を変更 */
-  async setProfileConfig(profileName: string, key: string, value: string): Promise<void> {
+  async setProfileConfig(profileName: string, key: ConfigKey, value: string): Promise<void> {
     const appConfig = await this.readAppConfig();
 
     // プロファイルが存在しない場合はエラー
@@ -197,10 +197,39 @@ export class ConfigStorage implements ConfigManager {
 
     const profile = appConfig.profiles[profileName];
 
+    const allowedValues: { [key: string]: boolean } = {
+      true: true,
+      false: false,
+    };
+
     switch (key) {
       case 'endpoint':
         profile.endpoint = value;
         break;
+      case 'allow-local-endpoint': {
+        const v = String(value).toLowerCase();
+        if (!Object.hasOwn(allowedValues, v)) {
+          throw new Error(`無効な値 (${value}): allow-local-endpoint は 'true' または 'false' を指定してください`);
+        }
+        profile.allowLocalEndpoint = allowedValues[v];
+        break;
+      }
+      case 'allow-private-endpoint': {
+        const v = String(value).toLowerCase();
+        if (!Object.hasOwn(allowedValues, v)) {
+          throw new Error(`無効な値 (${value}): allow-private-endpoint は 'true' または 'false' を指定してください`);
+        }
+        profile.allowPrivateEndpoint = allowedValues[v];
+        break;
+      }
+      case 'allow-http': {
+        const v = String(value).toLowerCase();
+        if (!Object.hasOwn(allowedValues, v)) {
+          throw new Error(`無効な値 (${value}): allow-http は 'true' または 'false' を指定してください`);
+        }
+        profile.allowHttp = allowedValues[v];
+        break;
+      }
       case 'api-key':
         profile.apiKey = value;
         break;
@@ -222,7 +251,7 @@ export class ConfigStorage implements ConfigManager {
   }
 
   /** プロファイルの設定をリセット */
-  async unsetProfileConfig(profileName: string, key: string): Promise<void> {
+  async unsetProfileConfig(profileName: string, key: ConfigKey): Promise<void> {
     const appConfig = await this.readAppConfig();
 
     if (!appConfig.profiles[profileName]) {
@@ -236,6 +265,15 @@ export class ConfigStorage implements ConfigManager {
     switch (key) {
       case 'provider':
         profile.provider = defaultProfile.provider;
+        break;
+      case 'allow-local-endpoint':
+        profile.allowLocalEndpoint = defaultProfile.allowLocalEndpoint;
+        break;
+      case 'allow-private-endpoint':
+        profile.allowPrivateEndpoint = defaultProfile.allowPrivateEndpoint;
+        break;
+      case 'allow-http':
+        profile.allowHttp = defaultProfile.allowHttp;
         break;
       case 'endpoint':
         profile.endpoint = defaultProfile.endpoint;
