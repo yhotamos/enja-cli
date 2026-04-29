@@ -48,6 +48,9 @@ export interface ConfigProfile {
   endpoint?: string;
   apiKey?: string;
   model?: string;
+  allowLocalEndpoint: boolean;
+  allowPrivateEndpoint: boolean;
+  allowHttp: boolean;
 }
 
 export interface AppConfig {
@@ -65,8 +68,11 @@ export interface ConfigOptions {
   endpoint?: string;
   apiKey?: string;
   model?: string;
+  allowLocalEndpoint?: boolean;
+  allowPrivateEndpoint?: boolean;
+  allowHttp?: boolean;
 }
 
-export type ConfigKey = 'endpoint' | 'api-key' | 'provider' | 'model';
+export type ConfigKey = 'endpoint' | 'api-key' | 'provider' | 'model' | 'allow-local-endpoint' | 'allow-private-endpoint' | 'allow-http';
 
 export type TranslatorProvider = 'gas' | 'openai' | 'gemini' | 'lmstudio' | 'ollama' | 'custom';

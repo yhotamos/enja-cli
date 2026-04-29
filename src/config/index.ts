@@ -27,10 +27,17 @@ export async function getConfig(options?: TranslateOptions): Promise<ConfigProfi
 
   const model: string | undefined = options?.model || fileConfig.model;
 
+  const allowLocalEndpoint: boolean = options?.allowLocalEndpoint ?? fileConfig.allowLocalEndpoint ?? false;
+  const allowPrivateEndpoint: boolean = options?.allowPrivateEndpoint ?? fileConfig.allowPrivateEndpoint ?? false;
+  const allowHttp: boolean = options?.allowHttp ?? fileConfig.allowHttp ?? false;
+
   return {
     endpoint,
     provider,
     apiKey,
     model,
+    allowLocalEndpoint,
+    allowPrivateEndpoint,
+    allowHttp,
   };
 }
