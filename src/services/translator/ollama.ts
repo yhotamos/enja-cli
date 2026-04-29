@@ -20,6 +20,9 @@ export class OllamaTranslator implements Translator {
       provider: OllamaTranslator.PROVIDER_NAME,
       endpoint: OllamaTranslator.DEFAULT_ENDPOINT,
       model: OllamaTranslator.DEFAULT_MODEL,
+      allowLocalEndpoint: false,
+      allowPrivateEndpoint: false,
+      allowHttp: false,
     };
   }
 

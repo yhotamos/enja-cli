@@ -10,6 +10,9 @@ export class GeminiTranslator implements Translator {
     return {
       provider: 'gemini',
       model: GeminiTranslator.DEFAULT_MODEL,
+      allowLocalEndpoint: false,
+      allowPrivateEndpoint: false,
+      allowHttp: false,
     };
   }
 
