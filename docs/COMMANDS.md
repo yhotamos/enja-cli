@@ -132,7 +132,7 @@ enja history --clear
 ### 使い方
 
 ```bash
-enja config [profile|subcommand] [subcommandArg] [options]
+enja config [profile|subcommand] [options]
 ```
 
 ### Arguments
@@ -152,13 +152,16 @@ enja config [profile|subcommand] [subcommandArg] [options]
 
 ### Options
 
-`--provider`, `--endpoint`, `--api-key`, `--model` はプロファイル名または `add` と一緒に使用します．  
+`--provider`, `--endpoint`, `--api-key`, `--model`, `--allow-local-endpoint`, `--allow-private-endpoint`, `--allow-http` はプロファイル名または `add` と一緒に使用します．  
 `--unset`, `--reset` はプロファイル名と一緒に使用します．
 
-- `--provider <name>` - プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio)
+- `--provider <name>` - プロファイルのプロバイダーを設定 (例: gas, openai, gemini, lmstudio, ollama, custom)
 - `--endpoint <url>` - プロファイルのエンドポイントを設定
 - `--api-key <api-key>` - プロファイルの API キーを設定
 - `--model <name>` - プロファイルのモデルを設定
+- `--allow-local-endpoint` - プロファイルで localhost のエンドポイントを許可
+- `--allow-private-endpoint` - プロファイルでプライベート IP のエンドポイントを許可
+- `--allow-http` - プロファイルで HTTP のエンドポイントを許可
 - `--unset <key>` - プロファイルの指定した設定をリセット
 - `--reset` - プロファイル全体をリセット
 - `-h, --help` - ヘルプを表示
@@ -174,7 +177,7 @@ enja config [profile|subcommand] [subcommandArg] [options]
 
 #### `--unset` Keys
 
-- `provider`, `endpoint`, `api-key`, `model`
+- `provider`, `endpoint`, `api-key`, `model`, `allow-local-endpoint`, `allow-private-endpoint`, `allow-http`
 
 ### Examples
 
@@ -202,16 +205,16 @@ enja config add personal-profile --provider openai --api-key YOUR_OPENAI_API_KEY
 enja config add gemini-profile --provider gemini --api-key YOUR_GEMINI_API_KEY --model gemini-1.5-flash
 
 # LM Studio を使用するプロファイルを作成
-enja config add lmstudio-profile --provider lmstudio --endpoint http://127.0.0.1:1234 --model openai/gpt-oss-20b
+enja config add lmstudio-profile --provider lmstudio --endpoint http://127.0.0.1:1234 --model openai/gpt-oss-20b --allow-local-endpoint
 
 # ローカル Ollama を使用するプロファイルを作成
-enja config add ollama-local --provider ollama --endpoint http://localhost:11434/ --model gpt-oss:20b
+enja config add ollama-local --provider ollama --endpoint http://localhost:11434/ --model gpt-oss:20b --allow-local-endpoint
 
 # Ollama のクラウドモデルを使用するプロファイルを作成（APIキーで直接アクセス）
 enja config add ollama-cloud-direct --provider ollama --endpoint https://ollama.com/ --api-key YOUR_OLLAMA_API_KEY --model gpt-oss:120b-cloud
 
 # Ollama のクラウドモデルを使用するプロファイルを作成（ローカルの Ollama 経由でアクセス）
-enja config add ollama-cloud-via-local --provider ollama --endpoint http://localhost:11434/ --model gpt-oss:120b-cloud
+enja config add ollama-cloud-via-local --provider ollama --endpoint http://localhost:11434/ --model gpt-oss:120b-cloud --allow-local-endpoint
 
 # カスタムエンドポイントを使用するプロファイルを作成
 enja config add custom-profile --provider custom --endpoint https://api.example.com/translate --api-key YOUR_KEY
