@@ -34,11 +34,30 @@ jobs:
             exit 1
           fi
 
+      - name: Check mandatory environment variables
+        run: |
+          if [ -z "${{ secrets.GAS_DEFAULT_ENDPOINT }}" ]; then
+            echo "GAS_DEFAULT_ENDPOINT is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.OPENAI_DEFAULT_MODEL }}" ]; then
+            echo "OPENAI_DEFAULT_MODEL is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.GEMINI_DEFAULT_MODEL }}" ]; then
+            echo "GEMINI_DEFAULT_MODEL is not set"
+            exit 1
+          fi
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
+        env:
+          GAS_DEFAULT_ENDPOINT: ${{ secrets.GAS_DEFAULT_ENDPOINT }}
+          OPENAI_DEFAULT_MODEL: ${{ secrets.OPENAI_DEFAULT_MODEL }}
+          GEMINI_DEFAULT_MODEL: ${{ secrets.GEMINI_DEFAULT_MODEL }}
 
       - name: Publish to npm (OIDC)
         run: |
