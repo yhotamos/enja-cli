@@ -43,7 +43,7 @@ export function translateCommand(program: Command): void {
 export async function translate(text: string | undefined, options: TranslateOptions): Promise<void> {
   try {
     // 標準入力からの読み込み処理
-    if (!text && !options.file) {
+    if (text === undefined && !options.file) {
       const stdin = process.stdin.isTTY ? await readInteractiveStdin() : await readStdin();
       await processTranslation(stdin, options, 'stdin');
       return;
@@ -60,7 +60,7 @@ export async function translate(text: string | undefined, options: TranslateOpti
     }
 
     // 引数で渡されたテキストの処理
-    if (text) {
+    if (text !== undefined) {
       await processTranslation(text, options, 'arg');
       return;
     }
