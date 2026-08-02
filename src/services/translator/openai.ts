@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
-import type { ConfigProfile } from '../../types/index.js';
+import type { ConfigProfile, TranslatorStyle } from '../../types/index.js';
 import type { TranslationResult, Translator } from './index.js';
+import { buildSystemPrompt } from './prompt.js';
 
 export class OpenAITranslator implements Translator {
   public static readonly DEFAULT_MODEL = process.env.OPENAI_DEFAULT_MODEL || 'gpt-4o-mini';
@@ -30,12 +31,9 @@ export class OpenAITranslator implements Translator {
     return this.model;
   }
 
-  async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
+  async translate(text: string, sourceLang: string, targetLang: string, style?: TranslatorStyle): Promise<TranslationResult> {
     try {
-      const sourceLanguage = this.mapLanguageCode(sourceLang);
-      const targetLanguage = this.mapLanguageCode(targetLang);
-
-      const systemPrompt = `You are a professional translator. Translate the following text from ${sourceLanguage} to ${targetLanguage}. Only return the translated text without any additional explanation or comments.`;
+      const systemPrompt = buildSystemPrompt(sourceLang, targetLang, style);
 
       const completion = await this.client.chat.completions.create({
         model: this.model,
@@ -70,14 +68,5 @@ export class OpenAITranslator implements Translator {
       }
       throw error;
     }
-  }
-
-  private mapLanguageCode(code: string): string {
-    const languageMap: Record<string, string> = {
-      en: 'English',
-      ja: 'Japanese',
-    };
-
-    return languageMap[code.toLowerCase()] || code;
   }
 }

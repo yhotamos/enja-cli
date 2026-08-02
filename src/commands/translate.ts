@@ -2,8 +2,10 @@ import * as fs from 'node:fs';
 import type { Command } from 'commander';
 import kleur from 'kleur';
 import ora from 'ora';
+import { resolveConfig } from '../config/index.js';
 import { HistoryStorage } from '../services/history/storage.js';
 import { createTranslator } from '../services/translator/factory.js';
+import { assertStyleSupported, assertTranslatorStyle } from '../services/translator/prompt.js';
 import type { TranslateOptions } from '../types/index.js';
 import { hashText } from '../utils/hash.js';
 
@@ -15,6 +17,7 @@ export function translateCommand(program: Command): void {
     .option('-o, --output <path>', 'ファイルに出力する (デフォルト: 標準出力)')
     .option('-s, --strip-html', 'HTMLタグを除去してから翻訳する')
     .option('-N, --no-cache', 'キャッシュを使用せずに再翻訳する')
+    .option('--style <style>', '翻訳のスタイルを指定（formal, casual, technical, academic, business）')
     .option('-F, --flip', '翻訳方向を逆にする (default: 英語→日本語)')
     .option('-p, --profile <name>', '使用するプロファイルを指定')
     .option('--endpoint <url>', '一時的にカスタム翻訳エンドポイントを指定（現在のプロファイルに適用）')
@@ -89,13 +92,27 @@ async function processTranslation(text: string, options: TranslateOptions, input
   }
 
   const historyStorage = new HistoryStorage();
+  assertTranslatorStyle(options.style);
+
+  const styledConfig = options.style ? await resolveConfig(options) : undefined;
+  if (styledConfig) assertStyleSupported(styledConfig.config.provider, options.style);
 
   // 翻訳処理
   const sourceLang = options.flip ? 'ja' : 'en';
   const targetLang = options.flip ? 'en' : 'ja';
 
   // キャッシュチェック
-  const textHash = hashText(processedText);
+  const cacheSource = styledConfig
+    ? JSON.stringify({
+        text: processedText,
+        style: options.style,
+        profile: styledConfig.profileName,
+        provider: styledConfig.config.provider,
+        model: styledConfig.config.model,
+        endpoint: styledConfig.config.endpoint,
+      })
+    : processedText;
+  const textHash = hashText(cacheSource);
   const cachedEntry = await historyStorage.findByHash(textHash, sourceLang, targetLang);
 
   if (cachedEntry && options.cache !== false) {
@@ -124,7 +141,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
 
   const spinner = ora(`翻訳中... ${dir} ${profileInfo}`).start();
   try {
-    const result = await translator.translate(processedText, sourceLang, targetLang);
+    const result = await translator.translate(processedText, sourceLang, targetLang, options.style);
     const translated = result.text;
     spinner.succeed(`翻訳完了 ${dir} ${profileInfo}`);
     // 履歴に保存
@@ -140,6 +157,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
       model: model ?? undefined,
       options: {
         stripHtml: options.stripHtml,
+        style: options.style,
         file: options.file,
         inputMethod,
       },

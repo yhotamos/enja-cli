@@ -20,6 +20,7 @@ enja [text] [options]
 - `-o, --output <path>` - ファイルに出力する (デフォルト: 標準出力)
 - `-s, --strip-html` - HTML タグを除去してから翻訳する
 - `-N, --no-cache` - キャッシュを使用せずに再翻訳する
+- `--style <style>` - 翻訳スタイルを指定 ※ OpenAI，Gemini，LM Studio，Ollamaのみ（`formal`, `casual`, `technical`, `academic`, `business`）
 - `-F, --flip` - 翻訳方向を逆にする (デフォルト: 英語 → 日本語)
 - `-p, --profile <name>` - 使用するプロファイルを指定
 - `--endpoint <url>` 一時的にカスタム翻訳エンドポイントを指定（現在のプロファイルに適用）
@@ -63,6 +64,9 @@ enja "Hello, world!" --endpoint https://api.example.com/translate --api-key YOUR
 
 # OpenAI API を使用して翻訳
 enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY --model gpt-4o
+
+# フォーマルなスタイルで翻訳
+enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY --style formal
 
 # Gemini API を使用して翻訳
 enja "Hello, world!" --provider gemini --api-key YOUR_GEMINI_API_KEY --model gemini-1.5-flash
