@@ -1,4 +1,5 @@
 import * as fs from 'node:fs';
+import { createInterface, type Key } from 'node:readline';
 import type { Command } from 'commander';
 import kleur from 'kleur';
 import ora from 'ora';
@@ -42,8 +43,8 @@ export function translateCommand(program: Command): void {
 export async function translate(text: string | undefined, options: TranslateOptions): Promise<void> {
   try {
     // 標準入力からの読み込み処理
-    if (!text && !options.file && !process.stdin.isTTY) {
-      const stdin = await readStdin();
+    if (!text && !options.file) {
+      const stdin = process.stdin.isTTY ? await readInteractiveStdin() : await readStdin();
       await processTranslation(stdin, options, 'stdin');
       return;
     }
@@ -63,14 +64,6 @@ export async function translate(text: string | undefined, options: TranslateOpti
       await processTranslation(text, options, 'arg');
       return;
     }
-
-    throw new Error(
-      '翻訳するテキストが提供されていません\n\n' +
-        '使用例:\n' +
-        '  enja "Hello, world!"     # 引数で渡された文字列を翻訳\n' +
-        '  enja -f input.txt        # ファイルからテキストを読み込んで翻訳\n' +
-        '  cat README.md | enja     # パイプ(標準入力)で渡されたテキストを翻訳',
-    );
   } catch (error) {
     console.error(`error: ${formatErrorMessage(error)}`);
     process.exit(1);
@@ -187,6 +180,50 @@ function formatErrorMessage(error: unknown): string {
   } catch {
     return 'Unknown error';
   }
+}
+
+function readInteractiveStdin(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const lines: string[] = [];
+    let cancelled = false;
+    const readline = createInterface({
+      input: process.stdin,
+      output: process.stderr,
+      terminal: true,
+      prompt: '› ',
+    });
+
+    console.error(`${kleur.cyan('翻訳するテキスト')} ${kleur.dim('（Ctrl+D で翻訳）')}`);
+    readline.prompt();
+
+    const handleKeypress = (_character: string | undefined, key: Key) => {
+      if (!key.ctrl || key.name !== 'd') return;
+      if (readline.line.length > 0) lines.push(readline.line);
+      process.stderr.write('\n');
+      readline.close();
+    };
+    process.stdin.prependListener('keypress', handleKeypress);
+
+    readline.on('line', (line) => {
+      lines.push(line);
+      readline.prompt();
+    });
+
+    readline.on('SIGINT', () => {
+      cancelled = true;
+      process.stderr.write('\n');
+      readline.close();
+    });
+
+    readline.on('close', () => {
+      process.stdin.removeListener('keypress', handleKeypress);
+      if (cancelled) {
+        reject(new Error('入力をキャンセルしました'));
+        return;
+      }
+      resolve(lines.join('\n'));
+    });
+  });
 }
 
 function readStdin(): Promise<string> {
