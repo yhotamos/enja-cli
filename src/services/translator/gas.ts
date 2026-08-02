@@ -27,7 +27,10 @@ export class GASTranslator implements Translator {
   private apiUrl: string;
   private apiKey?: string;
 
-  constructor(endpoint: string = GASTranslator.DEFAULT_ENDPOINT, apiKey?: string, validateEndpointOptions?: ValidateEndpointOptions) {
+  constructor(endpoint?: string, apiKey?: string, validateEndpointOptions?: ValidateEndpointOptions) {
+    if (!endpoint) {
+      throw new Error('エンドポイント URL が必要です');
+    }
     if (!GASTranslator.ENDPOINT_URL_PATTERN.test(endpoint)) {
       throw new Error('無効な GAS エンドポイント URL です');
     }

@@ -54,6 +54,22 @@ describe('createTranslator', () => {
     await expect(createTranslator()).rejects.toThrow('エンドポイント URL は https:// で始まる必要があります');
   });
 
+  it('rejects GAS selected over a profile without an endpoint', async () => {
+    resolveConfig.mockResolvedValue({
+      profileName: 'openai',
+      config: {
+        provider: 'gas',
+        apiKey: 'openai-secret',
+        model: 'openai-model',
+        allowLocalEndpoint: false,
+        allowPrivateEndpoint: false,
+        allowHttp: false,
+      },
+    });
+
+    await expect(createTranslator()).rejects.toThrow('エンドポイント URL が必要です');
+  });
+
   it('uses the trusted built-in endpoint when no endpoint is configured', async () => {
     resolveConfig.mockResolvedValue({
       profileName: 'local',
