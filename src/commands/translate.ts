@@ -2,8 +2,9 @@ import * as fs from 'node:fs';
 import type { Command } from 'commander';
 import kleur from 'kleur';
 import ora from 'ora';
+import { resolveConfig } from '../config/index.js';
 import { HistoryStorage } from '../services/history/storage.js';
-import { type CreatedTranslator, createTranslator } from '../services/translator/factory.js';
+import { createTranslator } from '../services/translator/factory.js';
 import { assertStyleSupported, assertTranslatorStyle } from '../services/translator/prompt.js';
 import type { TranslateOptions } from '../types/index.js';
 import { hashText } from '../utils/hash.js';
@@ -93,24 +94,22 @@ async function processTranslation(text: string, options: TranslateOptions, input
   const historyStorage = new HistoryStorage();
   assertTranslatorStyle(options.style);
 
-  let createdTranslator: CreatedTranslator | undefined;
-  if (options.style) {
-    createdTranslator = await createTranslator(options);
-    assertStyleSupported(createdTranslator.provider, options.style);
-  }
+  const styledConfig = options.style ? await resolveConfig(options) : undefined;
+  if (styledConfig) assertStyleSupported(styledConfig.config.provider, options.style);
 
   // 翻訳処理
   const sourceLang = options.flip ? 'ja' : 'en';
   const targetLang = options.flip ? 'en' : 'ja';
 
   // キャッシュチェック
-  const cacheSource = options.style
+  const cacheSource = styledConfig
     ? JSON.stringify({
         text: processedText,
         style: options.style,
-        profile: createdTranslator?.profileName,
-        provider: createdTranslator?.provider,
-        model: createdTranslator?.translator.getModel(),
+        profile: styledConfig.profileName,
+        provider: styledConfig.config.provider,
+        model: styledConfig.config.model,
+        endpoint: styledConfig.config.endpoint,
       })
     : processedText;
   const textHash = hashText(cacheSource);
@@ -135,7 +134,7 @@ async function processTranslation(text: string, options: TranslateOptions, input
   }
 
   // キャッシュにない場合のみ翻訳サービスを初期化
-  const { translator, profileName, provider } = createdTranslator ?? (await createTranslator(options));
+  const { translator, profileName, provider } = await createTranslator(options);
   const dir = `(${sourceLang} → ${targetLang})`;
   const model = translator.getModel();
   const profileInfo = `[${profileName} | ${provider}${model ? ` | ${model}` : ''}]`;
