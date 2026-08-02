@@ -4,6 +4,7 @@ export interface TranslateOptions {
   stripHtml?: boolean;
   cache?: boolean;
   flip?: boolean;
+  style?: TranslatorStyle;
   endpoint?: string;
   apiKey?: string;
   provider?: TranslatorProvider;
@@ -28,6 +29,7 @@ export interface HistoryEntry {
   model?: string;
   options?: {
     stripHtml?: boolean;
+    style?: TranslatorStyle;
     file?: string;
     inputMethod?: 'arg' | 'stdin' | 'file';
     command?: string;
@@ -76,3 +78,5 @@ export interface ConfigOptions {
 export type ConfigKey = 'endpoint' | 'api-key' | 'provider' | 'model' | 'allow-local-endpoint' | 'allow-private-endpoint' | 'allow-http';
 
 export type TranslatorProvider = 'gas' | 'openai' | 'gemini' | 'lmstudio' | 'ollama' | 'custom';
+
+export type TranslatorStyle = 'formal' | 'casual' | 'technical' | 'academic' | 'business';

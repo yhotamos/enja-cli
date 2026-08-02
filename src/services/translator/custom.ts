@@ -1,7 +1,8 @@
-import type { ConfigProfile } from '../../types/index.js';
+import type { ConfigProfile, TranslatorStyle } from '../../types/index.js';
 import type { ValidateEndpointOptions } from '../validate/endpoint.js';
 import { validateEndpoint } from '../validate/endpoint.js';
 import type { TranslationResult, Translator } from './index.js';
+import { assertStyleSupported } from './prompt.js';
 
 export class CustomTranslator implements Translator {
   static getDefaultProfile(): ConfigProfile {
@@ -31,7 +32,9 @@ export class CustomTranslator implements Translator {
     return this.model || null;
   }
 
-  async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
+  async translate(text: string, sourceLang: string, targetLang: string, style?: TranslatorStyle): Promise<TranslationResult> {
+    assertStyleSupported('custom', style);
+
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       Accept: 'application/json',

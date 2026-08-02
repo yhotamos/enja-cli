@@ -41,6 +41,9 @@ enja "こんにちは" -F
 
 # OpenAI API を一時的に使用して翻訳
 enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY
+
+# フォーマルなスタイルで翻訳（OpenAI, Gemini, LM Studio, Ollama）
+enja "Hello, world!" --provider openai --api-key YOUR_OPENAI_API_KEY --style formal
 ```
 
 ### 履歴と設定

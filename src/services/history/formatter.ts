@@ -53,6 +53,7 @@ function formatDetailed(entries: HistoryEntry[]): string {
       const opts = [
         entry.options.inputMethod && `input=${entry.options.inputMethod}`,
         entry.options.stripHtml && 'stripHtml=true',
+        entry.options.style && `style=${entry.options.style}`,
         entry.options.file && `file=${entry.options.file}`,
       ]
         .filter(Boolean)

@@ -1,6 +1,7 @@
-import type { ConfigProfile } from '../../types/index.js';
+import type { ConfigProfile, TranslatorStyle } from '../../types/index.js';
 import { type ValidateEndpointOptions, validateEndpoint } from '../validate/endpoint.js';
 import type { TranslationResult, Translator } from './index.js';
+import { assertStyleSupported } from './prompt.js';
 
 interface GASApiResponse {
   code: number;
@@ -43,7 +44,9 @@ export class GASTranslator implements Translator {
     return null;
   }
 
-  async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
+  async translate(text: string, sourceLang: string, targetLang: string, style?: TranslatorStyle): Promise<TranslationResult> {
+    assertStyleSupported('gas', style);
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };

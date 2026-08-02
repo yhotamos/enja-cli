@@ -1,6 +1,7 @@
-import type { ConfigProfile } from '../../types/index.js';
+import type { ConfigProfile, TranslatorStyle } from '../../types/index.js';
 import { type ValidateEndpointOptions, validateEndpoint } from '../validate/endpoint.js';
 import type { TranslationResult, Translator } from './index.js';
+import { buildSystemPrompt } from './prompt.js';
 
 type OllamaResponse = {
   response: string;
@@ -44,8 +45,8 @@ export class OllamaTranslator implements Translator {
     return this.model || null;
   }
 
-  async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
-    const systemPrompt = `You are a professional translator. Translate the following text from ${sourceLang} to ${targetLang}. Only return the translated text without any additional explanation or comments.`;
+  async translate(text: string, sourceLang: string, targetLang: string, style?: TranslatorStyle): Promise<TranslationResult> {
+    const systemPrompt = buildSystemPrompt(sourceLang, targetLang, style);
 
     const url = this.endpoint.endsWith('/api/generate') ? this.endpoint : `${this.endpoint}/api/generate`;
 
