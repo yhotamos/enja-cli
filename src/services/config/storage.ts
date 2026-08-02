@@ -8,7 +8,7 @@ import { LMStudioTranslator } from '../translator/lmstudio.js';
 import { OllamaTranslator } from '../translator/ollama.js';
 import { OpenAITranslator } from '../translator/openai.js';
 import { validateProfileName } from '../validate/profile.js';
-import type { ConfigManager } from './index.js';
+import type { ConfigManager, ResolvedProfile } from './index.js';
 
 const DEFAULT_PROVIDER: TranslatorProvider = 'gas';
 
@@ -22,13 +22,15 @@ const defaultProfileFactories: Record<TranslatorProvider, () => ConfigProfile> =
   custom: CustomTranslator.getDefaultProfile,
 };
 
-const defaultAppConfig: AppConfig = {
-  version: '1.1',
-  activeProfile: 'default',
-  profiles: {
-    default: defaultProfileFactories[DEFAULT_PROVIDER](),
-  },
-};
+function createDefaultAppConfig(): AppConfig {
+  return {
+    version: '1.1',
+    activeProfile: 'default',
+    profiles: {
+      default: defaultProfileFactories[DEFAULT_PROVIDER](),
+    },
+  };
+}
 
 /** 設定の永続化を管理するクラス */
 export class ConfigStorage implements ConfigManager {
@@ -40,7 +42,29 @@ export class ConfigStorage implements ConfigManager {
 
   /** 設定を取得 */
   async get(): Promise<ConfigProfile> {
-    return await this.readConfig();
+    const { config } = await this.getResolvedProfile();
+    return config;
+  }
+
+  /** 指定された、またはアクティブなプロファイルを名前と設定の組で取得 */
+  async getResolvedProfile(name?: string): Promise<ResolvedProfile> {
+    const appConfig = await this.readAppConfig();
+    const profileName = name ?? appConfig.activeProfile;
+    const config = appConfig.profiles[profileName];
+
+    if (config) {
+      return { profileName, config };
+    }
+
+    if (name) {
+      const availableProfiles = Object.keys(appConfig.profiles).join(', ');
+      throw new Error(`プロファイル '${name}' が見つかりません\n利用可能なプロファイル: ${availableProfiles}`);
+    }
+
+    return {
+      profileName: 'default',
+      config: appConfig.profiles.default ?? this.getDefaultProfile(),
+    };
   }
 
   // プロファイル管理メソッド
@@ -336,9 +360,9 @@ export class ConfigStorage implements ConfigManager {
       if (ConfigStorage.isAppConfig(parsed)) {
         return parsed;
       }
-      return { ...defaultAppConfig };
+      return createDefaultAppConfig();
     } catch {
-      return { ...defaultAppConfig };
+      return createDefaultAppConfig();
     }
   }
 
@@ -352,11 +376,5 @@ export class ConfigStorage implements ConfigManager {
     } catch {
       throw new Error(`設定ファイルの書き込みに失敗しました`);
     }
-  }
-
-  private async readConfig(): Promise<ConfigProfile> {
-    const appConfig = await this.readAppConfig();
-    const activeProfile = appConfig.profiles[appConfig.activeProfile];
-    return activeProfile || this.getDefaultProfile();
   }
 }

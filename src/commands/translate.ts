@@ -88,8 +88,6 @@ async function processTranslation(text: string, options: TranslateOptions, input
     }
   }
 
-  // 翻訳サービスの初期化
-  const { translator, config, activeProfile } = await createTranslator(options);
   const historyStorage = new HistoryStorage();
 
   // 翻訳処理
@@ -118,10 +116,11 @@ async function processTranslation(text: string, options: TranslateOptions, input
     return;
   }
 
+  // キャッシュにない場合のみ翻訳サービスを初期化
+  const { translator, profileName, provider } = await createTranslator(options);
   const dir = `(${sourceLang} → ${targetLang})`;
-  const model = translator.getModel() || config.model;
-  const profileName = activeProfile || 'unknown';
-  const profileInfo = `[${profileName} | ${config.provider}${model ? ` | ${model}` : ''}]`;
+  const model = translator.getModel();
+  const profileInfo = `[${profileName} | ${provider}${model ? ` | ${model}` : ''}]`;
 
   const spinner = ora(`翻訳中... ${dir} ${profileInfo}`).start();
   try {
@@ -137,8 +136,8 @@ async function processTranslation(text: string, options: TranslateOptions, input
       textLength: processedText.length,
       sourceHash: textHash,
       profile: profileName,
-      provider: config.provider,
-      model: model,
+      provider,
+      model: model ?? undefined,
       options: {
         stripHtml: options.stripHtml,
         file: options.file,
