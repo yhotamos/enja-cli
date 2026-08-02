@@ -18,7 +18,10 @@ export class OpenAITranslator implements Translator {
   private client: OpenAI;
   private model: string;
 
-  constructor(apiKey: string, model: string = OpenAITranslator.DEFAULT_MODEL) {
+  constructor(apiKey?: string, model: string = OpenAITranslator.DEFAULT_MODEL) {
+    if (!apiKey) {
+      throw new Error('OpenAI を使用するには API キーが必要です');
+    }
     this.client = new OpenAI({ apiKey });
     this.model = model;
   }

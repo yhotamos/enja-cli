@@ -1,4 +1,5 @@
 import type { ConfigProfile } from '../../types/index.js';
+import { type ValidateEndpointOptions, validateEndpoint } from '../validate/endpoint.js';
 import type { TranslationResult, Translator } from './index.js';
 
 type LMStudioError = {
@@ -36,12 +37,18 @@ export class LMStudioTranslator implements Translator {
     };
   }
 
-  private baseUrl: string;
+  private endpoint: string;
   private model: string;
   private apiKey?: string;
 
-  constructor(endpoint: string = LMStudioTranslator.DEFAULT_ENDPOINT, model: string, apiKey?: string) {
-    this.baseUrl = endpoint;
+  constructor(endpoint?: string, model?: string, apiKey?: string, validateEndpointOptions?: ValidateEndpointOptions) {
+    if (!model) {
+      throw new Error('LM Studio を使用するにはモデル名が必要です');
+    }
+    if (endpoint) {
+      validateEndpoint(endpoint, validateEndpointOptions);
+    }
+    this.endpoint = endpoint || LMStudioTranslator.DEFAULT_ENDPOINT;
     this.model = model;
     this.apiKey = apiKey;
   }
@@ -53,7 +60,7 @@ export class LMStudioTranslator implements Translator {
   async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
     const systemPrompt = `You are a professional translator. Translate the following text from ${sourceLang} to ${targetLang}. Only return the translated text without any additional explanation.`;
 
-    const url = this.resolveEndpoint(this.baseUrl);
+    const url = this.resolveEndpoint(this.endpoint);
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',

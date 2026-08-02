@@ -19,7 +19,10 @@ export class GeminiTranslator implements Translator {
   private client: GoogleGenAI;
   private model: string;
 
-  constructor(apiKey: string, model: string = GeminiTranslator.DEFAULT_MODEL) {
+  constructor(apiKey?: string, model: string = GeminiTranslator.DEFAULT_MODEL) {
+    if (!apiKey) {
+      throw new Error('Gemini を使用するには API キーが必要です');
+    }
     this.client = new GoogleGenAI({ apiKey });
     this.model = model;
   }

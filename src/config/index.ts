@@ -1,43 +1,25 @@
 import { ConfigStorage } from '../services/config/storage.js';
-import type { ConfigProfile, TranslateOptions, TranslatorProvider } from '../types/index.js';
+import type { ConfigProfile, TranslateOptions } from '../types/index.js';
 
-export async function getConfig(options?: TranslateOptions): Promise<ConfigProfile> {
+export interface ResolvedConfig {
+  profileName: string;
+  config: ConfigProfile;
+}
+
+export async function resolveConfig(options?: TranslateOptions): Promise<ResolvedConfig> {
   const storage = new ConfigStorage();
-
-  // プロファイル指定がある場合はそのプロファイルを取得
-  let fileConfig: ConfigProfile;
-  if (options?.profile) {
-    try {
-      fileConfig = await storage.getProfile(options.profile);
-    } catch {
-      const profiles = await storage.listProfiles();
-      throw new Error(`プロファイル '${options.profile}' が見つかりません\n利用可能なプロファイル: ${profiles.join(', ')}`);
-    }
-  } else {
-    // アクティブプロファイルを取得
-    fileConfig = await storage.get();
-  }
+  const { profileName, config: fileConfig } = await storage.getResolvedProfile(options?.profile);
 
   // 優先順位: コマンドラインオプション > プロファイル > デフォルト値
-  const provider: TranslatorProvider = options?.provider || fileConfig.provider || 'gas';
-
-  const endpoint: string | undefined = options?.endpoint || fileConfig.endpoint;
-
-  const apiKey: string | undefined = options?.apiKey || fileConfig.apiKey;
-
-  const model: string | undefined = options?.model || fileConfig.model;
-
-  const allowLocalEndpoint: boolean = options?.allowLocalEndpoint ?? fileConfig.allowLocalEndpoint ?? false;
-  const allowPrivateEndpoint: boolean = options?.allowPrivateEndpoint ?? fileConfig.allowPrivateEndpoint ?? false;
-  const allowHttp: boolean = options?.allowHttp ?? fileConfig.allowHttp ?? false;
-
-  return {
-    endpoint,
-    provider,
-    apiKey,
-    model,
-    allowLocalEndpoint,
-    allowPrivateEndpoint,
-    allowHttp,
+  const config: ConfigProfile = {
+    provider: options?.provider || fileConfig.provider || 'gas',
+    endpoint: options?.endpoint || fileConfig.endpoint,
+    apiKey: options?.apiKey || fileConfig.apiKey,
+    model: options?.model || fileConfig.model,
+    allowLocalEndpoint: options?.allowLocalEndpoint ?? fileConfig.allowLocalEndpoint ?? false,
+    allowPrivateEndpoint: options?.allowPrivateEndpoint ?? fileConfig.allowPrivateEndpoint ?? false,
+    allowHttp: options?.allowHttp ?? fileConfig.allowHttp ?? false,
   };
+
+  return { profileName, config };
 }

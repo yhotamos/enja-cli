@@ -1,4 +1,5 @@
 import type { ConfigProfile } from '../../types/index.js';
+import { type ValidateEndpointOptions, validateEndpoint } from '../validate/endpoint.js';
 import type { TranslationResult, Translator } from './index.js';
 
 type OllamaResponse = {
@@ -26,12 +27,15 @@ export class OllamaTranslator implements Translator {
     };
   }
 
-  private baseUrl: string;
+  private endpoint: string;
   private model: string;
   private apiKey?: string;
 
-  constructor(endpoint?: string, model?: string, apiKey?: string) {
-    this.baseUrl = endpoint || OllamaTranslator.DEFAULT_ENDPOINT;
+  constructor(endpoint?: string, model?: string, apiKey?: string, validateEndpointOptions?: ValidateEndpointOptions) {
+    if (endpoint) {
+      validateEndpoint(endpoint, validateEndpointOptions);
+    }
+    this.endpoint = endpoint || OllamaTranslator.DEFAULT_ENDPOINT;
     this.model = model || OllamaTranslator.DEFAULT_MODEL;
     this.apiKey = apiKey;
   }
@@ -43,7 +47,7 @@ export class OllamaTranslator implements Translator {
   async translate(text: string, sourceLang: string, targetLang: string): Promise<TranslationResult> {
     const systemPrompt = `You are a professional translator. Translate the following text from ${sourceLang} to ${targetLang}. Only return the translated text without any additional explanation or comments.`;
 
-    const url = this.baseUrl.endsWith('/api/generate') ? this.baseUrl : `${this.baseUrl}/api/generate`;
+    const url = this.endpoint.endsWith('/api/generate') ? this.endpoint : `${this.endpoint}/api/generate`;
 
     const headers: HeadersInit = {
       'Content-Type': 'application/json',

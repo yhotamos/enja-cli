@@ -1,7 +1,13 @@
 import type { ConfigProfile } from '../../types/index.js';
 
+export interface ResolvedProfile {
+  profileName: string;
+  config: ConfigProfile;
+}
+
 export interface ConfigManager {
   get(): Promise<ConfigProfile>;
+  getResolvedProfile(name?: string): Promise<ResolvedProfile>;
   getActiveProfileName(): Promise<string>;
   getProfile(name: string): Promise<ConfigProfile>;
   listProfiles(): Promise<string[]>;

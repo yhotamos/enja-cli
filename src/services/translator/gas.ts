@@ -1,4 +1,5 @@
 import type { ConfigProfile } from '../../types/index.js';
+import { type ValidateEndpointOptions, validateEndpoint } from '../validate/endpoint.js';
 import type { TranslationResult, Translator } from './index.js';
 
 interface GASApiResponse {
@@ -26,10 +27,14 @@ export class GASTranslator implements Translator {
   private apiUrl: string;
   private apiKey?: string;
 
-  constructor(endpoint: string = GASTranslator.DEFAULT_ENDPOINT, apiKey?: string) {
+  constructor(endpoint?: string, apiKey?: string, validateEndpointOptions?: ValidateEndpointOptions) {
+    if (!endpoint) {
+      throw new Error('エンドポイント URL が必要です');
+    }
     if (!GASTranslator.ENDPOINT_URL_PATTERN.test(endpoint)) {
       throw new Error('無効な GAS エンドポイント URL です');
     }
+    validateEndpoint(endpoint, validateEndpointOptions);
     this.apiUrl = endpoint;
     this.apiKey = apiKey;
   }

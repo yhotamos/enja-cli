@@ -1,4 +1,6 @@
 import type { ConfigProfile } from '../../types/index.js';
+import type { ValidateEndpointOptions } from '../validate/endpoint.js';
+import { validateEndpoint } from '../validate/endpoint.js';
 import type { TranslationResult, Translator } from './index.js';
 
 export class CustomTranslator implements Translator {
@@ -11,12 +13,16 @@ export class CustomTranslator implements Translator {
     };
   }
 
-  private apiUrl: string;
+  private endpoint: string;
   private apiKey?: string;
   private model?: string;
 
-  constructor(endpoint: string, apiKey?: string, model?: string) {
-    this.apiUrl = endpoint;
+  constructor(endpoint?: string, apiKey?: string, model?: string, validateEndpointOptions?: ValidateEndpointOptions) {
+    if (!endpoint) {
+      throw new Error('エンドポイント URL が必要です');
+    }
+    validateEndpoint(endpoint, validateEndpointOptions);
+    this.endpoint = endpoint;
     this.apiKey = apiKey;
     this.model = model;
   }
@@ -35,7 +41,7 @@ export class CustomTranslator implements Translator {
       headers.Authorization = `Bearer ${this.apiKey}`;
     }
 
-    const res = await fetch(this.apiUrl, {
+    const res = await fetch(this.endpoint, {
       method: 'POST',
       headers,
       body: JSON.stringify({
